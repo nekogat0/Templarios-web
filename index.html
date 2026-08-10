@@ -250,6 +250,33 @@
       color: #000;
     }
 
+    /* BOTÓN DE HOLO ARENA (ANTES GEMINI) */
+    .btn-holo-arena {
+      background: linear-gradient(135deg, #00f0ff, #0077ff);
+      color: #000;
+      border: 1px solid var(--neon-cyan);
+      padding: 10px 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: var(--glow-cyan);
+      transition: all 0.2s ease;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-holo-arena:hover {
+      background: #fff;
+      color: #000;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.9);
+    }
+
     .btn-discord {
       background: linear-gradient(135deg, var(--neon-red), #990022);
       color: white;
@@ -276,6 +303,98 @@
       flex: 1;
       width: 100%;
     }
+
+    /* MODAL / SECCIÓN DE HOLO ARENA */
+    #holoArenaModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(1, 1, 3, 0.95);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .holo-arena-box {
+      width: 100%; max-width: 850px;
+      background: rgba(4, 8, 18, 0.95);
+      border: 2px solid var(--neon-cyan);
+      box-shadow: var(--glow-cyan);
+      border-radius: 8px;
+      padding: 25px;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .holo-close-btn {
+      position: absolute; top: 15px; right: 15px;
+      background: rgba(255, 42, 85, 0.2);
+      border: 1px solid var(--neon-red);
+      color: var(--neon-red);
+      font-family: 'Orbitron', sans-serif;
+      padding: 5px 12px; cursor: pointer; border-radius: 4px;
+    }
+    .holo-close-btn:hover { background: var(--neon-red); color: #fff; }
+
+    .arena-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px; margin-top: 15px;
+    }
+
+    .monster-card {
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid var(--border-hud);
+      padding: 12px; border-radius: 6px; cursor: pointer;
+      transition: all 0.2s ease; text-align: center;
+    }
+    .monster-card:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: var(--glow-cyan);
+      transform: translateY(-3px);
+    }
+
+    .battle-arena-view {
+      display: none; text-align: center; margin-top: 15px;
+    }
+
+    .battle-screen-box {
+      display: flex; justify-content: space-around; align-items: center;
+      background: rgba(0,0,0,0.6); border: 1px solid var(--neon-cyan);
+      padding: 20px; border-radius: 6px; margin-bottom: 15px;
+    }
+
+    .fighter-box {
+      width: 40%; text-align: left; padding: 10px;
+      background: rgba(0, 240, 255, 0.03); border-radius: 4px;
+      border-left: 3px solid var(--neon-cyan);
+    }
+
+    .hp-bar-bg {
+      width: 100%; height: 10px; background: #222; border-radius: 5px; overflow: hidden; margin-top: 5px;
+    }
+    .hp-bar-fill {
+      width: 100%; height: 100%; background: var(--neon-green); transition: width 0.3s ease;
+    }
+
+    .battle-log {
+      background: #000; border: 1px dashed var(--neon-cyan);
+      padding: 10px; font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem; height: 90px; overflow-y: auto; margin-bottom: 15px; text-align: left;
+      color: var(--neon-gold);
+    }
+
+    .moves-container {
+      display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    }
+
+    .move-btn {
+      background: rgba(0, 240, 255, 0.1); border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan); font-family: 'Orbitron', sans-serif;
+      padding: 8px 15px; cursor: pointer; border-radius: 4px; font-size: 0.75rem;
+    }
+    .move-btn:hover { background: var(--neon-cyan); color: #000; }
 
     .galaxy-viewport {
       background: #000;
@@ -898,6 +1017,46 @@
     </div>
   </div>
 
+  <!-- MODAL DE HOLO ARENA -->
+  <div id="holoArenaModal">
+    <div class="holo-arena-box">
+      <div class="hud-corner c1"></div><div class="hud-corner c2"></div>
+      <div class="hud-corner c3"></div><div class="hud-corner c4"></div>
+      <button class="holo-close-btn" id="closeHoloArena">CERRAR [X]</button>
+      <div class="alien-terminal-title runic-text">HOLO ARENA — COMBATES DE PRUEBA ATLAS</div>
+      
+      <!-- SELECCIÓN DE MONSTRUOS -->
+      <div id="holoSelectionView">
+        <p style="font-size: 0.9rem; color: #a0b0c0; margin-bottom: 10px;">Elige un espécimen generado proceduralmente para iniciar una batalla de prueba simplificada:</p>
+        <div class="arena-grid" id="monsterGrid"></div>
+      </div>
+
+      <!-- VISTA DE BATALLA -->
+      <div class="battle-arena-view" id="battleArenaView">
+        <div class="battle-screen-box">
+          <div class="fighter-box" id="playerFighterBox">
+            <h4 id="pfName" class="runic-text" style="color: var(--neon-cyan);"></h4>
+            <span id="pfType" class="badge badge-no"></span>
+            <div style="font-size:0.8rem; margin-top:5px;">HP: <span id="pfHpText">100/100</span></div>
+            <div class="hp-bar-bg"><div class="hp-bar-fill" id="pfHpBar"></div></div>
+          </div>
+          <div style="font-family:'Orbitron'; font-weight:900; color:var(--neon-gold);">VS</div>
+          <div class="fighter-box" id="enemyFighterBox" style="border-left-color: var(--neon-red);">
+            <h4 id="efName" class="runic-text" style="color: var(--neon-red);"></h4>
+            <span id="efType" class="badge badge-reclamado"></span>
+            <div style="font-size:0.8rem; margin-top:5px;">HP: <span id="efHpText">100/100</span></div>
+            <div class="hp-bar-bg"><div class="hp-bar-fill" id="efHpBar" style="background: var(--neon-red);"></div></div>
+          </div>
+        </div>
+
+        <div class="battle-log" id="battleLog">Iniciando simulación de combate Holo Arena...</div>
+        
+        <div class="moves-container" id="movesContainer"></div>
+        <button class="move-btn" id="backToSelectionBtn" style="margin-top: 15px; display: none;">⬅ VOLVER A SELECCIÓN</button>
+      </div>
+    </div>
+  </div>
+
   <!-- CAPA DE FONDO CON GLIFOS Y RED GALÁCTICA -->
   <div class="background-glyphs-overlay">
     <div class="glyph-watermark" style="top: 8%; left: 3%;">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ</div>
@@ -914,6 +1073,8 @@
     <div class="nav-actions">
       <button id="btnToggleCompact" class="btn-compact-mode">📱 MÓVIL: OFF</button>
       <button id="btnToggleAudio" class="btn-audio">🎵 AUDIO: OFF</button>
+      <!-- BOTÓN DE HOLO ARENA INCORPORADO AQUÍ -->
+      <button id="btnHoloArena" class="btn-holo-arena">⚔️ Holo Arena</button>
       <a href="https://discord.gg/KSt3j67x5" target="_blank" class="btn-discord">Discord</a>
     </div>
   </nav>
@@ -1177,6 +1338,158 @@
           alienLoadingScreen.innerHTML = "<div style='font-family: Orbitron; font-size: 1.5rem; color: var(--neon-red); text-align: center;'>ACCESO DENEGADO. PROTOCOLO ABORTADO.</div>";
         }, 1000);
       });
+    });
+
+    // ==========================================
+    // LÓGICA DE HOLO ARENA (8 MONSTRUOS PROCEDURALES)
+    // ==========================================
+    const btnHoloArena = document.getElementById('btnHoloArena');
+    const holoArenaModal = document.getElementById('holoArenaModal');
+    const closeHoloArena = document.getElementById('closeHoloArena');
+    const monsterGrid = document.getElementById('monsterGrid');
+    const holoSelectionView = document.getElementById('holoSelectionView');
+    const battleArenaView = document.getElementById('battleArenaView');
+    const battleLog = document.getElementById('battleLog');
+    const movesContainer = document.getElementById('movesContainer');
+    const backToSelectionBtn = document.getElementById('backToSelectionBtn');
+
+    const monsterTypesData = [
+      { type: "Fuego", color: "#ff2a55", moves: [{name: "Llamarada", dmg: 25}, {name: "Ascuas", dmg: 15}] },
+      { type: "Agua", color: "#00f0ff", moves: [{name: "Hidropulso", dmg: 22}, {name: "Pistola Agua", dmg: 14}] },
+      { type: "Planta", color: "#00ff66", moves: [{name: "Látigo Cepa", dmg: 20}, {name: "Hoja Afilada", dmg: 18}] },
+      { type: "Eléctrico", color: "#ffaa00", moves: [{name: "Rayolaser", dmg: 24}, {name: " Chispa", dmg: 15}] },
+      { type: "Psíquico", color: "#aa00ff", moves: [{name: "Ondas Mental", dmg: 23}, {name: "Pulso Psíquico", dmg: 16}] }
+    ];
+
+    const randomPrefixes = ["Xeno", "Alpha", "Bio", "Cyber", "Gek", "Atlas", "Void", "Mecha", "Stellar", "Omega"];
+    const randomSuffixes = ["pod", "beast", "dox", "ron", "max", "thor", "9000", "prime", "isk", "vortex"];
+
+    let proceduralMonsters = [];
+    let currentBattleState = { player: null, enemy: null, playerHp: 100, enemyHp: 100 };
+
+    function generateProceduralMonsters() {
+      proceduralMonsters = [];
+      monsterGrid.innerHTML = '';
+      
+      for (let i = 0; i < 8; i++) {
+        const name = randomPrefixes[Math.floor(Math.random() * randomPrefixes.length)] + "-" + randomSuffixes[Math.floor(Math.random() * randomSuffixes.length)];
+        const typeObj = monsterTypesData[Math.floor(Math.random() * monsterTypesData.length)];
+        
+        const monster = {
+          id: i,
+          name: name.toUpperCase(),
+          type: typeObj.type,
+          color: typeObj.color,
+          moves: typeObj.moves,
+          hp: 100
+        };
+        proceduralMonsters.push(monster);
+
+        const card = document.createElement('div');
+        card.className = 'monster-card';
+        card.style.borderColor = monster.color;
+        card.innerHTML = `
+          <h5 class="runic-text" style="color: ${monster.color};">${monster.name}</h5>
+          <span class="badge" style="background: ${monster.color}22; color: ${monster.color}; border: 1px solid ${monster.color};">${monster.type}</span>
+          <div style="font-size: 0.75rem; color: #a0b0c0; margin-top: 5px;">Ataques: ${monster.moves[0].name}, ${monster.moves[1].name}</div>
+        `;
+        card.addEventListener('click', () => startBattle(monster));
+        monsterGrid.appendChild(card);
+      }
+    }
+
+    btnHoloArena.addEventListener('click', () => {
+      generateProceduralMonsters();
+      holoSelectionView.style.display = 'block';
+      battleArenaView.style.display = 'none';
+      holoArenaModal.style.display = 'flex';
+    });
+
+    closeHoloArena.addEventListener('click', () => {
+      holoArenaModal.style.display = 'none';
+    });
+
+    function startBattle(playerMonster) {
+      holoSelectionView.style.display = 'none';
+      battleArenaView.style.display = 'block';
+
+      // Elegir rival aleatorio de los otros 7
+      const remaining = proceduralMonsters.filter(m => m.id !== playerMonster.id);
+      const enemyMonster = remaining[Math.floor(Math.random() * remaining.length)];
+
+      currentBattleState = {
+        player: { ...playerMonster },
+        enemy: { ...enemyMonster },
+        playerHp: 100,
+        enemyHp: 100
+      };
+
+      document.getElementById('pfName').innerText = currentBattleState.player.name;
+      document.getElementById('pfType').innerText = currentBattleState.player.type;
+      document.getElementById('pfType').style.color = currentBattleState.player.color;
+      
+      document.getElementById('efName').innerText = currentBattleState.enemy.name;
+      document.getElementById('efType').innerText = currentBattleState.enemy.type;
+      document.getElementById('efType').style.color = currentBattleState.enemy.color;
+
+      updateHpBars();
+      battleLog.innerHTML = `¡Combate iniciado entre ${currentBattleState.player.name} y ${currentBattleState.enemy.name}!`;
+      renderMoves();
+      backToSelectionBtn.style.display = 'none';
+    }
+
+    function updateHpBars() {
+      document.getElementById('pfHpText3') || (document.getElementById('pfHpText').innerText = `${Math.max(0, currentBattleState.playerHp)}/100`);
+      document.getElementById('pfHpBar').style.width = `${Math.max(0, currentBattleState.playerHp)}%`;
+
+      document.getElementById('efHpText').innerText = `${Math.max(0, currentBattleState.enemyHp)}/100`;
+      document.getElementById('efHpBar').style.width = `${Math.max(0, currentBattleState.enemyHp)}%`;
+    }
+
+    function renderMoves() {
+      movesContainer.innerHTML = '';
+      currentBattleState.player.moves.forEach(move => {
+        const btn = document.createElement('button');
+        btn.className = 'move-btn';
+        btn.innerText = `${move.name} (${move.dmg} DMG)`;
+        btn.addEventListener('click', () => executeTurn(move));
+        movesContainer.appendChild(btn);
+      });
+    }
+
+    function executeTurn(playerMove) {
+      if (currentBattleState.playerHp <= 0 || currentBattleState.enemyHp <= 0) return;
+
+      // Turno Jugador
+      currentBattleState.enemyHp -= playerMove.dmg;
+      battleLog.innerHTML = `${currentBattleState.player.name} usó ${playerMove.name} e infligió ${playerMove.dmg} de daño.<br>`;
+      updateHpBars();
+
+      if (currentBattleState.enemyHp <= 0) {
+        battleLog.innerHTML += `<b style="color: var(--neon-green);">¡Victoria! ${currentBattleState.player.name} ha ganado el combate de prueba.</b>`;
+        movesContainer.innerHTML = '';
+        backToSelectionBtn.style.display = 'block';
+        return;
+      }
+
+      // Turno Rival (IA simple)
+      setTimeout(() => {
+        const enemyMove = currentBattleState.enemy.moves[Math.floor(Math.random() * currentBattleState.enemy.moves.length)];
+        currentBattleState.playerHp -= enemyMove.dmg;
+        battleLog.innerHTML += `${currentBattleState.enemy.name} rival usó ${enemyMove.name} e infligió ${enemyMove.dmg} de daño.`;
+        updateHpBars();
+
+        if (currentBattleState.playerHp <= 0) {
+          battleLog.innerHTML += `<br><b style="color: var(--neon-red);">Derrota. ${currentBattleState.enemy.name} ha vencido.</b>`;
+          movesContainer.innerHTML = '';
+          backToSelectionBtn.style.display = 'block';
+        }
+      }, 600);
+    }
+
+    backToSelectionBtn.addEventListener('click', () => {
+      holoSelectionView.style.display = 'block';
+      battleArenaView.style.display = 'none';
     });
 
     // ==========================================
@@ -1860,7 +2173,6 @@
       controls.update();
       renderer.render(scene, camera);
     }
-
     animate();
 
     window.addEventListener('resize', () => {
@@ -1870,7 +2182,7 @@
     });
 
     // ==========================================
-    // GENERADOR Y EDITOR DE TARJETAS ID
+    // LÓGICA DE TARJETA DE ID Y EXPORTACIÓN
     // ==========================================
     const nameInput = document.getElementById('nameInput');
     const platformInput = document.getElementById('platformInput');
@@ -1887,32 +2199,20 @@
     const idCardRole = document.getElementById('idCardRole');
     const idCardGroup = document.getElementById('idCardGroup');
     const idCardCode = document.getElementById('idCardCode');
-    const idCardDisplay = document.getElementById('idCardDesign');
 
-    nameInput.addEventListener('input', () => { idCardName.innerText = nameInput.value || '---'; });
-    platformInput.addEventListener('change', () => { idCardPlatform.innerText = platformInput.value; });
-    professionInput.addEventListener('change', () => { idCardProfession.innerText = professionInput.value; });
-    raceInput.addEventListener('input', () => { idCardRace.innerText = raceInput.value || '---'; });
-    roleInput.addEventListener('input', () => { idCardRole.innerText = roleInput.value || '---'; });
-    groupInput.addEventListener('input', () => { idCardGroup.innerText = groupInput.value || '---'; });
-    codeInput.addEventListener('input', () => { idCardCode.innerText = codeInput.value || '---'; });
-
-    function setTheme(themeIndex) {
-      idCardDisplay.className = `id-card-display theme-${themeIndex}`;
-      document.querySelectorAll('.style-btn').forEach((btn, idx) => {
-        if (idx === themeIndex) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
-    }
+    nameInput.addEventListener('input', () => idCardName.innerText = nameInput.value.toUpperCase() || "EXPLORADOR");
+    platformInput.addEventListener('change', () => idCardPlatform.innerText = platformInput.value);
+    professionInput.addEventListener('change', () => idCardProfession.innerText = professionInput.value.toUpperCase());
+    raceInput.addEventListener('input', () => idCardRace.innerText = raceInput.value.toUpperCase() || "ANOMALY");
+    roleInput.addEventListener('input', () => idCardRole.innerText = roleInput.value.toUpperCase());
+    groupInput.addEventListener('input', () => idCardGroup.innerText = groupInput.value.toUpperCase());
+    codeInput.addEventListener('input', () => idCardCode.innerText = codeInput.value.toUpperCase());
 
     const idFileInput = document.getElementById('idFileInput');
     const idPhotoPreview = document.getElementById('idPhotoPreview');
     const photoPlaceholder = document.getElementById('photoPlaceholder');
 
-    idFileInput.addEventListener('change', function(e) {
+    idFileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -1925,23 +2225,26 @@
       }
     });
 
-    document.getElementById('btnDownloadCard').addEventListener('click', () => {
-      const originalTransform = idCardDisplay.style.transform;
-      idCardDisplay.style.transform = 'none';
+    function setTheme(themeIndex) {
+      const cardDisplay = document.getElementById('idCardDesign');
+      cardDisplay.className = `id-card-display theme-${themeIndex}`;
+      
+      const buttons = document.querySelectorAll('.style-btn');
+      buttons.forEach((btn, idx) => {
+        if (idx === themeIndex) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+    }
 
-      html2canvas(idCardDisplay, {
-        scale: 3,
-        useCORS: true,
-        backgroundColor: null
-      }).then(canvas => {
-        idCardDisplay.style.transform = originalTransform;
+    document.getElementById('btnDownloadCard').addEventListener('click', () => {
+      const cardElement = document.getElementById('idCardDesign');
+      
+      html2canvas(cardElement, { scale: 3, useCORS: true, backgroundColor: null }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `Templarios_Atlas_ID_${nameInput.value || 'Ciudadano'}.png`;
+        link.download = `${nameInput.value.trim() || 'ID_Ciudadano'}_Atlas.png`;
         link.href = canvas.toDataURL('image/png');
+        link.link = true;
         link.click();
-      }).catch(err => {
-        idCardDisplay.style.transform = originalTransform;
-        console.error("Error al generar la captura de la tarjeta ID:", err);
       });
     });
   </script>

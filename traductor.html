@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traductor Cuántico - Templarios del Atlas</title>
+    <style>
+        body {
+            background-color: #04060b;
+            color: #e2e8f0;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background: #090d16;
+            border: 2px solid #ef4444;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.25);
+            width: 100%;
+            max-width: 650px;
+            text-align: center;
+            position: relative;
+        }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #1e1e24;
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+            padding: 6px 12px;
+            font-size: 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #fbbf24;
+            color: #04060b;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+        h2 {
+            color: #ef4444;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+        label {
+            display: block;
+            text-align: left;
+            color: #fbbf24;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        textarea {
+            width: 100%;
+            height: 110px;
+            background: #020617;
+            color: #f1f5f9;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 16px;
+            resize: none;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        button.action-btn {
+            background: #ef4444;
+            color: #fff;
+            border: 1px solid #f87171;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+        }
+        button.action-btn:hover {
+            background: #dc2626;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        }
+        .note {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 15px;
+            border-top: 1px solid #1e293b;
+            padding-top: 10px;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="index.html" class="back-btn">&larr; VOLVER</a>
+    <h2>Terminal de Cifrado Caótico</h2>
+    
+    <label for="inputTexto">&gt; INTRODUZCA FLUJO DE DATOS:</label>
+    <textarea id="inputTexto" placeholder="Escribe tu mensaje aquí..."></textarea>
+
+    <div class="controls">
+        <button class="action-btn" onclick="cifrarMezcla()">[ CIFRAR CAOS ]</button>
+        <button class="action-btn" onclick="descifrarSeleccion()" style="background-color: #b91c1c;">[ DESCIFRAR PARTE ]</button>
+    </div>
+
+    <label for="outputTexto">&gt; RESULTADO DE LA TRANSMISIÓN:</label>
+    <textarea id="outputTexto" placeholder="El resultado aparecerá aquí..." readonly></textarea>
+
+    <div class="note">PROTOCOLO ACTIVO // GASTER - SANS - PAPYRUS MIX</div>
+</div>
+
+<script>
+    const gasterMap = {'a': '🕆', 'b': '🕈', 'c': '⚐', 'd': '🕡', 'e': '🕢', 'f': '🕣', 'g': '📁', 'h': '📂', 'i': '📄', 'j': '📃', 'l': '👁', 'm': '✋', 'n': '✌', 'o': '👌', 'p': '👍', 'q': '👎', 'r': '✊', 'u': '💀', 'v': '👻', 'w': '☠', 'x': '👾', 'y': '🤖', 'z': '🎃', ' ': ' '};
+    const reverseGaster = Object.fromEntries(Object.entries(gasterMap).map(([k, v]) => [v, k]));
+
+    function cifrarMezcla() {
+        let texto = document.getElementById('inputTexto').value.toLowerCase();
+        let palabras = texto.split(' ');
+        let resultadoFinal = [];
+
+        palabras.forEach(palabra => {
+            let estilo = Math.floor(Math.random() * 3);
+            let palabraModificada = "";
+
+            if (estilo === 0) {
+                for (let char of palabra) {
+                    palabraModificada += gasterMap[char] || char;
+                }
+                palabraModificada = "[G:" + palabraModificada + "]";
+            } else if (estilo === 1) {
+                palabraModificada = palabra.split('').reverse().join('') + "..zZ";
+            } else {
+                palabraModificada = "NYEH!" + palabra.toUpperCase() + "!NYEH";
+            }
+            resultadoFinal.push(palabraModificada);
+        });
+
+        document.getElementById('outputTexto').value = resultadoFinal.join(' ');
+    }
+
+    function descifrarSeleccion() {
+        let texto = document.getElementById('inputTexto').value.trim();
+        let resultado = "";
+
+        if (texto.startsWith("NYEH!")) {
+            resultado = texto.replace(/NYEH!/g, "").replace(/!NYEH/g, "").toLowerCase();
+        } else if (texto.includes("..zZ")) {
+            let limpio = texto.replace("..zZ", "");
+            resultado = limpio.split('').reverse().join('');
+        } else {
+            let limpio = texto.replace(/^\[G:|\]$/g, "");
+            for (let char of limpio) {
+                resultado += reverseGaster[char] || char;
+            }
+        }
+
+        document.getElementById('outputTexto').value = resultado || "ERROR DE DESCODIFICACIÓN. AISLE EL FRAGMENTO.";
+    }
+</script>
+
+</body>
+</html>

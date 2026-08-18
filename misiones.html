@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misiones - Templarios del Atlas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #04060b;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .top-bar {
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-btn {
+            background-color: #1a1a1a;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .nav-btn:hover {
+            background-color: #2a2a2a;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .points-box {
+            background-color: #090d16;
+            border: 1px solid #ef4444;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            text-align: right;
+            display: inline-block;
+        }
+        .points-box span {
+            color: #f87171;
+        }
+        .skip-btn {
+            display: block;
+            margin-top: 4px;
+            background-color: #991b1b;
+            color: white;
+            border: none;
+            padding: 3px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.75em;
+            font-weight: normal;
+        }
+        .skip-btn:hover {
+            background-color: #b91c1c;
+        }
+        .license-promo-box {
+            background-color: #090d16;
+            border: 2px solid #d4af37;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+        }
+        .license-promo-box h3 {
+            margin: 0 0 5px 0;
+            color: #d4af37;
+        }
+        .license-promo-box p {
+            margin: 0;
+            color: #bbb;
+            font-size: 0.85em;
+        }
+        .license-btn {
+            background-color: #d4af37;
+            color: #04060b;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .license-btn:hover {
+            background-color: #e6c547;
+        }
+        .timer-box {
+            background-color: #090d16;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            border: 1px solid #334155;
+        }
+        .mission-card {
+            background-color: #090d16;
+            border: 1px solid #1e293b;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .mission-info h3 {
+            margin: 0 0 5px 0;
+            color: #f87171;
+        }
+        .mission-info p {
+            margin: 0;
+            color: #bbb;
+            font-size: 0.9em;
+        }
+        .mission-btn {
+            background-color: #991b1b;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .mission-btn:disabled {
+            background-color: #334155;
+            cursor: not-allowed;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background-color: #090d16;
+            border: 2px solid #ef4444;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-content input[type="password"] {
+            margin: 15px 0;
+            padding: 8px;
+            width: 80%;
+            background-color: #020617;
+            border: 1px solid #334155;
+            color: #fff;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .modal-btns {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        .modal-btn-confirm {
+            background-color: #16a34a;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .modal-btn-cancel {
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="index.html" class="nav-btn">← Volver al Inicio</a>
+        <div class="points-box">
+            Puntos: <span id="points-display">0</span>
+            <button class="skip-btn" onclick="skipCooldown()">Saltar tiempo (150 pts)</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Misiones de Purificación</h1>
+
+        <div class="license-promo-box">
+            <div>
+                <h3>Licencia de Conducción Estelar</h3>
+                <p>Gestiona tu carnet de pilotaje oficial (Temporal gratis o Definitiva por 2,500 pts).</p>
+            </div>
+            <a href="licencia.html" class="license-btn">Tramitar Licencia</a>
+        </div>
+
+        <div class="timer-box">
+            Próximo reinicio en: <span id="countdown">--:--:--</span>
+        </div>
+        <div id="mission-container">
+            </div>
+    </div>
+
+    <div id="verifyModal" class="modal">
+        <div class="modal-content">
+            <h3>Seguridad de los Templarios</h3>
+            <p id="modal-mission-title" style="color: #bbb; font-size: 0.9em;"></p>
+            <p>Introduce la contraseña de acceso para autorizar esta misión de alta dificultad:</p>
+            <input type="password" id="missionPassword" placeholder="Contraseña secreta">
+            <div class="modal-btns">
+                <button class="modal-btn-confirm" onclick="verifyPassword()">Autorizar</button>
+                <button class="modal-btn-cancel" onclick="closeModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const allMissions = [
+            { id: 1, title: "Purga Menor Gek", desc: "Infiltra puesto de avanzada y debilita patrulla Gek local.", points: 70, hard: false },
+            { id: 2, title: "Sabotaje de Suministros", desc: "Intercepta cargamentos comerciales en sistemas Gek.", points: 90, hard: false },
+            { id: 3, title: "Escaneo de Fauna Hostil", desc: "Registra la fauna peligrosa en planetas bajo dominio Gek.", points: 80, hard: false },
+            { id: 4, title: "Extracción de Minerales", desc: "Extrae recursos clave de mundos contaminados.", points: 60, hard: false },
+            { id: 5, title: "Masacre de Flota Gek (Difícil)", desc: "Destruye una cantidad masiva de cargueros Gek en combate espacial prolongado.", points: 250, hard: true },
+            { id: 6, title: "Ecocidio y Mapeo Extremo (Difícil)", desc: "Completa el registro total de fauna y minerales pesados en múltiples planetas hostiles.", points: 200, hard: true },
+            { id: 7, title: "Campaña de Exterminio Total (Difícil)", desc: "Ejecuta una serie masiva de misiones de purificación contra sistemas Gek fuertemente defendidos.", points: 300, hard: true }
+        ];
+
+        let selectedMissionIndex = null;
+
+        function getTodayKey() {
+            const d = new Date();
+            return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+        }
+
+        function loadDailyMissions() {
+            let savedData = JSON.parse(localStorage.getItem('templarios_misiones')) || {};
+            let activeDate = localStorage.getItem('templarios_active_date');
+            const realToday = getTodayKey();
+
+            if (!activeDate) {
+                activeDate = realToday;
+                localStorage.setItem('templarios_active_date', activeDate);
+            }
+
+            if (savedData.date !== activeDate || !savedData.missions) {
+                let shuffled = [...allMissions].sort(() => 0.5 - Math.random());
+                let selected = shuffled.slice(0, 6).map(m => ({ ...m, completed: false }));
+                savedData = { date: activeDate, missions: selected };
+                localStorage.setItem('templarios_misiones', JSON.stringify(savedData));
+            }
+
+            renderMissions(savedData.missions);
+            updatePointsDisplay();
+        }
+
+        function renderMissions(missions) {
+            const container = document.getElementById('mission-container');
+            container.innerHTML = '';
+
+            missions.forEach((mission, index) => {
+                const card = document.createElement('div');
+                card.className = 'mission-card';
+                card.innerHTML = `
+                    <div class="mission-info">
+                        <h3>${mission.title} ${mission.hard ? '⚡ [ALTA DIFICULTAD]' : ''}</h3>
+                        <p>${mission.desc} (+${mission.points} pts)</p>
+                    </div>
+                    <button class="mission-btn" ${mission.completed ? 'disabled' : ''} onclick="handleMissionClick(${index})">
+                        ${mission.completed ? 'Completada' : 'Completar'}
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updatePointsDisplay() {
+            let currentPoints = localStorage.getItem('templarios_puntos') || '0';
+            document.getElementById('points-display').innerText = currentPoints;
+        }
+
+        function handleMissionClick(index) {
+            let savedData = JSON.parse(localStorage.getItem('templarios_misiones'));
+            let mission = savedData.missions[index];
+
+            if (mission.hard) {
+                selectedMissionIndex = index;
+                document.getElementById('modal-mission-title').innerText = mission.title;
+                document.getElementById('missionPassword').value = '';
+                document.getElementById('verifyModal').style.display = 'flex';
+            } else {
+                finalizeMission(index);
+            }
+        }
+
+        function verifyPassword() {
+            const passInput = document.getElementById('missionPassword').value.trim();
+            const correctPass = "delcodigoalser";
+
+            if (passInput === correctPass) {
+                closeModal();
+                if (selectedMissionIndex !== null) {
+                    finalizeMission(selectedMissionIndex);
+                    selectedMissionIndex = null;
+                }
+            } else {
+                alert("Contraseña incorrecta. Acceso denegado por los protocolos del Atlas.");
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('verifyModal').style.display = 'none';
+        }
+
+        function finalizeMission(index) {
+            let savedData = JSON.parse(localStorage.getItem('templarios_misiones'));
+            if (!savedData.missions[index].completed) {
+                savedData.missions[index].completed = true;
+                localStorage.setItem('templarios_misiones', JSON.stringify(savedData));
+                
+                let currentPoints = parseInt(localStorage.getItem('templarios_puntos') || '0');
+                currentPoints += savedData.missions[index].points;
+                localStorage.setItem('templarios_puntos', currentPoints);
+
+                renderMissions(savedData.missions);
+                updatePointsDisplay();
+            }
+        }
+
+        function skipCooldown() {
+            let currentPoints = parseInt(localStorage.getItem('templarios_puntos') || '0');
+            const cost = 150;
+
+            if (currentPoints >= cost) {
+                currentPoints -= cost;
+                localStorage.setItem('templarios_puntos', currentPoints);
+
+                let activeDate = new Date(localStorage.getItem('templarios_active_date') || getTodayKey());
+                activeDate.setDate(activeDate.getDate() + 1);
+                const nextKey = `${activeDate.getFullYear()}-${activeDate.getMonth() + 1}-${activeDate.getDate()}`;
+                
+                localStorage.setItem('templarios_active_date', nextKey);
+                loadDailyMissions();
+                updatePointsDisplay();
+            } else {
+                alert("No tienes suficientes puntos para saltar el tiempo de reutilización (Necesitas 150 pts).");
+            }
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            const diff = tomorrow - now;
+
+            const hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+            const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
+            const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+
+            document.getElementById('countdown').innerText = `${hours}:${minutes}:${seconds}`;
+
+            if (diff <= 1000) {
+                localStorage.removeItem('templarios_active_date');
+                loadDailyMissions();
+            }
+        }
+
+        loadDailyMissions();
+        setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>

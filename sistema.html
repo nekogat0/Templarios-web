@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxia de Euclides - Sistemas del Templario</title>
+    <style>
+        body {
+            background-color: #04060b;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 10px 20px;
+            background-color: #0284c7;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background-color: #0369a1;
+        }
+        .galaxy-container {
+            max-width: 1200px;
+            margin: 0 auto 30px auto;
+            background: #090d16;
+            border: 2px solid #38bdf8;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+            text-align: center;
+        }
+        canvas {
+            background: radial-gradient(circle at center, #1e1b4b 0%, #030712 80%);
+            border-radius: 6px;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+            max-width: 100%;
+            height: auto;
+            cursor: crosshair;
+        }
+        .galaxy-info {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+        .highlight-name {
+            color: #f87171;
+            font-weight: bold;
+        }
+        .table-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow-x: auto;
+            background: #1e293b;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            border: 1px solid #334155;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            white-space: nowrap;
+        }
+        th, td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #334155;
+        }
+        th {
+            background-color: #0f172a;
+            color: #38bdf8;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+        tr:hover {
+            background-color: #334155;
+        }
+        td {
+            font-size: 0.9rem;
+        }
+        tr.highlighted-row {
+            background-color: rgba(239, 68, 68, 0.15) !important;
+            border-left: 5px solid #ef4444;
+        }
+        tr.highlighted-row td {
+            color: #fca5a5;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Galaxia de Euclides - Sistemas del Templario</h1>
+        <div class="subtitle">Simulador Galáctico en Vivo &bull; 157 Sistemas Registrados hacia el Núcleo</div>
+    </header>
+
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <a href="index.html" class="back-btn">&larr; Volver al Inicio</a>
+    </div>
+
+    <!-- SIMULADOR GRÁFICO DE LA GALAXIA (CANVAS) -->
+    <div class="galaxy-container">
+        <canvas id="euclidCanvas" width="900" height="600"></canvas>
+        <div class="galaxy-info">
+            Visualización de la Galaxia de Euclides. El sistema <span class="highlight-name">Eahams-ayg</span> se encuentra en el confín exterior con la ruta recta hacia el centro.
+        </div>
+    </div>
+
+    <!-- TABLA DE SISTEMAS -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre del Sistema</th>
+                    <th>Cuerpos Celestes</th>
+                    <th>Raza</th>
+                    <th>Conflicto / Economía</th>
+                    <th>Reclamados</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>boylosa lx</td>
+                    <td>6</td>
+                    <td>gek</td>
+                    <td>c 2 e sostenible</td>
+                    <td>si</td>
+                </tr>
+                <tr class="highlighted-row">
+                    <td>eahams-ayg</td>
+                    <td>5 y luna 1</td>
+                    <td>gek</td>
+                    <td>c 2 e equilibrado ganacias</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>negulus xvlll</td>
+                    <td>5 e 1 luna</td>
+                    <td>korvax</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>odiusiped</td>
+                    <td>5</td>
+                    <td>gek</td>
+                    <td>0 e bajos suministros</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>defora</td>
+                    <td>3 y 2 luna</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>uphlin-ryann</td>
+                    <td>6</td>
+                    <td>vykeen</td>
+                    <td>c 2 e floreciente</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>beattyip</td>
+                    <td>3</td>
+                    <td>korvax</td>
+                    <td>c 3 e equilibrado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>eduanr-deporp</td>
+                    <td>5</td>
+                    <td>ninguna</td>
+                    <td>ninguna</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>oneston vlll</td>
+                    <td>5</td>
+                    <td>gek</td>
+                    <td>c 2 minerales</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>coklahom</td>
+                    <td>6</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>ninectichu</td>
+                    <td>4 y luna 2</td>
+                    <td>korvax</td>
+                    <td>c 2 e prometedor</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>rafael</td>
+                    <td>4 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 3 e adecuado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>ryintonya</td>
+                    <td>5 y luna 1</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>tratias-vai xlx</td>
+                    <td>2</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>elegze-pra l</td>
+                    <td>2</td>
+                    <td>vykeen</td>
+                    <td>c 1 e combustible satisfecho</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>hoskyovinia</td>
+                    <td>4</td>
+                    <td>korvax</td>
+                    <td>c 3 e poco suministros</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>muskirto</td>
+                    <td>6</td>
+                    <td>korvax</td>
+                    <td>c 1 e sostenible</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>hitachi-uefuk</td>
+                    <td>4 y lunas 2</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>mobingwoo</td>
+                    <td>5</td>
+                    <td>vykeen</td>
+                    <td>c 1 e satisfecho</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>nonjiwua</td>
+                    <td>5</td>
+                    <td>vykeen</td>
+                    <td>c 2 e en quiebra</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>riveyko-oko</td>
+                    <td>2</td>
+                    <td>korvax</td>
+                    <td>c 1 e holgado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>susurav-asb</td>
+                    <td>6</td>
+                    <td>gek</td>
+                    <td>c 3 e en desarrollo</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>hejiung-uunu</td>
+                    <td>5 y luna 1</td>
+                    <td>vykeen</td>
+                    <td>c 3 e holgado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>yorxunf</td>
+                    <td>5 y luna 1</td>
+                    <td>ninguna</td>
+                    <td>ninguna</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>goqudoi vll</td>
+                    <td>2</td>
+                    <td>korvax</td>
+                    <td>c 1 e expe satisfactorio</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>cintil</td>
+                    <td>3 y luna 1</td>
+                    <td>vykeen</td>
+                    <td>c 1 e fabri equilibrado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>kabaele-boen</td>
+                    <td>3</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>gexungy</td>
+                    <td>4</td>
+                    <td>korvax</td>
+                    <td>c 1 e avanzado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>orches-usuk</td>
+                    <td>5 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 3 e carente</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>eswade vll</td>
+                    <td>2</td>
+                    <td>korvax</td>
+                    <td>c 1 e muchos suministro</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>osporia</td>
+                    <td>3 y luna 2</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>ilfordo-apl</td>
+                    <td>3</td>
+                    <td>vykeen</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>seusiar</td>
+                    <td>5 y luna 1</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>rihunsl</td>
+                    <td>4</td>
+                    <td>korvax</td>
+                    <td>c 1 e suministro medio</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>qayugkar</td>
+                    <td>6</td>
+                    <td>gek</td>
+                    <td>c 1  e equilibrado</td>
+                    <td>1 de 6</td>
+                </tr>
+                <tr>
+                    <td>muxingl</td>
+                    <td>5 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 3 e opulento</td>
+                    <td>1 de 5</td>
+                </tr>
+                <tr>
+                    <td>bozhow-yava</td>
+                    <td>4</td>
+                    <td>vykeen</td>
+                    <td>c 3 e equilibrado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>juennongj</td>
+                    <td>4 y luna 2</td>
+                    <td>korvax</td>
+                    <td>c 3 e suministro medio</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>ruzhou</td>
+                    <td>3 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c pirata e negro</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>ahaohsin</td>
+                    <td>3 y luna 2</td>
+                    <td>korvax</td>
+                    <td>c 3 suministro medio</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>bestie-hyull</td>
+                    <td>5</td>
+                    <td>korvax</td>
+                    <td>c 3 e infructuoso</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>rewsbu-esapa</td>
+                    <td>3</td>
+                    <td>gek</td>
+                    <td>c pirata e negro</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>oprovern</td>
+                    <td>3 y luna 1</td>
+                    <td>gek</td>
+                    <td>c pirata e negro</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>tesyala</td>
+                    <td>5 y luna 1</td>
+                    <td>gek</td>
+                    <td>c pirata e negro</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>ukuhas iv</td>
+                    <td>4</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>neyringisn</td>
+                    <td>5</td>
+                    <td>korvax</td>
+                    <td>c 1 e suministro medio</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>michik vlll</td>
+                    <td>2</td>
+                    <td>vykeen</td>
+                    <td>c 1 e floreciente</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>roasit-qen</td>
+                    <td>5 y luna 1</td>
+                    <td>vykeen</td>
+                    <td>c 2 e equilibrado</td>
+                    <td>2 de 5</td>
+                </tr>
+                <tr>
+                    <td>losbels-evy vll</td>
+                    <td>1 y lunas 5</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>3 lunas y 1 planeta</td>
+                </tr>
+                <tr>
+                    <td>jeellomi xlv</td>
+                    <td>6</td>
+                    <td>korvax</td>
+                    <td>c 3 e sostenible</td>
+                    <td>1 de 6</td>
+                </tr>
+                <tr>
+                    <td>sotann-luburg</td>
+                    <td>5 y luna 1</td>
+                    <td>vykeen</td>
+                    <td>c 1 e poco prometedeor</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>eorgonash</td>
+                    <td>4 y luna 2</td>
+                    <td>korvax</td>
+                    <td>c 1 e muchos suministros</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>kufasta</td>
+                    <td>3</td>
+                    <td>korvax</td>
+                    <td>c 2 e pudiente</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>avsuyrir xvll</td>
+                    <td>5 y luna 1</td>
+                    <td>vykeen</td>
+                    <td>c 1 e equilibrado</td>
+                    <td>1 de 5</td>
+                </tr>
+                <tr>
+                    <td>tinggu-hof</td>
+                    <td>6</td>
+                    <td>vykeen</td>
+                    <td>c 1 e holgado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>riyamag vlll</td>
+                    <td>6</td>
+                    <td>gek</td>
+                    <td>c 1 e poco prometedeor</td>
+                    <td>1 de 6</td>
+                </tr>
+                <tr>
+                    <td>hisoma</td>
+                    <td>6</td>
+                    <td>korvax</td>
+                    <td>c 1 e satisfactorio</td>
+                    <td>2 de 6</td>
+                </tr>
+                <tr>
+                    <td>pevetli</td>
+                    <td>3 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 2 e equilibrado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>oyolasve</td>
+                    <td>5</td>
+                    <td>vykeen</td>
+                    <td>c pirata e negro</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>chonquam</td>
+                    <td>5</td>
+                    <td>vykeen</td>
+                    <td>c 3 e suministro medio</td>
+                    <td>1 de 5</td>
+                </tr>
+                <tr>
+                    <td>woomenz</td>
+                    <td>6</td>
+                    <td>gek</td>
+                    <td>c 1 e endesarollo</td>
+                    <td>1 de 6</td>
+                </tr>
+                <tr>
+                    <td>lejope</td>
+                    <td>6</td>
+                    <td>vykeen</td>
+                    <td>c 1 e sostenible</td>
+                    <td>1 de 6</td>
+                </tr>
+                <tr>
+                    <td>ookaka x</td>
+                    <td>6</td>
+                    <td>gek</td>
+                    <td>c 3 e sostenible</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>valech</td>
+                    <td>3 y luna 2</td>
+                    <td>vykeen</td>
+                    <td>c 3 e equilibrado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>sembok-yus</td>
+                    <td>6</td>
+                    <td>gek</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>dewsbur</td>
+                    <td>1 y luna 5</td>
+                    <td>korvax</td>
+                    <td>c 1 e en declive</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>kojiyo</td>
+                    <td>5 y luna 1</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>zuhott</td>
+                    <td>4</td>
+                    <td>vykeen</td>
+                    <td>c 3 e satisfactorio</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>ubaraka-sori xlll</td>
+                    <td>5 y luna 1</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>jallva-rozna</td>
+                    <td>6</td>
+                    <td>vykeen</td>
+                    <td>c 2 e opulento</td>
+                    <td>1 de 6</td>
+                </tr>
+                <tr>
+                    <td>rayugku lx</td>
+                    <td>4 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 2 e en desarrollo</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>ajorte</td>
+                    <td>6</td>
+                    <td>gek</td>
+                    <td>c 3 e adecuado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>uhasudor v</td>
+                    <td>6</td>
+                    <td>korvax</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>yutegrad</td>
+                    <td>2</td>
+                    <td>korvax</td>
+                    <td>c 1 e satisfecho</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>alexey ll</td>
+                    <td>4 y luna 2</td>
+                    <td>korvax</td>
+                    <td>c 2 e holgado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>edcosse-irs xl</td>
+                    <td>2</td>
+                    <td>korvax</td>
+                    <td>c 1 e en desarrollo</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>anleyto-poydn</td>
+                    <td>5 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 1 e incipiente</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>aquintop</td>
+                    <td>2</td>
+                    <td>korvax</td>
+                    <td>c 1 e floreciente</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>hovdor-desro</td>
+                    <td>1 y luna 5</td>
+                    <td>korvax</td>
+                    <td>c 2 e equilibrado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>lagang-egda</td>
+                    <td>5 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 1 e holgado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>hyirhowag xvll</td>
+                    <td>4 y luna 2</td>
+                    <td>korvax</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>coggesso</td>
+                    <td>4 y luna 2</td>
+                    <td>korvax</td>
+                    <td>c 1 e adecuado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>sorial</td>
+                    <td>3</td>
+                    <td>korvax</td>
+                    <td>c 1 e adecuado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>coranoyam</td>
+                    <td>6</td>
+                    <td>korvax</td>
+                    <td>c 1 e satisfactorio</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>imskyvi-uulis</td>
+                    <td>1 y luna 5</td>
+                    <td>korvax</td>
+                    <td>c 3 e adecuado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>atorigus</td>
+                    <td>4</td>
+                    <td>korvax</td>
+                    <td>c 1 e carente</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>idetsi</td>
+                    <td>5</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>talukouri</td>
+                    <td>4 y luna 2</td>
+                    <td>korvax</td>
+                    <td>c 1 e sostenible</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>yutossa-iset</td>
+                    <td>2 y luna 1</td>
+                    <td>korvax</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>lzonash lv</td>
+                    <td>6</td>
+                    <td>korvax</td>
+                    <td>c 3 e en auge</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>usoinol vl</td>
+                    <td>4</td>
+                    <td>vykeen</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>ogdani-bayed l</td>
+                    <td>2</td>
+                    <td>korvax</td>
+                    <td>c pirata e negro</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>bluchyo-rube</td>
+                    <td>4 y luna 1</td>
+                    <td>gek</td>
+                    <td>c 1 e incipiente</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>yazumois lx</td>
+                    <td>4 y luna 1</td>
+                    <td>vykeen</td>
+                    <td>c 3 e prometedor</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>ruksik</td>
+                    <td>3</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>bratov-fuji</td>
+                    <td>4 y luna 2</td>
+                    <td>gek</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>essedium xvlll</td>
+                    <td>4 y luna 2</td>
+                    <td>gek</td>
+                    <td>c 3 e sostenible</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>affugtni</td>
+                    <td>6</td>
+                    <td>korvax</td>
+                    <td>c 1 e sostenible</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>ezusum</td>
+                    <td>4 y luna 2</td>
+                    <td>gek</td>
+                    <td>c 2 e poco prometedor</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>aparahas</td>
+                    <td>2 y luna 1</td>
+                    <td>gek</td>
+                    <td>ninguna</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>onjisu-hats xl</td>
+                    <td>5 y luna 1</td>
+                    <td>vykeen</td>
+                    <td>c 3 e satisfactorio</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>razawai</td>
+                    <td>4</td>
+                    <td>vykeen</td>
+                    <td>c 1 e en auge</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>yulison-nest xvll</td>
+                    <td>3</td>
+                    <td>korvax</td>
+                    <td>c 2 e holgado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>hutrata</td>
+                    <td>1 y luna 5</td>
+                    <td>korvax</td>
+                    <td>c 2 e adecuado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>akhtar</td>
+                    <td>4</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>enevadu</td>
+                    <td>6</td>
+                    <td>vykeen</td>
+                    <td>c 1 e avanzado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>zugash-poc vlll</td>
+                    <td>6</td>
+                    <td>korvax</td>
+                    <td>c 2 e en quiebra</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>bunkyots</td>
+                    <td>5</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>lamasamk</td>
+                    <td>5 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 1 e suministro medio</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>batagaiat lv</td>
+                    <td>5 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 2 e suministro medio</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>nileidim</td>
+                    <td>4 y luna 2</td>
+                    <td>vykeen</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>ritable</td>
+                    <td>4 y luna 1</td>
+                    <td>vykeen</td>
+                    <td>c 3 e adecuado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>gonaogour</td>
+                    <td>4 y luna 2</td>
+                    <td>korvax</td>
+                    <td>c 2 e equilibrado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>nimatti-riksaw</td>
+                    <td>4</td>
+                    <td>gek</td>
+                    <td>c 2 e holgado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>rochatovk</td>
+                    <td>3 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 2 e incipiente</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>magoga v</td>
+                    <td>4</td>
+                    <td>vykeen</td>
+                    <td>c 3 e sostenible</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>inkarsho</td>
+                    <td>5 y luna 1</td>
+                    <td>vykeen</td>
+                    <td>c 1 e en desarrollo</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>amusic-guah ll</td>
+                    <td>3</td>
+                    <td>korvax</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>zadnogri</td>
+                    <td>4</td>
+                    <td>vykeen</td>
+                    <td>c 2 e prospero</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>nujukuiper</td>
+                    <td>6</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>omnarr lx</td>
+                    <td>4</td>
+                    <td>korvax</td>
+                    <td>c 2 e holgado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>ukshai</td>
+                    <td>4 y luna 2</td>
+                    <td>vykeen</td>
+                    <td>c 1 e satisfecho</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>riittami</td>
+                    <td>3</td>
+                    <td>korvax</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>erdoiji xl</td>
+                    <td>2</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>omfatt-ili lx</td>
+                    <td>6</td>
+                    <td>korvax</td>
+                    <td>c 1 e sostenible</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>lilash-aol</td>
+                    <td>4 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 1 e en auge</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>tizani-ukn x</td>
+                    <td>3</td>
+                    <td>korvax</td>
+                    <td>c 1 e suministro medio</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>arimovits</td>
+                    <td>2 y luna 1</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>surantil</td>
+                    <td>5 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 2 e holgado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>cukleyuw</td>
+                    <td>6</td>
+                    <td>korvax</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>igasah-ayv</td>
+                    <td>2 y luna 4</td>
+                    <td>korvax</td>
+                    <td>c 1 e incipiente</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>beokaya-huron</td>
+                    <td>2</td>
+                    <td>korvax</td>
+                    <td>c 2 e equilibrado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>portsa</td>
+                    <td>4</td>
+                    <td>vykeen</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>rodneyas</td>
+                    <td>4</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>loftusa</td>
+                    <td>4 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 1 e equilibrado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>madach-sosy</td>
+                    <td>3</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>1 de 3</td>
+                </tr>
+                <tr>
+                    <td>rotsbert</td>
+                    <td>4 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c pirata e negro</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>zaozyorsk</td>
+                    <td>5 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c pirata e negro</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>wusongji l</td>
+                    <td>6</td>
+                    <td>korvax</td>
+                    <td>c 3 e prometedor</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>nidopochk</td>
+                    <td>3</td>
+                    <td>korvax</td>
+                    <td>c 3 e en desarrollo</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>veychy lv</td>
+                    <td>3</td>
+                    <td>gek</td>
+                    <td>c pirata e negro</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>yahytak</td>
+                    <td>2</td>
+                    <td>korvax</td>
+                    <td>c pirata e negro</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>mesannurta</td>
+                    <td>1 y luna 2</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>apolyb</td>
+                    <td>3 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c pirata e negro</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>suyrnina</td>
+                    <td>4 y luna 2</td>
+                    <td>korvax</td>
+                    <td>c 3 e holgado</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>ticyati</td>
+                    <td>4</td>
+                    <td>korvax</td>
+                    <td>c pirata e negro</td>
+                    <td>no</td>
+                </tr>
+                <tr>
+                    <td>gaokay xvll</td>
+                    <td>4 y luna 2</td>
+                    <td>ninguno</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>averdig-wat xlv</td>
+                    <td>5</td>
+                    <td>korvax</td>
+                    <td>c 1 e adecuado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>kofuname</td>
+                    <td>5 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 1 e holgado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>yalaint</td>
+                    <td>3 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 3 e en desarrollo</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>lidovoa-natoud</td>
+                    <td>4 y luna 1</td>
+                    <td>korvax</td>
+                    <td>c 1 e suministro medio</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>mechnym-lsh vlll</td>
+                    <td>4 y luna 2</td>
+                    <td>korvax</td>
+                    <td>c 1 e holgado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>alsrull</td>
+                    <td>4 y luna 2</td>
+                    <td>korvax</td>
+                    <td>c 3 e suministro medio</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>miglich</td>
+                    <td>5 y luna 1</td>
+                    <td>vykeen</td>
+                    <td>c 3 e holgado</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>artagil-naho</td>
+                    <td>5 y luna 1</td>
+                    <td>vykeen</td>
+                    <td>c 2 e incipiente</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>gadzhe</td>
+                    <td>1 y luna 5</td>
+                    <td>korvax</td>
+                    <td>ninguno</td>
+                    <td>si</td>
+                </tr>
+                <tr>
+                    <td>settsu</td>
+                    <td>5 y luna 1</td>
+                    <td>vykeen</td>
+                    <td>c 2 e holgado</td>
+                    <td>si</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('euclidCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+
+        // Partículas galácticas de fondo con gradiente de color según distancia
+        const particles = [];
+        for (let i = 0; i < 2000; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.pow(Math.random(), 1.4) * (canvas.width * 0.45);
+            particles.push({ angle, dist, size: Math.random() * 1.8 + 0.5 });
+        }
+
+        // Generar los 157 sistemas en línea recta hacia el centro con ligero desplazamiento lateral aleatorio
+        const systems157 = [];
+        const totalSys = 157;
+        
+        // Coordenadas de inicio (borde exterior) y fin (centro exacto)
+        const startX = cx - 360;
+        const startY = cy - 120;
+        const endX = cx;
+        const endY = cy;
+
+        // Vector director y su perpendicular para el desvío lateral leve
+        const dx = endX - startX;
+        const dy = endY - startY;
+        const len = Math.hypot(dx, dy);
+        const nx = -dy / len;
+        const ny = dx / len;
+
+        for (let i = 0; i < totalSys; i++) {
+            const t = i / (totalSys - 1);
+            
+            // Interpolación lineal estricta hacia el centro
+            const baseX = startX * (1 - t) + endX * t;
+            const baseY = startY * (1 - t) + endY * t;
+
+            // Desvío lateral aleatorio pequeño para que no sea una línea robótica perfecta
+            const jitter = (Math.sin(i * 12.9898) * 43758.543) % 1 * 16 - 8;
+            
+            const x = baseX + nx * jitter;
+            const y = baseY + ny * jitter;
+
+            // Calcular distancia al centro para el color
+            const distToCenter = Math.hypot(x - cx, y - cy);
+
+            let isEdge = (i === 1 || i === 0);
+            systems157.push({ 
+                name: (i === 1) ? "eahams-ayg" : (i === 0 ? "boylosa lx" : "sistema-" + i), 
+                x, y, 
+                isEdge: (i === 1), // Eahams-ayg en el extremo más alejado
+                dist: distToCenter
+            });
+        }
+
+        function getColorByDistance(dist) {
+            const maxDist = 400;
+            const norm = Math.min(Math.max(dist / maxDist, 0), 1);
+
+            if (norm > 0.85) return '#facc15'; // Amarillo exterior
+            if (norm > 0.70) return '#4ade80'; // Verde
+            if (norm > 0.55) return '#c084fc'; // Morado
+            if (norm > 0.40) return '#f87171'; // Rojo
+            if (norm > 0.25) return '#38bdf8'; // Azul
+            if (norm > 0.10) return '#fb923c'; // Naranjo
+            return '#ffffff'; // Blanco puro en el núcleo
+        }
+
+        function drawGalaxy() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Dibujar partículas de fondo
+            particles.forEach(p => {
+                const currentAngle = p.angle + Date.now() * 0.00004;
+                const x = cx + Math.cos(currentAngle) * p.dist;
+                const y = cy + Math.sin(currentAngle) * (p.dist * 0.65);
+
+                const distFromCenter = Math.hypot(x - cx, y - cy);
+                const color = getColorByDistance(distFromCenter);
+                
+                ctx.fillStyle = color;
+                ctx.globalAlpha = Math.max(0.3, 1 - (distFromCenter / 400));
+                ctx.beginPath();
+                ctx.arc(x, y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.globalAlpha = 1.0;
+
+            // 2. Dibujar la línea de ruta recta principal entre los sistemas
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            for (let i = 0; i < systems157.length; i++) {
+                if (i === 0) ctx.moveTo(systems157[i].x, systems157[i].y);
+                else ctx.lineTo(systems157[i].x, systems157[i].y);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 3. Dibujar los sistemas sobre la línea recta
+            systems157.forEach((sys) => {
+                ctx.beginPath();
+                if (sys.isEdge) {
+                    // Eahams-ayg en el confín exterior
+                    ctx.fillStyle = '#ef4444';
+                    ctx.shadowColor = '#ef4444';
+                    ctx.shadowBlur = 15;
+                    ctx.arc(sys.x, sys.y, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+
+                    ctx.fillStyle = '#fca5a5';
+                    ctx.font = 'bold 11px sans-serif';
+                    ctx.fillText("Eahams-ayg (Confín)", sys.x + 10, sys.y + 4);
+                } else {
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.arc(sys.x, sys.y, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+
+            // 4. Núcleo central blanco puro brillante
+            const coreGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, 45);
+            coreGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            coreGradient.addColorStop(0.25, 'rgba(250, 204, 21, 0.85)');
+            coreGradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = coreGradient;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 45, 0, Math.PI * 2);
+            ctx.fill();
+
+            requestAnimationFrame(drawGalaxy);
+        }
+
+        drawGalaxy();
+    </script>
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Templarios del Atlas | Holo Arena Infinita</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap');
+
+    :root {
+      --bg-dark: #020208;
+      --panel-bg: rgba(8, 12, 22, 0.92);
+      --neon-green: #00ff66;
+      --neon-red: #ff2a55;
+      --neon-cyan: #00f0ff;
+      --neon-gold: #ffaa00;
+      --glow-green: 0 0 15px rgba(0, 255, 102, 0.5);
+      --glow-red: 0 0 15px rgba(255, 42, 85, 0.5);
+      --glow-cyan: 0 0 15px rgba(0, 240, 255, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Rajdhani', sans-serif; }
+
+    body {
+      background: var(--bg-dark);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    nav {
+      width: 100%; max-width: 900px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+    }
+
+    .nav-title {
+      font-family: 'Orbitron', sans-serif; font-size: 1.2rem;
+      color: var(--neon-green); font-weight: 900; letter-spacing: 2px;
+      text-shadow: var(--glow-green);
+    }
+
+    .nav-buttons { display: flex; gap: 10px; align-items: center; }
+
+    .btn-nav {
+      background: rgba(0, 240, 255, 0.1); color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan); padding: 8px 16px;
+      font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 0.8rem;
+      text-decoration: none; border-radius: 4px; cursor: pointer;
+      box-shadow: var(--glow-cyan); transition: all 0.2s ease;
+    }
+
+    .btn-nav:hover { background: var(--neon-cyan); color: #000; }
+
+    .btn-music {
+      background: rgba(255, 170, 0, 0.15); color: var(--neon-gold);
+      border-color: var(--neon-gold);
+    }
+    .btn-music:hover { background: var(--neon-gold); color: #000; }
+
+    /* ESCENARIO DE COMBATE */
+    .battle-arena {
+      width: 100%; max-width: 900px; height: 430px;
+      background: radial-gradient(circle at 50% 30%, #10192d 0%, #03050b 90%);
+      border: 2px solid var(--neon-green);
+      box-shadow: var(--glow-green);
+      border-radius: 8px; position: relative;
+      overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
+      padding: 20px;
+    }
+
+    .arena-grid-bg {
+      position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+      background-image: linear-gradient(rgba(0, 255, 102, 0.05) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0, 255, 102, 0.05) 1px, transparent 1px);
+      background-size: 30px 30px; pointer-events: none;
+    }
+
+    /* HUDS DE COMBATIENTES */
+    .creature-hud {
+      background: var(--panel-bg);
+      border: 1px solid var(--neon-cyan);
+      padding: 10px 15px; border-radius: 6px; width: 280px;
+      z-index: 5; position: relative;
+    }
+
+    .hud-enemy { align-self: flex-start; border-color: var(--neon-red); }
+    .hud-player { align-self: flex-end; border-color: var(--neon-green); }
+
+    .creature-name { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: #fff; font-weight: bold; }
+
+    .hp-bar-bg {
+      width: 100%; height: 12px; background: #111;
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 3px; margin-top: 6px; overflow: hidden;
+    }
+
+    .hp-bar-fill { height: 100%; background: var(--neon-green); width: 100%; transition: width 0.3s ease, background-color 0.3s; }
+
+    /* SPRITES Y ANIMACIONES */
+    .sprite-box {
+      position: absolute; width: 130px; height: 130px;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 4rem; filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.4));
+      transition: transform 0.2s ease, opacity 0.4s ease;
+      z-index: 3;
+    }
+
+    .enemy-sprite { top: 50px; right: 100px; }
+    .player-sprite { bottom: 70px; left: 100px; }
+
+    .anim-attack-player { transform: translate(60px, -40px) scale(1.1); }
+    .anim-attack-enemy { transform: translate(-60px, 40px) scale(1.1); }
+    .anim-faint { transform: scale(0) rotate(180deg); opacity: 0; }
+
+    /* PANEL DE CONTROL / ACCIONES */
+    .controls-panel {
+      width: 100%; max-width: 900px; margin-top: 15px;
+      display: grid; grid-template-columns: 1fr 300px; gap: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .controls-panel { grid-template-columns: 1fr; }
+      .enemy-sprite { right: 30px; }
+      .player-sprite { left: 30px; }
+    }
+
+    .log-box {
+      background: var(--panel-bg); border: 1px solid var(--neon-cyan);
+      border-radius: 6px; padding: 12px; font-family: 'Share Tech Mono', monospace;
+      font-size: 0.88rem; color: var(--neon-gold); height: 130px; overflow-y: auto;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    }
+
+    .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .btn-action {
+      background: rgba(0, 255, 102, 0.1); border: 1px solid var(--neon-green);
+      color: #fff; font-family: 'Orbitron', sans-serif; font-size: 0.72rem;
+      padding: 12px 8px; cursor: pointer; border-radius: 4px; text-transform: uppercase;
+      font-weight: bold; transition: all 0.2s ease;
+    }
+
+    .btn-action:hover:not(:disabled) { background: var(--neon-green); color: #000; box-shadow: var(--glow-green); }
+    .btn-action:disabled { opacity: 0.4; cursor: not-allowed; border-color: #555; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-title">HOLO ARENA | BATALLA INFINITA NMS</div>
+    <div class="nav-buttons">
+      <button class="btn-nav btn-music" id="btnAudioToggle" onclick="toggleChiptuneMusic()">🎮 MÚSICA 8-BIT: OFF</button>
+      <a href="index.html" class="btn-nav">⬅ VOLVER AL MAPA</a>
+    </div>
+  </nav>
+
+  <div class="battle-arena">
+    <div class="arena-grid-bg"></div>
+
+    <!-- HUD ENEMIGO -->
+    <div class="creature-hud hud-enemy">
+      <div class="creature-name" id="enemyName">CARGANDO...</div>
+      <div class="hp-bar-bg"><div class="hp-bar-fill" id="enemyHp" style="width: 100%;"></div></div>
+    </div>
+
+    <!-- SPRITES -->
+    <div class="sprite-box enemy-sprite" id="enemySprite">👾</div>
+    <div class="sprite-box player-sprite" id="playerSprite">🦖</div>
+
+    <!-- HUD JUGADOR -->
+    <div class="creature-hud hud-player">
+      <div class="creature-name" id="playerName">CARGANDO...</div>
+      <div class="hp-bar-bg"><div class="hp-bar-fill" id="playerHp" style="width: 100%;"></div></div>
+    </div>
+  </div>
+
+  <div class="controls-panel">
+    <div class="log-box" id="battleLog">
+      > ¡Iniciando enlace táctico en la Holo-Arena!<br>
+      > ¡Prepara a tu criatura para el combate continuo!
+    </div>
+
+    <div class="actions-grid">
+      <button class="btn-action" id="btnAtk1" onclick="playerAttack(0)">⚡ Ataque 1</button>
+      <button class="btn-action" id="btnAtk2" onclick="playerAttack(1)">💥 Ataque 2</button>
+      <button class="btn-action" id="btnAtk3" onclick="playerAttack(2)">🛡️ Escudo</button>
+      <button class="btn-action" id="btnAtk4" onclick="playerAttack(3)">🧪 Curación</button>
+    </div>
+  </div>
+
+  <script>
+    /* ===================================================
+       1. BANCO DE DATOS DE MONSTRUOS
+    =================================================== */
+    const playerMonstersDB = [
+      { name: "ENGENDRO BIOLÓGICO", sprite: "👾", maxHp: 110, atk: 26, moves: ["Coletazo Venenoso", "Ráfaga Ácida", "Refugio Escamoso", "Regeneración Celular"] },
+      { name: "CENTINELA CUADRÚPEDO", sprite: "🤖", maxHp: 95, atk: 30, moves: ["Láser Calentador", "Cañón de Implosión", "Muro Energético", "Reinicio de Sistemas"] },
+      { name: "DEPREDADOR ALFA", sprite: "🦖", maxHp: 120, atk: 28, moves: ["Mordisco Feroz", "Embestida Sísmica", "Grito Dominante", "Infusión Bio-Química"] },
+      { name: "CENTINELA MINOTAURO", sprite: "🦾", maxHp: 130, atk: 25, moves: ["Puño Estelar", "Lanza-Misiles", "Escudo Electrónico", "Autorreparación"] }
+    ];
+
+    const enemyMonstersDB = [
+      { name: "TITAN WORM SALVAJE", sprite: "🪱", maxHp: 115, atk: 27 },
+      { name: "HORROR ABISAL", sprite: "🐙", maxHp: 90, atk: 32 },
+      { name: "MEGACRÁNEO ORGÁNICO", sprite: "💀", maxHp: 105, atk: 28 },
+      { name: "DRAGÓN VOLCÁNICO", sprite: "🐉", maxHp: 125, atk: 29 },
+      { name: "CENTINELA CAMINANTE", sprite: "🤖", maxHp: 140, atk: 24 }
+    ];
+
+    let currentPlyr = null;
+    let currentEnmy = null;
+    let plyrCurHp = 100;
+    let enmyCurHp = 100;
+    let isBusy = false;
+
+    function log(msg) {
+      const logBox = document.getElementById('battleLog');
+      logBox.innerHTML += `<br>> ${msg}`;
+      logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    /* ===================================================
+       2. LÓGICA DE BATALLA Y RELEVOS CONTINUOS
+    =================================================== */
+    function updateHpBars() {
+      if (!currentPlyr || !currentEnmy) return;
+
+      const pPct = Math.max(0, (plyrCurHp / currentPlyr.maxHp) * 100);
+      const ePct = Math.max(0, (enmyCurHp / currentEnmy.maxHp) * 100);
+
+      const pBar = document.getElementById('playerHp');
+      const eBar = document.getElementById('enemyHp');
+
+      pBar.style.width = pPct + '%';
+      eBar.style.width = ePct + '%';
+
+      pBar.style.backgroundColor = pPct < 30 ? 'var(--neon-red)' : (pPct < 60 ? 'var(--neon-gold)' : 'var(--neon-green)');
+      eBar.style.backgroundColor = ePct < 30 ? 'var(--neon-red)' : (ePct < 60 ? 'var(--neon-gold)' : 'var(--neon-green)');
+    }
+
+    function spawnPlayerMonster() {
+      const idx = Math.floor(Math.random() * playerMonstersDB.length);
+      currentPlyr = { ...playerMonstersDB[idx] };
+      plyrCurHp = currentPlyr.maxHp;
+
+      document.getElementById('playerName').innerText = `${currentPlyr.name} (NV. 50)`;
+      document.getElementById('playerSprite').innerText = currentPlyr.sprite;
+      document.getElementById('playerSprite').classList.remove('anim-faint');
+
+      // Actualizar nombres de botones
+      document.getElementById('btnAtk1').innerText = `⚡ ${currentPlyr.moves[0]}`;
+      document.getElementById('btnAtk2').innerText = `💥 ${currentPlyr.moves[1]}`;
+      document.getElementById('btnAtk3').innerText = `🛡️ ${currentPlyr.moves[2]}`;
+      document.getElementById('btnAtk4').innerText = `🧪 ${currentPlyr.moves[3]}`;
+
+      updateHpBars();
+      log(`<strong style="color: var(--neon-green);">¡Desplegado a la arena: ${currentPlyr.name}!</strong>`);
+    }
+
+    function spawnEnemyMonster() {
+      const idx = Math.floor(Math.random() * enemyMonstersDB.length);
+      currentEnmy = { ...enemyMonstersDB[idx] };
+      enmyCurHp = currentEnmy.maxHp;
+
+      document.getElementById('enemyName').innerText = `${currentEnmy.name} (NV. 50)`;
+      document.getElementById('enemySprite').innerText = currentEnmy.sprite;
+      document.getElementById('enemySprite').classList.remove('anim-faint');
+
+      updateHpBars();
+      log(`<strong style="color: var(--neon-red);">¡Un ${currentEnmy.name} hostil ha entrado en combate!</strong>`);
+    }
+
+    function setButtonsDisabled(disabled) {
+      document.querySelectorAll('.btn-action').forEach(b => b.disabled = disabled);
+    }
+
+    function playerAttack(moveIndex) {
+      if (isBusy || plyrCurHp <= 0 || enmyCurHp <= 0 || !currentPlyr || !currentEnmy) return;
+      
+      isBusy = true;
+      setButtonsDisabled(true);
+
+      const spriteP = document.getElementById('playerSprite');
+      spriteP.classList.add('anim-attack-player');
+      setTimeout(() => spriteP.classList.remove('anim-attack-player'), 300);
+
+      playSfx('attack');
+
+      const moveName = currentPlyr.moves[moveIndex];
+      let damage = 0;
+
+      if (moveIndex === 0) damage = Math.floor(currentPlyr.atk * (0.8 + Math.random() * 0.4));
+      if (moveIndex === 1) damage = Math.floor(currentPlyr.atk * (1.2 + Math.random() * 0.5));
+      if (moveIndex === 2) {
+        damage = 12;
+        log(`¡${currentPlyr.name} aumenta sus defensas con ${moveName}!`);
+      }
+      if (moveIndex === 3) {
+        const heal = 35;
+        plyrCurHp = Math.min(currentPlyr.maxHp, plyrCurHp + heal);
+        updateHpBars();
+        playSfx('heal');
+        log(`¡${currentPlyr.name} usó ${moveName} y recuperó ${heal} HP!`);
+        setTimeout(enemyTurn, 1000);
+        return;
+      }
+
+      enmyCurHp = Math.max(0, enmyCurHp - damage);
+      updateHpBars();
+      log(`¡${currentPlyr.name} usó ${moveName}! Causó ${damage} de daño a ${currentEnmy.name}.`);
+
+      if (enmyCurHp <= 0) {
+        setTimeout(handleEnemyDefeated, 800);
+      } else {
+        setTimeout(enemyTurn, 1000);
+      }
+    }
+
+    function enemyTurn() {
+      if (enmyCurHp <= 0 || !currentEnmy) return;
+
+      const spriteE = document.getElementById('enemySprite');
+      spriteE.classList.add('anim-attack-enemy');
+      setTimeout(() => spriteE.classList.remove('anim-attack-enemy'), 300);
+
+      playSfx('enemyAtk');
+
+      const dmg = Math.floor(currentEnmy.atk * (0.8 + Math.random() * 0.5));
+      plyrCurHp = Math.max(0, plyrCurHp - dmg);
+      updateHpBars();
+
+      log(`¡${currentEnmy.name} atacó causando ${dmg} de daño!`);
+
+      if (plyrCurHp <= 0) {
+        setTimeout(handlePlayerDefeated, 800);
+      } else {
+        isBusy = false;
+        setButtonsDisabled(false);
+      }
+    }
+
+    function handleEnemyDefeated() {
+      playSfx('faint');
+      log(`<strong style="color: var(--neon-gold);">¡VICTORIA! ${currentEnmy.name} ha sido neutralizado.</strong>`);
+      document.getElementById('enemySprite').classList.add('anim-faint');
+
+      setTimeout(() => {
+        log("-----------------------------------------");
+        log("¡Aparece un nuevo oponente salvaje!");
+        spawnEnemyMonster();
+        isBusy = false;
+        setButtonsDisabled(false);
+      }, 1500);
+    }
+
+    function handlePlayerDefeated() {
+      playSfx('faint');
+      log(`<strong style="color: var(--neon-red);">¡DERROTA! Tu ${currentPlyr.name} ha caído en batalla.</strong>`);
+      document.getElementById('playerSprite').classList.add('anim-faint');
+
+      setTimeout(() => {
+        log("-----------------------------------------");
+        log("¡Enviando un nuevo aliado de relevo desde la reserva!");
+        spawnPlayerMonster();
+        isBusy = false;
+        setButtonsDisabled(false);
+      }, 1500);
+    }
+
+    /* ===================================================
+       3. SINTETIZADOR MÚSICA 8-BIT GAME BOY (WEB AUDIO API)
+    =================================================== */
+    let audioCtx = null;
+    let isMusicPlaying = false;
+    let musicInterval = null;
+
+    const N = {
+      C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+      C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, B5: 987.77
+    };
+
+    const epicChiptuneMelody = [
+      N.E5, N.E5, N.E5, N.C5, N.E5, N.G5, N.G4,
+      N.A4, N.C5, N.E5, N.A5, N.G5, N.E5, N.D5,
+      N.E5, N.G5, N.A5, N.B5, N.A5, N.G5, N.E5,
+      N.D5, N.C5, N.D5, N.E5, N.E5, N.D5, N.C5
+    ];
+
+    let noteIdx = 0;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function toggleChiptuneMusic() {
+      initAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const btn = document.getElementById('btnAudioToggle');
+      isMusicPlaying = !isMusicPlaying;
+
+      if (isMusicPlaying) {
+        btn.innerText = "🎮 MÚSICA 8-BIT: ON";
+        btn.style.borderColor = "var(--neon-green)";
+        btn.style.color = "var(--neon-green)";
+        
+        musicInterval = setInterval(playChiptuneStep, 140);
+        log("<span style='color: var(--neon-cyan);'>♪ Sintetizador 8-Bit Game Boy Activado. ¡A combatir!</span>");
+      } else {
+        btn.innerText = "🎮 MÚSICA 8-BIT: OFF";
+        btn.style.borderColor = "var(--neon-gold)";
+        btn.style.color = "var(--neon-gold)";
+        clearInterval(musicInterval);
+      }
+    }
+
+    function playChiptuneStep() {
+      if (!isMusicPlaying || !audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'square';
+      const freq = epicChiptuneMelody[noteIdx % epicChiptuneMelody.length];
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.13);
+
+      noteIdx++;
+    }
+
+    function playSfx(type) {
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'attack') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(80, now + 0.15);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+        osc.start(now); osc.stop(now + 0.15);
+      } else if (type === 'enemyAtk') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(50, now + 0.2);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+        osc.start(now); osc.stop(now + 0.2);
+      } else if (type === 'heal') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.25);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+        osc.start(now); osc.stop(now + 0.25);
+      } else if (type === 'faint') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(250, now);
+        osc.frequency.linearRampToValueAtTime(40, now + 0.4);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+        osc.start(now); osc.stop(now + 0.4);
+      }
+    }
+
+    /* INICIALIZACIÓN CONTROLADA */
+    window.addEventListener('DOMContentLoaded', () => {
+      spawnPlayerMonster();
+      spawnEnemyMonster();
+    });
+  </script>
+</body>
+</html>
+si

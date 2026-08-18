@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guerra Táctica - Templarios del Atlas</title>
+    <style>
+        body {
+            background-color: #04060b;
+            color: #e2e8f0;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: #090d16;
+            border: 2px solid #ef4444;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.25);
+            text-align: center;
+            position: relative;
+        }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #1e1e24;
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+            padding: 6px 12px;
+            font-size: 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #fbbf24;
+            color: #04060b;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+        h2 {
+            color: #ef4444;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+        .subtitle {
+            color: #fbbf24;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        .status-panel {
+            background: #020617;
+            border: 1px solid #334155;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #38bdf8;
+        }
+        
+        /* TABLERO DE AJEDREZ TÁCTICO */
+        .chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 1 / 1;
+            margin: 0 auto 20px auto;
+            border: 3px solid #ef4444;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+            border-radius: 4px;
+        }
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+            position: relative;
+        }
+        .cell.light {
+            background-color: #0f172a;
+        }
+        .cell.dark {
+            background-color: #020617;
+        }
+        .cell.selected {
+            background-color: rgba(251, 191, 36, 0.4) !important;
+            box-shadow: inset 0 0 10px #fbbf24;
+        }
+        .cell.highlight::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background-color: rgba(56, 189, 248, 0.6);
+            border-radius: 50%;
+            box-shadow: 0 0 8px #38bdf8;
+        }
+        .cell:hover {
+            opacity: 0.85;
+        }
+
+        /* MODAL DE PROMOCIÓN */
+        .modal-promocion {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #090d16;
+            border: 2px solid #fbbf24;
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 100;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
+            text-align: center;
+        }
+        .modal-promocion h3 {
+            color: #fbbf24;
+            margin-top: 0;
+            font-size: 1rem;
+        }
+        .promo-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .promo-btn {
+            background: #1e1e24;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            font-size: 24px;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+        .promo-btn:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .action-btn {
+            background: #1e1e24;
+            color: #f1f5f9;
+            border: 1px solid #ef4444;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+        .action-btn:hover {
+            background: #ef4444;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+        .footer-note {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 15px;
+            letter-spacing: 0.5px;
+            border-top: 1px solid #1e293b;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="index.html" class="back-btn">&larr; VOLVER</a>
+    <h2>Guerra Táctica</h2>
+    <div class="subtitle">GAMBITO DEL ATLAS // CONDICIÓN DE VICTORIA Y PROMOCIÓN</div>
+
+    <div class="status-panel" id="statusPanel">
+        Turno de: <span style="color: #ef4444; font-weight: bold;">Templarios del Atlas (Tus Unidades)</span>
+    </div>
+
+    <!-- TABLERO -->
+    <div class="chessboard" id="chessboard"></div>
+
+    <!-- MODAL DE PROMOCIÓN DE PEÓN -->
+    <div class="modal-promocion" id="modalPromocion">
+        <h3>¡ASCENSIÓN DE UNIDAD! Elige el nuevo componente:</h3>
+        <div class="promo-options">
+            <button class="promo-btn" onclick="promocionarPeon('q')">♛</button>
+            <button class="promo-btn" onclick="promocionarPeon('r')">♜</button>
+            <button class="promo-btn" onclick="promocionarPeon('b')">♝</button>
+            <button class="promo-btn" onclick="promocionarPeon('n')">♞</button>
+        </div>
+    </div>
+
+    <div class="controls-row">
+        <button class="action-btn" onclick="reiniciarPartida()">[ REINICIAR SIMULACIÓN ]</button>
+    </div>
+
+    <div class="footer-note">EL CÓDICE RIGE EL COMBATE // DESTRUYE AL ENEMIGO O ASCIENDE TUS FILAS</div>
+</div>
+
+<script>
+    let tablero = [
+        ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+        ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r']
+    ];
+
+    const piezasIconos = {
+        'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟', 
+        'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙'  
+    };
+
+    let turnoActual = 'atlas'; // 'atlas', 'ia', o 'promocion', 'fin'
+    let seleccionFila = null;
+    let seleccionCol = null;
+    let movimientosValidos = [];
+    let peonPendientePromo = null;
+
+    const boardElement = document.getElementById('chessboard');
+    const statusPanel = document.getElementById('statusPanel');
+    const modalPromocion = document.getElementById('modalPromocion');
+
+    function dentro(f, c) {
+        return f >= 0 && f < 8 && c >= 0 && c < 8;
+    }
+
+    function esPropia(pieza, esAtlas) {
+        if (!pieza) return false;
+        return esAtlas ? (pieza === pieza.toLowerCase()) : (pieza === pieza.toUpperCase());
+    }
+
+    function calcularMovimientosLegales(f, c, board) {
+        let pieza = board[f][c];
+        if (!pieza) return [];
+        let movs = [];
+        let esAtlas = (pieza === pieza.toLowerCase());
+        let tipo = pieza.toLowerCase();
+
+        if (tipo === 'p') {
+            let dir = esAtlas ? -1 : 1;
+            let filaInicial = esAtlas ? 6 : 1;
+
+            let f1 = f + dir;
+            if (dentro(f1, c) && board[f1][c] === '') {
+                movs.push({f: f1, c: c});
+                let f2 = f + (dir * 2);
+                if (f === filaInicial && dentro(f2, c) && board[f2][c] === '') {
+                    movs.push({f: f2, c: c});
+                }
+            }
+            let colsDiagonal = [c - 1, c + 1];
+            colsDiagonal.forEach(dc => {
+                let fd = f + dir;
+                if (dentro(fd, dc)) {
+                    let destino = board[fd][dc];
+                    if (destino !== '' && !esPropia(destino, esAtlas)) {
+                        movs.push({f: fd, c: dc});
+                    }
+                }
+            });
+        } 
+        else if (tipo === 'r') {
+            let dirs = [[1,0], [-1,0], [0,1], [0,-1]];
+            dirs.forEach(d => {
+                let rf = f + d[0], rc = c + d[1];
+                while (dentro(rf, rc)) {
+                    let dest = board[rf][rc];
+                    if (dest === '') {
+                        movs.push({f: rf, c: rc});
+                    } else {
+                        if (!esPropia(dest, esAtlas)) movs.push({f: rf, c: rc});
+                        break;
+                    }
+                    rf += d[0]; rc += d[1];
+                }
+            });
+        } 
+        else if (tipo === 'b') {
+            let dirs = [[1,1], [1,-1], [-1,1], [-1,-1]];
+            dirs.forEach(d => {
+                let rf = f + d[0], rc = c + d[1];
+                while (dentro(rf, rc)) {
+                    let dest = board[rf][rc];
+                    if (dest === '') {
+                        movs.push({f: rf, c: rc});
+                    } else {
+                        if (!esPropia(dest, esAtlas)) movs.push({f: rf, c: rc});
+                        break;
+                    }
+                    rf += d[0]; rc += d[1];
+                }
+            });
+        } 
+        else if (tipo === 'q') {
+            let dirs = [[1,0], [-1,0], [0,1], [0,-1], [1,1], [1,-1], [-1,1], [-1,-1]];
+            dirs.forEach(d => {
+                let rf = f + d[0], rc = c + d[1];
+                while (dentro(rf, rc)) {
+                    let dest = board[rf][rc];
+                    if (dest === '') {
+                        movs.push({f: rf, c: rc});
+                    } else {
+                        if (!esPropia(dest, esAtlas)) movs.push({f: rf, c: rc});
+                        break;
+                    }
+                    rf += d[0]; rc += d[1];
+                }
+            });
+        } 
+        else if (tipo === 'k') {
+            let dirs = [[1,0], [-1,0], [0,1], [0,-1], [1,1], [1,-1], [-1,1], [-1,-1]];
+            dirs.forEach(d => {
+                let rf = f + d[0], rc = c + d[1];
+                if (dentro(rf, rc)) {
+                    let dest = board[rf][rc];
+                    if (dest === '' || !esPropia(dest, esAtlas)) {
+                        movs.push({f: rf, c: rc});
+                    }
+                }
+            });
+        } 
+        else if (tipo === 'n') {
+            let saltos = [
+                [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+                [1, -2], [1, 2], [2, -1], [2, 1]
+            ];
+            saltos.forEach(s => {
+                let rf = f + s[0], rc = c + s[1];
+                if (dentro(rf, rc)) {
+                    let dest = board[rf][rc];
+                    if (dest === '' || !esPropia(dest, esAtlas)) {
+                        movs.push({f: rf, c: rc});
+                    }
+                }
+            });
+        }
+
+        return movs;
+    }
+
+    function renderizarTablero() {
+        boardElement.innerHTML = '';
+        for (let f = 0; f < 8; f++) {
+            for (let c = 0; c < 8; c++) {
+                const cell = document.createElement('div');
+                cell.className = `cell ${(f + c) % 2 === 0 ? 'light' : 'dark'}`;
+                cell.dataset.fila = f;
+                cell.dataset.col = c;
+
+                let pieza = tablero[f][c];
+                if (pieza) {
+                    cell.innerText = piezasIconos[pieza] || pieza;
+                    if (pieza === pieza.toLowerCase()) {
+                        cell.style.color = '#ef4444';
+                        cell.style.textShadow = '0 0 6px rgba(239, 68, 68, 0.6)';
+                    } else {
+                        cell.style.color = '#fbbf24';
+                        cell.style.textShadow = '0 0 6px rgba(251, 191, 36, 0.6)';
+                    }
+                }
+
+                if (seleccionFila === f && seleccionCol === c) {
+                    cell.classList.add('selected');
+                }
+
+                if (movivientosContiene(f, c)) {
+                    cell.classList.add('highlight');
+                }
+
+                cell.addEventListener('click', () => manejarClickCasilla(f, c));
+                boardElement.appendChild(cell);
+            }
+        }
+    }
+
+    function movivientosContiene(f, c) {
+        return movimientosValidos.some(m => m.f === f && m.c === c);
+    }
+
+    function manejarClickCasilla(f, c) {
+        if (turnoActual !== 'atlas') return;
+
+        let piezaClicked = tablero[f][c];
+
+        if (seleccionFila === null && seleccionCol === null) {
+            if (piezaClicked !== '' && piezaClicked === piezaClicked.toLowerCase()) {
+                seleccionFila = f;
+                seleccionCol = c;
+                movimientosValidos = calcularMovimientosLegales(f, c, tablero);
+                renderizarTablero();
+            }
+        } else {
+            if (movivientosContiene(f, c)) {
+                let piezaMovida = tablero[seleccionFila][seleccionCol];
+                tablero[f][c] = piezaMovida;
+                tablero[seleccionFila][seleccionCol] = '';
+
+                seleccionFila = null;
+                seleccionCol = null;
+                movimientosValidos = [];
+
+                // Verificar si un peón llegó al otro lado (fila 0 para el jugador)
+                if (piezaMovida === 'p' && f === 0) {
+                    peonPendientePromo = {f: f, c: c};
+                    turnoActual = 'promocion';
+                    modalPromocion.style.display = 'block';
+                    renderizarTablero();
+                    return;
+                }
+
+                finalizarTurnoJugador();
+            } else if (piezaClicked !== '' && piezaClicked === piezaClicked.toLowerCase()) {
+                seleccionFila = f;
+                seleccionCol = c;
+                movimientosValidos = calcularMovimientosLegales(f, c, tablero);
+                renderizarTablero();
+            } else {
+                seleccionFila = null;
+                seleccionCol = null;
+                movimientosValidos = [];
+                renderizarTablero();
+            }
+        }
+    }
+
+    // Promocionar peón al llegar al otro lado
+    function promocionarPeon(tipoPieza) {
+        if (peonPendientePromo) {
+            tablero[peonPendientePromo.f][peonPendientePromo.c] = tipoPieza; // Se mantiene minúscula para el jugador
+            peonPendientePromo = null;
+        }
+        modalPromocion.style.display = 'none';
+        finalizarTurnoJugador();
+    }
+
+    function finalizarTurnoJugador() {
+        if (verificarFinJuego()) return;
+
+        turnoActual = 'ia';
+        actualizarEstadoPanel();
+        setTimeout(ejecutarIAAgresiva, 600);
+    }
+
+    // IA AGRESIVA
+    function ejecutarIAAgresiva() {
+        if (turnoActual === 'fin') return;
+
+        let todosLosAtaques = [];
+        let todosLosMovimientos = [];
+
+        for (let f = 0; f < 8; f++) {
+            for (let c = 0; c < 8; c++) {
+                let pieza = tablero[f][c];
+                if (pieza !== '' && pieza === pieza.toUpperCase()) {
+                    let legalMoves = calcularMovimientosLegales(f, c, tablero);
+                    legalMoves.forEach(m => {
+                        let destino = tablero[m.f][m.c];
+                        if (destino !== '' && destino === destino.toLowerCase()) {
+                            todosLosAtaques.push({origenF: f, origenC: c, destinoF: m.f, destinoC: m.c});
+                        } else {
+                            todosLosMovimientos.push({origenF: f, origenC: c, destinoF: m.f, destinoC: m.c});
+                        }
+                    });
+                }
+            }
+        }
+
+        if (todosLosAtaques.length > 0) {
+            let ataqueElegido = todosLosAtaques[Math.floor(Math.random() * todosLosAtaques.length)];
+            
+            // Promoción automática de IA si su peón llega a la fila 7
+            let piezaMovida = tablero[ataqueElegido.origenF][ataqueElegido.origenC];
+            tablero[ataqueElegido.destinoF][ataqueElegido.destinoC] = (piezaMovida === 'P' && ataqueElegido.destinoF === 7) ? 'Q' : piezaMovida;
+            tablero[ataqueElegido.origenF][ataqueElegido.origenC] = '';
+        } else if (todosLosMovimientos.length > 0) {
+            let movElegido = todosLosMovimientos[Math.floor(Math.random() * todosLosMovimientos.length)];
+            let piezaMovida = tablero[movElegido.origenF][movElegido.origenC];
+            tablero[movElegido.destinoF][movElegido.destinoC] = (piezaMovida === 'P' && movElegido.destinoF === 7) ? 'Q' : piezaMovida;
+            tablero[movElegido.origenF][movElegido.origenC] = '';
+        }
+
+        if (verificarFinJuego()) return;
+
+        turnoActual = 'atlas';
+        actualizarEstadoPanel();
+        renderizarTablero();
+    }
+
+    // Verificar si quedan piezas para determinar Victoria o Derrota
+    function verificarFinJuego() {
+        let tieneAtlas = false;
+        let tieneEnemigo = false;
+
+        for (let f = 0; f < 8; f++) {
+            for (let c = 0; c < 8; c++) {
+                let p = tablero[f][c];
+                if (p !== '') {
+                    if (p === p.toLowerCase()) tieneAtlas = true;
+                    if (p === p.toUpperCase()) tieneEnemigo = true;
+                }
+            }
+        }
+
+        if (!tieneEnemigo) {
+            turnoActual = 'fin';
+            statusPanel.innerHTML = `<span style="color: #22c55e; font-weight: bold;">¡VICTORIA! Has purificado el sector. El Atlas celebra tu triunfo.</span>`;
+            return true;
+        }
+        if (!tieneAtlas) {
+            turnoActual = 'fin';
+            statusPanel.innerHTML = `<span style="color: #ef4444; font-weight: bold;">¡DERROTA! Tus unidades han caído en el vacío.</span>`;
+            return true;
+        }
+        return false;
+    }
+
+    function actualizarEstadoPanel() {
+        if (turnoActual === 'atlas') {
+            statusPanel.innerHTML = `Turno de: <span style="color: #ef4444; font-weight: bold;">Templarios del Atlas (Tus Unidades)</span>`;
+        } else if (turnoActual === 'ia') {
+            statusPanel.innerHTML = `Turno de la IA: <span style="color: #fbbf24; font-weight: bold;">Invasores Hostiles (Atacando sin piedad...)</span>`;
+        }
+    }
+
+    function reiniciarPartida() {
+        tablero = [
+            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+            ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r']
+        ];
+        turnoActual = 'atlas';
+        seleccionFila = null;
+        seleccionCol = null;
+        movimientosValidos = [];
+        peonPendientePromo = null;
+        modalPromocion.style.display = 'none';
+        actualizarEstadoPanel();
+        renderizarTablero();
+    }
+
+    renderizarTablero();
+</script>
+
+</body>
+</html>

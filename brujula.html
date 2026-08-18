@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escáner de Señales Exoespectrales - Templarios del Atlas</title>
+    <style>
+        body {
+            background-color: #04060b;
+            color: #e2e8f0;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: #090d16;
+            border: 2px solid #ef4444;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.25);
+            text-align: center;
+            position: relative;
+        }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #1e1e24;
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+            padding: 6px 12px;
+            font-size: 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #fbbf24;
+            color: #04060b;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+        h2 {
+            color: #ef4444;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+        .subtitle {
+            color: #fbbf24;
+            font-size: 0.85rem;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        /* HUD NMS */
+        .hud-compass-wrapper {
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .compass-bar-container {
+            position: relative;
+            width: 100%;
+            height: 60px;
+            background: rgba(2, 6, 23, 0.9);
+            border-bottom: 2px solid #ef4444;
+            border-top: 1px solid #1e293b;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        .compass-pointer {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: #fbbf24;
+            box-shadow: 0 0 10px #fbbf24;
+            z-index: 10;
+        }
+        .compass-strip {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            transition: transform 0.1s linear;
+            will-change: transform;
+        }
+        .compass-marker {
+            position: absolute;
+            font-size: 14px;
+            font-weight: bold;
+            color: #94a3b8;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+        .compass-marker.cardinal {
+            color: #fbbf24;
+            font-size: 18px;
+            text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+        }
+        
+        /* TELEMETRÍA */
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .telemetry-box {
+            background: #020617;
+            border: 1px solid #1e293b;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: left;
+        }
+        .telemetry-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+        .telemetry-value {
+            font-size: 1.05rem;
+            color: #38bdf8;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        /* CAJA DE SEÑAL / ALERTA DEL ATLAS */
+        .signal-alert-box {
+            background: #020617;
+            border: 2px solid #334155;
+            padding: 15px;
+            border-radius: 6px;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.4s ease;
+        }
+        .signal-alert-box.active-signal {
+            border-color: #ef4444;
+            color: #fca5a5;
+            background: rgba(239, 68, 68, 0.08);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+            animation: pulseWarning 1.5s infinite alternate;
+        }
+
+        @keyframes pulseWarning {
+            0% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
+            100% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); }
+        }
+
+        /* CONTROLES */
+        .controls-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            flex: 1;
+            min-width: 140px;
+            background: #1e1e24;
+            color: #f1f5f9;
+            border: 1px solid #ef4444;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+        .action-btn.active {
+            background: #ef4444;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+        .action-btn:hover {
+            border-color: #fbbf24;
+            color: #fbbf24;
+        }
+        
+        .footer-note {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 20px;
+            letter-spacing: 0.5px;
+            border-top: 1px solid #1e293b;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="index.html" class="back-btn">&larr; VOLVER</a>
+    <h2>Escáner de Señales</h2>
+    <div class="subtitle">RADAR EXAOESPECTRAL // 16 / 16 / 16</div>
+
+    <div class="hud-compass-wrapper">
+        <!-- BARRA ESTILO NMS -->
+        <div class="compass-bar-container">
+            <div class="compass-pointer"></div>
+            <div class="compass-strip" id="compassStrip"></div>
+        </div>
+
+        <div class="telemetry-grid">
+            <div class="telemetry-box">
+                <div class="telemetry-label">Rumbo Actual</div>
+                <div class="telemetry-value" id="valGrados">000° NORTE</div>
+            </div>
+            <div class="telemetry-box">
+                <div class="telemetry-label">Tipo de Red Captada</div>
+                <div class="telemetry-value" id="valTipoRed" style="color: #fbbf24;">DESCONOCIDA</div>
+            </div>
+            <div class="telemetry-box">
+                <div class="telemetry-label">Intensidad de Enlace</div>
+                <div class="telemetry-value" id="valIntensidad">0% (Vacío)</div>
+            </div>
+            <div class="telemetry-box">
+                <div class="telemetry-label">Estado del Radar</div>
+                <div class="telemetry-value" id="valModo" style="color: #38bdf8;">SIMULACIÓN</div>
+            </div>
+        </div>
+
+        <!-- RECUADRO DE ALERTA DE SEÑAL -->
+        <div class="signal-alert-box" id="signalBox">
+            &gt; Buscando señales de radio o frecuencias cercanas en el sector...
+        </div>
+    </div>
+
+    <div class="controls-row">
+        <button class="action-btn active" id="btnSim" onclick="cambiarModo('sim')">[ MODO SIMULACIÓN ]</button>
+        <button class="action-btn" id="btnRadar" onclick="activarRadarReal()">[ ACTIVAR RADAR GPS/RED ]</button>
+    </div>
+
+    <div class="footer-note">EL CÓDICE RIGE EL RUMBO // LAS ONDAS DEL ATLAS DELATAN EL ENTORNO</div>
+</div>
+
+<script>
+    const strip = document.getElementById('compassStrip');
+    const valGrados = document.getElementById('valGrados');
+    const valTipoRed = document.getElementById('valTipoRed');
+    const valIntensidad = document.getElementById('valIntensidad');
+    const valModo = document.getElementById('valModo');
+    const signalBox = document.getElementById('signalBox');
+    const btnSim = document.getElementById('btnSim');
+    const btnRadar = document.getElementById('btnRadar');
+
+    let modo = 'sim';
+    let headingActual = 0;
+    let ultimaPosicionX = 0;
+
+    function construirTira() {
+        strip.innerHTML = '';
+        for (let g = -360; g <= 720; g += 15) {
+            let normalizado = (g % 360 + 360) % 360;
+            let marker = document.createElement('div');
+            marker.className = 'compass-marker';
+            marker.style.left = (g * 4) + 'px';
+
+            let textoLabel = normalizado + '°';
+            let esCardinal = false;
+
+            if (normalizado === 0) { textoLabel = 'N'; esCardinal = true; }
+            else if (normalizado === 90) { textoLabel = 'E'; esCardinal = true; }
+            else if (normalizado === 180) { textoLabel = 'S'; esCardinal = true; }
+            else if (normalizado === 270) { textoLabel = 'O'; esCardinal = true; }
+
+            if (esCardinal) {
+                marker.classList.add('cardinal');
+                marker.innerHTML = `${textoLabel}<br><span style="font-size:10px; color:#ef4444;">|</span>`;
+            } else {
+                marker.innerHTML = `${textoLabel}<br><span style="font-size:8px; color:#475569;">|</span>`;
+            }
+
+            strip.appendChild(marker);
+        }
+    }
+
+    construirTira();
+
+    function actualizarVista(grados) {
+        headingActual = (grados % 360 + 360) % 360;
+        let desplazamientoPx = - (headingActual * 4);
+        strip.style.transform = `translateX(${desplazamientoPx}px)`;
+
+        let cardinalTxt = "NORTE";
+        if (headingActual >= 337.5 || headingActual < 22.5) cardinalTxt = "NORTE (N)";
+        else if (headingActual >= 22.5 && headingActual < 67.5) cardinalTxt = "NORTE-ESTE (NE)";
+        else if (headingActual >= 67.5 && headingActual < 112.5) cardinalTxt, cardinalTxt = "ESTE (E)";
+        else if (headingActual >= 112.5 && headingActual < 157.5) cardinalTxt = "SUR-ESTE (SE)";
+        else if (headingActual >= 157.5 && headingActual < 202.5) cardinalTxt = "SUR (S)";
+        else if (headingActual >= 202.5 && headingActual < 247.5) cardinalTxt = "SUR-OESTE (SO)";
+        else if (headingActual >= 247.5 && headingActual < 292.5) cardinalTxt = "OESTE (O)";
+        else if (headingActual >= 292.5 && headingActual < 337.5) cardinalTxt = "NORTE-OESTE (NO)";
+
+        valGrados.innerText = `${Math.round(headingActual).toString().padStart(3, '0')}° - ${cardinalTxt}`;
+    }
+
+    // MODO SIMULACIÓN INTERACTIVA
+    window.addEventListener('mousemove', (e) => {
+        if (modo === 'sim') {
+            let deltaX = e.clientX - ultimaPosicionX;
+            let nuevoH = headingActual - (deltaX * 0.5);
+            actualizarVista(nuevoH);
+            ultimaPosicionX = e.clientX;
+
+            // Simular proximidad de señal según el movimiento aleatorio o la posición simulada
+            evaluarSeñalSimulada(Math.abs(deltaX));
+        }
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (modo === 'sim' && e.touches.length > 0) {
+            let touchX = e.touches[0].clientX;
+            let deltaX = touchX - ultimaPosicionX;
+            let nuevoH = headingActual - (deltaX * 0.8);
+            actualizarVista(nuevoH);
+            ultimaPosicionX = touchX;
+            evaluarSeñalSimulada(Math.abs(deltaX));
+        }
+    }, {passive: true});
+
+    window.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 0) ultimaPosicionX = e.touches[0].clientX;
+    });
+
+    function evaluarSeñalSimulada(movimiento) {
+        if (movimiento > 12) {
+            valTipoRed.innerText = "RADIO / FRECUENCIA";
+            valIntensidad.innerText = "85% (Alta)";
+            signalBox.className = "signal-alert-box active-signal";
+            signalBox.innerHTML = `&gt; ⚡ ¡ATENCIÓN! Señal cercana detectada. <br><strong>¡El Atlas te está observando!</strong>`;
+        } else {
+            valTipoRed.innerText = " VACÍO CÓSMICO";
+            valIntensidad.innerText = "15% (Baja)";
+            signalBox.className = "signal-alert-box";
+            signalBox.innerHTML = `&gt; Señal no muy lejana en el sector... Desplace el radar para sintonizar ondas.`;
+        }
+    }
+
+    function cambiarModo(nuevoModo) {
+        modo = nuevoModo;
+        if (modo === 'sim') {
+            btnSim.classList.add('active');
+            btnRadar.classList.remove('active');
+            valModo.innerText = "SIMULACIÓN";
+            valModo.style.color = "#fbbf24";
+            signalBox.className = "signal-alert-box";
+            signalBox.innerHTML = `&gt; Modo simulación activo. Mueva el cursor o deslice el dedo.`;
+        }
+    }
+
+    // ACTIVAR RADAR REAL (Analiza tipo de conexión y datos de red móviles / wifi del dispositivo)
+    function activarRadarReal() {
+        modo = 'radar';
+        btnSim.classList.remove('active');
+        btnRadar.classList.add('active');
+        valModo.innerText = "RADAR EN LÍNEA";
+        valModo.style.color = "#22c55e";
+
+        // Detectar tipo de red del dispositivo (Datos móviles 4G/5G, Wifi, etc.)
+        const conexion = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        
+        if (conexion) {
+            actualizarDatosRed(conexion);
+            conexion.addEventListener('change', () => actualizarDatosRed(conexion));
+        } else {
+            valTipoRed.innerText = "ESTÁNDAR (WEB)";
+            valIntensidad.innerText = "Estable";
+        }
+
+        // Activar GPS para medir cercanía a puntos del sistema
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition((pos) => {
+                // Usamos las coordenadas reales para simular la cercanía a una baliza del Atlas
+                let lat = pos.coords.latitude;
+                let lon = pos.coords.longitude;
+                
+                // Generamos un umbral basado en decimales para disparar la frase exacta que pediste
+                let cercaniaVariable = Math.floor((Math.abs(lat + lon) * 1000) % 100);
+                
+                if (cercaniaVariable > 50) {
+                    valIntensidad.innerText = cercaniaVariable + "% (Fuerte)";
+                    signalBox.className = "signal-alert-box active-signal";
+                    signalBox.innerHTML = `&gt; 📡 Baliza detectada en coordenadas cercanas (${lat.toFixed(2)}, ${lon.toFixed(2)}).<br><strong>¡El Atlas te está observando!</strong>`;
+                } else {
+                    valIntensidad.innerText = cercaniaVariable + "% (Débil)";
+                    signalBox.className = "signal-alert-box";
+                    signalBox.innerHTML = `&gt; Señal no muy lejana... Buscando transmisión en la cuadrícula física.`;
+                }
+            }, (err) => {
+                signalBox.className = "signal-alert-box";
+                signalBox.innerHTML = `&gt; ERROR DE SEÑAL: No ha sido posible captar ondas cercanas. El Atlas está ciego en esta zona.`;
+            }, { enableHighAccuracy: true });
+        }
+    }
+
+    function actualizarDatosRed(conn) {
+        let tipo = conn.effectiveType ? conn.effectiveType.toUpperCase() : "DESCONOCIDO";
+        let downlink = conn.downlink ? conn.downlink + " Mbps" : "Activa";
+        
+        if (tipo.includes('4G') || tipo.includes('5G') || conn.type === 'cellular') {
+            valTipoRed.innerText = `DATOS MÓVILES (${tipo})`;
+        } else if (conn.type === 'wifi') {
+            valTipoRed.innerText = "RED LOCAL (WIFI)";
+        } else {
+            valTipoRed.innerText = `SEÑAL (${tipo})`;
+        }
+        
+        signalBox.className = "signal-alert-box active-signal";
+        signalBox.innerHTML = `&gt; Enlace de red detectado (${downlink}). <br><strong>¡El Atlas te está observando a través de la red!</strong>`;
+    }
+
+    // Orientación por giroscopio si está en móvil
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', (event) => {
+            if (modo === 'radar' && event.alpha !== null) {
+                actualizarVista(360 - event.alpha);
+            }
+        }, true);
+    }
+</script>
+
+</body>
+</html>

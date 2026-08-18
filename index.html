@@ -73,6 +73,7 @@
             border: 1px solid #1e293b;
             max-height: 600px;
             overflow-y: auto;
+            position: relative;
         }
         .rollo-content h3 {
             color: #f87171;
@@ -100,6 +101,19 @@
             font-style: italic;
             margin-top: 15px;
         }
+        /* Estilo plomizo oscuro y diminuto para la contraseña oculta */
+        .secret-password {
+            font-size: 0.5rem;       /* Letra extremadamente pequeña */
+            color: #262f3f;          /* Gris plomo oscuro camuflado entre el negro y el plomo */
+            text-align: right;
+            margin-top: 40px;
+            letter-spacing: 0.5px;
+            user-select: none;       /* Dificulta la selección accidental */
+            transition: color 0.3s;
+        }
+        .secret-password:hover {
+            color: #64748b;          /* Se ilumina ligeramente al pasar el cursor por encima */
+        }
     </style>
 </head>
 <body>
@@ -120,6 +134,7 @@
         <a href="brujula.html" class="nav-btn" style="background-color: #0f766e; border: 1px solid #2dd4bf;">Brújula</a>
         <a href="inquisición.html" class="nav-btn" style="background-color: #991b1b; border: 1px solid #ef4444;">Inquisición</a>
         <a href="guerra.html" class="nav-btn" style="background-color: #7f1d1d; border: 1px solid #f87171;">Guerra de Ajedrez</a>
+        <a href="mensajesperdidos.html" class="nav-btn" style="background-color: #475569; border: 1px solid #94a3b8;">Mensajes Perdidos</a>
         <a href="https://discord.gg/ZQXX92bTh" target="_blank" class="nav-btn" style="background-color: #5865F2; border: 1px solid #7289da;">Discord</a>
     </div>
 
@@ -172,6 +187,9 @@ Aquel que intente burlar estos mandatos o crea que su voluntad está por encima 
 16 / 16 / 16</div>
 
 <div class="quote">“El código no miente. El Atlas no olvida.”</div>
+
+<!-- Contraseña oculta en gris plomo oscuro y tamaño diminuto -->
+<div class="secret-password">delcodigoalser</div>
         </div>
     </div>
 

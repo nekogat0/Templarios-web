@@ -5,145 +5,340 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terminal de Acceso Principal - Templarios del Atlas</title>
     <style>
+        :root {
+            --scale-factor: 1rem;
+        }
+
         body {
-            background-color: #04060b;
+            background-color: #000000;
             color: #e2e8f0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 2vw;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* FONDO DINÁMICO DE ESCANEO Y LÍNEAS CUÁNTICAS (ROJO, DORADO, NEGRO) */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(239, 68, 68, 0.03), rgba(234, 179, 8, 0.01), rgba(0, 0, 0, 0.05));
+            z-index: 999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .space-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #110202 0%, #000000 85%);
+            z-index: -2;
+        }
+
+        /* POLVO ESPACIAL CÓSMICO (ROJO Y DORADO) */
+        .cosmic-dust {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eab308, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ef4444, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #b91c1c, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #fde047, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 250px 250px;
+            animation: cosmic-drift 20s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes cosmic-drift {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-250px) rotate(5deg); }
+        }
+
+        /* MARCO DORADO Y ROJO FIJO ESTABLE */
+        .golden-frame {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 100;
+            border: 2px solid rgba(234, 179, 8, 0.35);
+            margin: clamp(8px, 1.5vw, 20px);
+            box-shadow: inset 0 0 25px rgba(234, 179, 8, 0.1), 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .golden-frame::before, .golden-frame::after {
+            content: "";
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+
+        .golden-frame::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+        .golden-frame::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+
+        .corner-bottom-left, .corner-bottom-right {
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+        .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+        .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 2vh;
+            position: relative;
+            z-index: 2;
         }
+
         h1 {
-            color: #38bdf8;
+            color: #eab308;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 0.2em;
             margin-bottom: 5px;
+            font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+            position: relative;
+            display: inline-block;
+            animation: glitch-anim 4s infinite linear alternate-reverse;
+            text-shadow: 0 0 15px rgba(234, 179, 8, 0.5);
         }
+
         .subtitle {
-            color: #94a3b8;
-            font-size: 0.95rem;
+            color: #ef4444;
+            font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+            letter-spacing: 2px;
         }
+
         .nav-container {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 3vh;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 10px;
+            max-width: 900px;
         }
+
         .nav-btn {
             display: inline-block;
-            margin: 5px 8px;
-            padding: 10px 18px;
-            background-color: #0284c7;
-            color: white;
+            padding: clamp(6px, 1.2vw, 10px) clamp(10px, 2vw, 18px);
+            background-color: #0d0202;
+            color: #eab308;
             text-decoration: none;
             border-radius: 6px;
             font-weight: bold;
-            transition: background 0.3s;
+            font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+            position: relative;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
         }
+
         .nav-btn:hover {
-            background-color: #0369a1;
-        }
-        .terminal-container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: #090d16;
-            border: 2px solid #ef4444;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 0 35px rgba(239, 68, 68, 0.25);
-        }
-        .terminal-header {
-            border-bottom: 1px solid #334155;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-            font-family: monospace;
-            color: #ef4444;
-            font-size: 1.1rem;
+            background-color: #991b1b;
+            color: #fde047;
+            border-color: #eab308;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7), inset 0 0 10px rgba(234, 179, 8, 0.3);
+            transform: translateY(-2px) scale(1.03);
             letter-spacing: 1px;
         }
+
+        .terminal-wrapper {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 30px auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .atlas-prism-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: clamp(280px, 60vw, 550px);
+            height: clamp(280px, 60vw, 550px);
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, rgba(0, 0, 0, 0.8) 60%, transparent 80%);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            z-index: -1;
+            pointer-events: none;
+            animation: prism-pulse 6s infinite ease-in-out alternate;
+        }
+
+        .terminal-container {
+            background: rgba(5, 2, 2, 0.95);
+            border: 2px solid #b91c1c;
+            border-radius: 10px;
+            padding: clamp(15px, 3vw, 30px);
+            box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
+            width: 100%;
+        }
+
+        .terminal-header {
+            border-bottom: 1px solid #7f1d1d;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            font-family: monospace;
+            color: #ef4444;
+            font-size: clamp(0.8rem, 1.5vw, 1.1rem);
+            letter-spacing: 1.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .terminal-header span.gold-accent {
+            color: #eab308;
+            font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+        }
+
         .rollo-content {
             font-family: 'Courier New', Courier, monospace;
-            line-height: 1.7;
+            line-height: 1.6;
+            font-size: clamp(0.85rem, 1.4vw, 1rem);
             color: #f1f5f9;
             white-space: pre-wrap;
-            background: #020617;
-            padding: 25px;
+            background: rgba(2, 1, 1, 0.9);
+            padding: clamp(12px, 2.5vw, 25px);
             border-radius: 6px;
-            border: 1px solid #1e293b;
-            max-height: 600px;
+            border: 1px solid #450a0a;
+            max-height: 60vh;
             overflow-y: auto;
             position: relative;
         }
+
         .rollo-content h3 {
-            color: #f87171;
+            color: #eab308;
             text-align: center;
-            font-size: 1.3rem;
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
             margin-top: 0;
             letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
         }
+
         .rollo-content .section-title {
-            color: #38bdf8;
+            color: #ef4444;
             font-weight: bold;
             margin-top: 20px;
             display: block;
         }
+
         .rollo-content .seal {
             text-align: center;
             color: #ef4444;
             font-weight: bold;
             margin-top: 30px;
             letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
         }
+
         .rollo-content .quote {
             text-align: center;
-            color: #94a3b8;
+            color: #eab308;
             font-style: italic;
             margin-top: 15px;
+            text-shadow: 0 0 8px rgba(234, 179, 8, 0.3);
         }
-        /* Estilo plomizo oscuro y diminuto para la contraseña oculta */
+
+        /* Código secreto oculto sin alteraciones */
         .secret-password {
-            font-size: 0.5rem;       /* Letra extremadamente pequeña */
-            color: #262f3f;          /* Gris plomo oscuro camuflado entre el negro y el plomo */
+            font-size: 0.5rem;       
+            color: #260a0a;          
             text-align: right;
             margin-top: 40px;
             letter-spacing: 0.5px;
-            user-select: none;       /* Dificulta la selección accidental */
+            user-select: none;       
             transition: color 0.3s;
         }
         .secret-password:hover {
-            color: #64748b;          /* Se ilumina ligeramente al pasar el cursor por encima */
+            color: #eab308;          
+        }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
+
+        @keyframes prism-pulse {
+            0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.7; }
+            100% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .nav-container { gap: 4px; }
         }
     </style>
 </head>
 <body>
+
+    <!-- Marco dorado ornamental exterior -->
+    <div class="golden-frame">
+        <div class="corner-bottom-left"></div>
+        <div class="corner-bottom-right"></div>
+    </div>
+
+    <div class="space-bg"></div>
+    <div class="cosmic-dust"></div>
 
     <header>
         <h1>Templarios del Atlas</h1>
         <div class="subtitle">Red de Comando y Control &bull; Sector Galáctico Euclides</div>
     </header>
 
+    <!-- Menú de navegación con estilo exclusivo en rojo, dorado y negro -->
     <div class="nav-container">
         <a href="tarjeta.html" class="nav-btn">Tarjeta</a>
         <a href="holoarena.html" class="nav-btn">Holoarena</a>
         <a href="sistema.html" class="nav-btn">Sistemas</a>
-        <a href="oraculo.html" class="nav-btn" style="background-color: #0284c7; border: 1px solid #38bdf8;">Oráculo</a>
+        <a href="oraculo.html" class="nav-btn">Oráculo</a>
         <a href="simulador.html" class="nav-btn">Simulador</a>
+        <a href="reporte.html" class="nav-btn">Reporte</a>
         <a href="traductor.html" class="nav-btn">Traductor</a>
-        <a href="misiones.html" class="nav-btn" style="background-color: #b91c1c; border: 1px solid #f87171;">Misiones</a>
-        <a href="brujula.html" class="nav-btn" style="background-color: #0f766e; border: 1px solid #2dd4bf;">Brújula</a>
-        <a href="inquisición.html" class="nav-btn" style="background-color: #991b1b; border: 1px solid #ef4444;">Inquisición</a>
-        <a href="guerra.html" class="nav-btn" style="background-color: #7f1d1d; border: 1px solid #f87171;">Guerra de Ajedrez</a>
-        <a href="mensajes perdidos.html" class="nav-btn" style="background-color: #475569; border: 1px solid #94a3b8;">Mensajes Perdidos</a>
-        <a href="https://discord.gg/ZQXX92bTh" target="_blank" class="nav-btn" style="background-color: #5865F2; border: 1px solid #7289da;">Discord</a>
+        <a href="misiones.html" class="nav-btn">Misiones</a>
+        <a href="brujula.html" class="nav-btn">Brújula</a>
+        <a href="inquisición.html" class="nav-btn">Inquisición</a>
+        <a href="guerra.html" class="nav-btn">Guerra de Ajedrez</a>
+        <a href="mensajes perdidos.html" class="nav-btn">Mensajes Perdidos</a>
+        <a href="https://discord.gg/ZQXX92bTh" target="_blank" class="nav-btn">Discord</a>
     </div>
 
-    <div class="terminal-container">
-        <div class="terminal-header">
-            &gt; ACCESO AUTORIZADO // PROTOCOLO DE PURIFICACIÓN ACTIVO
-        </div>
-        
-        <div class="rollo-content">
+    <div class="terminal-wrapper">
+        <div class="atlas-prism-bg"></div>
+
+        <div class="terminal-container">
+            <div class="terminal-header">
+                <span>&gt; ACCESO AUTORIZADO // PROTOCOLO DE PURIFICACIÓN ACTIVO</span>
+                <span class="gold-accent">SEC-16 // CLASE ATLAS</span>
+            </div>
+            
+            <div class="rollo-content" id="text-container">
 <h3>ATLAS 📜</h3>
 
 <span class="section-title">I. EL CICLO DE LA CLASE</span>
@@ -188,8 +383,8 @@ Aquel que intente burlar estos mandatos o crea que su voluntad está por encima 
 
 <div class="quote">“El código no miente. El Atlas no olvida.”</div>
 
-<!-- Contraseña oculta en gris plomo oscuro y tamaño diminuto -->
 <div class="secret-password">delcodigoalser</div>
+            </div>
         </div>
     </div>
 

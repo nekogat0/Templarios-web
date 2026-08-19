@@ -89,6 +89,28 @@
             background-color: #e6c547;
         }
 
+        /* Escudo flotante en la esquina */
+        .faction-shield-corner {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 1000;
+            width: 70px;
+            height: 70px;
+            background: #090d16;
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            padding: 2px;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+        .faction-shield-corner img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
         /* Estilo visual del carnet (Negro, Rojo y Dorado) */
         #license-display {
             display: none;
@@ -171,8 +193,13 @@
 </head>
 <body>
 
+    <!-- Escudo flotante en la esquina -->
+    <div class="faction-shield-corner" title="Templarios del Atlas">
+        <img src="escudo.png" alt="Escudo">
+    </div>
+
     <div class="container">
-        <a href="misiones.html" class="back-btn">← Volver a Misiones</a>
+        <a href="misiones.html" class="back-btn">&larr; Volver a Misiones</a>
         
         <h1 style="color: #d4af37; text-transform: uppercase; letter-spacing: 1px;">Tramitación de Licencia Estelar</h1>
         <p style="color: #94a3b8; font-size: 0.9em;">Emite tu permiso oficial bajo los estandartes de los Templarios del Atlas.</p>
@@ -294,7 +321,6 @@
                 return;
             }
 
-            // Validación de puntos solo para la licencia definitiva
             if (type === 'definitive') {
                 let currentPoints = parseInt(localStorage.getItem('templarios_puntos') || '0');
                 const cost = 2500;

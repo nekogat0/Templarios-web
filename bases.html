@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro y Archivo de Bases - Templarios del Atlas</title>
+    <!-- Cliente oficial de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #121212; color: #fff; padding: 20px; max-width: 900px; margin: auto; }
+        h2, h3 { color: #4CAF50; border-bottom: 1px solid #333; padding-bottom: 8px; }
+        
+        /* Botón de Navegación */
+        .nav-header { margin-bottom: 20px; }
+        .btn-regresar { display: inline-block; padding: 8px 14px; background: #333; color: #ffeb3b; border: 1px solid #555; border-radius: 4px; text-decoration: none; font-size: 14px; font-weight: bold; }
+        .btn-regresar:hover { background: #444; border-color: #ffeb3b; }
+
+        /* Formulario */
+        form { background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 40px; }
+        label { display: block; margin-top: 10px; font-size: 14px; color: #ccc; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; background: #2d2d2d; border: 1px solid #444; color: #fff; border-radius: 4px; box-sizing: border-box; }
+        button[type="submit"] { width: 100%; margin-top: 20px; padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button[type="submit"]:hover { background: #45a049; }
+        #mensaje { text-align: center; margin-top: 15px; font-weight: bold; }
+
+        /* Vista de Carpetas y Fichas */
+        .explorer-container { background: #181818; padding: 20px; border-radius: 8px; border: 1px solid #2a2a2a; }
+        .galaxy-folder, .system-folder { background: #242424; border: 1px solid #383838; border-radius: 6px; margin-bottom: 10px; overflow: hidden; }
+        .folder-header { padding: 10px 14px; background: #2d2d2d; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-weight: bold; font-size: 14px; }
+        .folder-header:hover { background: #353535; }
+        
+        .folder-content { display: none; padding: 10px; background: #1a1a1a; }
+        .folder-content.active { display: block; }
+
+        .base-card { background: #262626; border-left: 4px solid #4CAF50; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 8px; }
+        .base-card h4 { margin: 0 0 6px 0; color: #fff; font-size: 14px; }
+        .base-card p { margin: 3px 0; color: #bbb; }
+        .coords-badge { background: #111; color: #ffeb3b; padding: 3px 6px; border-radius: 3px; font-family: monospace; display: inline-block; margin-top: 4px; }
+        .nuevo-tag { background: #ff9800; color: #000; font-size: 10px; padding: 2px 5px; border-radius: 3px; margin-left: 8px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- BOTÓN DE RETORNO RÁPIDO -->
+    <div class="nav-header">
+        <a href="sistema.html" class="btn-regresar">⬅ Volver a sistema</a>
+    </div>
+
+    <!-- FORMULARIO DE REGISTRO -->
+    <form id="baseForm">
+        <h2>Registrar Base Templaria</h2>
+        
+        <!-- Galaxia -->
+        <label>Galaxia:</label>
+        <select id="galaxySelect" onchange="actualizarDependenciasGalaxia()">
+            <!-- Se llena dinámicamente -->
+        </select>
+
+        <div id="otraGalaxiaContainer" style="display: none; margin-top: 10px;">
+            <label>Nombre de la nueva galaxia:</label>
+            <input type="text" id="galaxyCustom" placeholder="Ej: Isdoraijung">
+        </div>
+
+        <!-- Sistema -->
+        <label>Nombre del Sistema:</label>
+        <select id="systemSelect" onchange="verificarSistemaCustom()">
+            <!-- Se llena dinámicamente según la galaxia elegida -->
+        </select>
+
+        <div id="otroSistemaContainer" style="display: none; margin-top: 10px;">
+            <label>Nombre del nuevo sistema:</label>
+            <input type="text" id="systemCustom" placeholder="Ej: Sistema Nuevo X">
+        </div>
+
+        <label>Nombre de la Base:</label>
+        <input type="text" id="base_name" required>
+
+        <label>Propietario:</label>
+        <input type="text" id="owner" required>
+
+        <label>Tipo de Base:</label>
+        <input type="text" id="type" required>
+
+        <label>Planeta:</label>
+        <input type="text" id="planet" required>
+
+        <label>Coordenadas (Glyphs/Portal):</label>
+        <input type="text" id="coords" required>
+
+        <button type="submit">Guardar Base</button>
+        <p id="mensaje"></p>
+    </form>
+
+    <!-- EXPLORADOR DE SISTEMAS Y BASES -->
+    <div class="explorer-container">
+        <h3>📂 Archivo General de Galaxias y Sistemas Oficiales</h3>
+        <div id="treeContainer">Cargando estructura...</div>
+    </div>
+
+    <script>
+        // 1. Configuración de Supabase
+        const SUPABASE_URL = 'https://sndisappxeebfjlfcnwj.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_5R5GmcZUunwh1RgJ3cZ0bg_XdSpQ4EL';
+
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ==========================================
+        // 2. DATOS ESTÁTICOS (6 Galaxias y 157 sistemas de Euclid)
+        // ==========================================
+        const galaxiasEstaticasBase = [
+            "Euclid", 
+            "Hilbert Dimension", 
+            "Calypso", 
+            "Hesperius Dimension", 
+            "Eissentam", 
+            "Budallangr"
+        ];
+
+        const sistemasEstaticos = {
+            "Euclid": [
+                "boylosa lx", "negulus xvlll", "odiusiped", "defora", "uphlin-ryann", "beattyip", 
+                "eduanr-deporp", "oneston vlll", "coklahom", "ninectichu", "rafael", "ryintonya", 
+                "tratias-vai xlx", "elegze-pra l", "hoskyovinia", "muskirto", "hitachi-uefuk", 
+                "mobingwoo", "nonjiwua", "kugy-us v", "sugamo", "tateish", "osaka", "yokohama", 
+                "hiroshima", "nagoya", "sapporo", "fukuoka", "kobe", "kyoto", "kawasaki", 
+                "saitama", "sendai", "chiba", "kitakyushu", "sakai", "niigata", "hamamatsu", 
+                "shizuoka", "sagamihara", "okayama", "kumamoto", "kagoshima", "funabashi", 
+                "hachioji", "himeji", "matsudo", "nishinomiya", "amagasaki", "kurashiki", 
+                "kanazawa", "fukuyama", "toyama", "toyonaka", "takamatsu", "nagasaki", 
+                "toyohashi", "okazaki", "koriyama", "naha", "nara", "kawaguchi", "iwaki", 
+                "tokushima", "matsuyama", "kochi", "onomichi", "kure", "shimonoseki", 
+                "nagaoka", "morioka", "tsu", "aomori", "fukui", "mito", "yamagata", 
+                "akita", "matsue", "tottori", "saga", "oita", "miyazaki", "kanoya", 
+                "nobeoka", "hyuga", "kirishima", "ibusuki", "minamisatsuma", "makurazaki", 
+                "tarumizu", "nishinoomote", "amami", "yoshino", "satsumasendai", "hioki", 
+                "ichikikushikino", "aizen", "kisogawa", "takayama", "tajimi", "nakatsugawa", 
+                "mizunami", "ena", "minokamo", "toki", "kani", "yamagata-gifu", "osu", 
+                "seki", "gero", "gujo", "hashima", "yamatokatata", "motosu", "yamagata-m", 
+                "mizuho", "hida", "anpachi", "godo", "wanouchi", "kaizu", "mitake", 
+                "yaotsu", "shirakawa", "higashishirakawa", "mitake-m", "ginnan", "kasamatsu", 
+                "yogawa", "kawashima", "sohara", "unuma", "naka", "kakamigahara", 
+                "averdig-wat xlv", "kofuname", "yalaint", "lidovoa-natoud", "mechnym-lsh vlll", 
+                "alsrull", "miglich", "artagil-naho", "gadzhe", "settsu"
+            ],
+            "Hilbert Dimension": [],
+            "Calypso": [],
+            "Hesperius Dimension": [],
+            "Eissentam": [],
+            "Budallangr": []
+        };
+
+        let galaxiasCompletaGlobal = {};
+        const form = document.getElementById('baseForm');
+        const mensaje = document.getElementById('mensaje');
+        const treeContainer = document.getElementById('treeContainer');
+        const galaxySelect = document.getElementById('galaxySelect');
+        const systemSelect = document.getElementById('systemSelect');
+
+        function actualizarDependenciasGalaxia() {
+            const customGalaxiaCont = document.getElementById('otraGalaxiaContainer');
+            if (galaxySelect.value === 'otra') {
+                customGalaxiaCont.style.display = 'block';
+                document.getElementById('galaxyCustom').setAttribute('required', 'true');
+                systemSelect.innerHTML = '<option value="otro">Escribir nuevo sistema...</option>';
+                systemSelect.value = 'otro';
+                verificarSistemaCustom();
+            } else {
+                customGalaxiaCont.style.display = 'none';
+                document.getElementById('galaxyCustom').removeAttribute('required');
+                poblarSistemasDeGalaxia(galaxySelect.value);
+            }
+        }
+
+        function poblarSistemasDeGalaxia(nombreGalaxia) {
+            systemSelect.innerHTML = '';
+            const sistemasDisponibles = galaxiasCompletaGlobal[nombreGalaxia] || [];
+
+            sistemasDisponibles.forEach(sis => {
+                const opt = document.createElement('option');
+                opt.value = sis;
+                opt.textContent = sis;
+                systemSelect.appendChild(opt);
+            });
+
+            const optOtro = document.createElement('option');
+            optOtro.value = 'otro';
+            optOtro.textContent = '➕ Escribir nuevo sistema...';
+            systemSelect.appendChild(optOtro);
+
+            verificarSistemaCustom();
+        }
+
+        function verificarSistemaCustom() {
+            const customSistemaCont = document.getElementById('otroSistemaContainer');
+            if (systemSelect.value === 'otro') {
+                customSistemaCont.style.display = 'block';
+                document.getElementById('systemCustom').setAttribute('required', 'true');
+            } else {
+                customSistemaCont.style.display = 'none';
+                document.getElementById('systemCustom').removeAttribute('required');
+            }
+        }
+
+        async function sincronizarYRenderizar() {
+            treeContainer.innerHTML = 'Sincronizando con Supabase...';
+
+            const { data: bases, error } = await _supabase
+                .from('bases_templarias')
+                .select('*');
+
+            if (error) {
+                treeContainer.innerHTML = '<p style="color:#f44336;">Error al conectar con Supabase: ' + error.message + '</p>';
+                return;
+            }
+
+            galaxiasCompletaGlobal = JSON.parse(JSON.stringify(sistemasEstaticos));
+            let listaGalaxiasDisponibles = [...galaxiasEstaticasBase];
+
+            if (bases) {
+                bases.forEach(b => {
+                    const galaxia = b.galaxy || 'Euclid';
+                    const sistema = b.system_name || 'Sistema Desconocido';
+
+                    if (!galaxiasCompletaGlobal[galaxia]) {
+                        galaxiasCompletaGlobal[galaxia] = [];
+                    }
+                    if (!listaGalaxiasDisponibles.includes(galaxia)) {
+                        listaGalaxiasDisponibles.push(galaxia);
+                    }
+
+                    if (!galaxiasCompletaGlobal[galaxia].includes(sistema)) {
+                        galaxiasCompletaGlobal[galaxia].push(sistema);
+                    }
+                });
+            }
+
+            const galaxiaSeleccionadaPrevia = galaxySelect.value || 'Euclid';
+            galaxySelect.innerHTML = '';
+            
+            listaGalaxiasDisponibles.forEach(gal => {
+                const opt = document.createElement('option');
+                opt.value = gal;
+                opt.textContent = gal;
+                galaxySelect.appendChild(opt);
+            });
+
+            const optOtraGal = document.createElement('option');
+            optOtraGal.value = 'otra';
+            optOtraGal.textContent = '➕ Otra galaxia (Escribir nombre)...';
+            galaxySelect.appendChild(optOtraGal);
+
+            if (listaGalaxiasDisponibles.includes(galaxiaSeleccionadaPrevia)) {
+                galaxySelect.value = galaxiaSeleccionadaPrevia;
+            } else {
+                galaxySelect.value = 'Euclid';
+            }
+
+            actualizarDependenciasGalaxia();
+
+            treeContainer.innerHTML = '';
+            Object.keys(galaxiasCompletaGlobal).forEach(galaxiaNombre => {
+                const galaxiaDiv = document.createElement('div');
+                galaxiaDiv.className = 'galaxy-folder';
+
+                let sistemasHtml = '';
+                const sistemasDeGalaxia = galaxiasCompletaGlobal[galaxiaNombre];
+
+                if (sistemasDeGalaxia.length === 0) {
+                    sistemasHtml = '<p style="color:#777; font-size:12px; padding: 5px 10px; margin:0;">No hay sistemas ni bases registradas en esta galaxia.</p>';
+                } else {
+                    sistemasDeGalaxia.forEach(sistemaNombre => {
+                        const esEstatico = sistemasEstaticos[galaxiaNombre] && sistemasEstaticos[galaxiaNombre].includes(sistemaNombre);
+                        const etiquetaNuevo = !esEstatico ? '<span class="nuevo-tag">NUEVO SISTEMA</span>' : '';
+
+                        const basesDelSistema = bases ? bases.filter(b => (b.galaxy || 'Euclid') === galaxiaNombre && b.system_name === sistemaNombre) : [];
+
+                        sistemasHtml += `
+                            <div class="system-folder">
+                                <div class="folder-header" onclick="toggleFolder(this)">
+                                    <span>🌌 ${sistemaNombre} ${etiquetaNuevo}</span>
+                                    <span>${basesDelSistema.length} base(s) ▼</span>
+                                </div>
+                                <div class="folder-content">
+                                    ${basesDelSistema.length > 0 ? basesDelSistema.map(b => `
+                                        <div class="base-card">
+                                            <h4>📄 ${b.base_name}</h4>
+                                            <p><strong>Planeta:</strong> ${b.planet}</p>
+                                            <p><strong>Tipo:</strong> ${b.type}</p>
+                                            <p><strong>Propietario:</strong> ${b.owner}</p>
+                                            <div class="coords-badge">📍 ${b.coords}</div>
+                                        </div>
+                                    `).join('') : '<p style="color:#777; font-size:12px; margin:0;">Sin bases registradas en este sistema.</p>'}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                galaxiaDiv.innerHTML = `
+                    <div class="folder-header" onclick="toggleFolder(this)" style="background: #252525;">
+                        <span>📁 Galaxia: <strong>${galaxiaNombre}</strong></span>
+                        <span>▼</span>
+                    </div>
+                    <div class="folder-content" style="padding-left: 10px;">
+                        ${sistemasHtml}
+                    </div>
+                `;
+
+                treeContainer.appendChild(galaxiaDiv);
+            });
+        }
+
+        function toggleFolder(header) {
+            const content = header.nextElementSibling;
+            content.classList.toggle('active');
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            mensaje.style.color = '#ffeb3b';
+            mensaje.textContent = 'Guardando registro...';
+
+            let galaxiaFinal = galaxySelect.value;
+            if (galaxiaFinal === 'otra') {
+                galaxiaFinal = document.getElementById('galaxyCustom').value.trim();
+            }
+
+            let sistemaFinal = systemSelect.value;
+            if (sistemaFinal === 'otro') {
+                sistemaFinal = document.getElementById('systemCustom').value.trim();
+            }
+
+            const nuevaBase = {
+                galaxy: galaxiaFinal,
+                system_name: sistemaFinal,
+                base_name: document.getElementById('base_name').value,
+                owner: document.getElementById('owner').value,
+                type: document.getElementById('type').value,
+                planet: document.getElementById('planet').value,
+                coords: document.getElementById('coords').value
+            };
+
+            const { error } = await _supabase
+                .from('bases_templarias')
+                .insert([nuevaBase]);
+
+            if (error) {
+                console.error(error);
+                mensaje.style.color = '#f44336';
+                mensaje.textContent = 'Error al guardar: ' + error.message;
+            } else {
+                mensaje.style.color = '#4CAF50';
+                mensaje.textContent = '¡Registrado con éxito!';
+                form.reset();
+                sincronizarYRenderizar();
+            }
+        });
+
+        sincronizarYRenderizar();
+    </script>
+</body>
+</html>

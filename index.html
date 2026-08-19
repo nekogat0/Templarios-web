@@ -26,7 +26,7 @@
             box-sizing: border-box;
         }
 
-        /* FONDO DINÁMICO DE ESCANEO Y LÍNEAS CUÁNTICAS (ROJO, DORADO, NEGRO) */
+        /* FONDO DINÁMICO DE ESCANEO Y LÍNEAS CUÁNTICAS */
         body::before {
             content: " ";
             display: block;
@@ -45,7 +45,7 @@
             z-index: -2;
         }
 
-        /* POLVO ESPACIAL CÓSMICO (ROJO Y DORADO) */
+        /* POLVO ESPACIAL CÓSMICO */
         .cosmic-dust {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -262,7 +262,6 @@
             text-shadow: 0 0 8px rgba(234, 179, 8, 0.3);
         }
 
-        /* Código secreto oculto sin alteraciones */
         .secret-password {
             font-size: 0.5rem;       
             color: #260a0a;          
@@ -274,6 +273,35 @@
         }
         .secret-password:hover {
             color: #eab308;          
+        }
+
+        /* ESCUDO FLOTANTE EN LA ESQUINITA */
+        .faction-shield-corner {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 1000;
+            width: 75px;
+            height: 75px;
+            background: rgba(5, 2, 2, 0.9);
+            border: 2px solid #eab308;
+            border-radius: 50%;
+            padding: 3px;
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4), inset 0 0 10px rgba(239, 68, 68, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .faction-shield-corner:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.7), inset 0 0 12px rgba(234, 179, 8, 0.7);
+        }
+
+        .faction-shield-corner img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
         }
 
         @keyframes glitch-anim {
@@ -293,15 +321,20 @@
         @media (max-width: 480px) {
             body { padding: 10px; }
             .nav-container { gap: 4px; }
+            .faction-shield-corner { width: 55px; height: 55px; bottom: 15px; right: 15px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Marco dorado ornamental exterior -->
     <div class="golden-frame">
         <div class="corner-bottom-left"></div>
         <div class="corner-bottom-right"></div>
+    </div>
+
+    <!-- ESCUDO FLOTANTE (Asegúrate de guardar tu imagen como 'escudo.png' en la misma carpeta) -->
+    <div class="faction-shield-corner" title="Templarios del Atlas">
+        <img src="escudo.png" alt="Escudo Templarios del Atlas">
     </div>
 
     <div class="space-bg"></div>
@@ -312,7 +345,6 @@
         <div class="subtitle">Red de Comando y Control &bull; Sector Galáctico Euclides</div>
     </header>
 
-    <!-- Menú de navegación con estilo exclusivo en rojo, dorado y negro -->
     <div class="nav-container">
         <a href="tarjeta.html" class="nav-btn">Tarjeta</a>
         <a href="holoarena.html" class="nav-btn">Holoarena</a>

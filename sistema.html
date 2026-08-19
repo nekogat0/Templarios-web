@@ -26,9 +26,14 @@
             color: #94a3b8;
             font-size: 0.95rem;
         }
+        .nav-buttons {
+            max-width: 1200px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            gap: 10px;
+        }
         .back-btn {
             display: inline-block;
-            margin-bottom: 15px;
             padding: 10px 20px;
             background-color: #0284c7;
             color: white;
@@ -39,6 +44,12 @@
         }
         .back-btn:hover {
             background-color: #0369a1;
+        }
+        .bases-btn {
+            background-color: #059669;
+        }
+        .bases-btn:hover {
+            background-color: #047857;
         }
         .galaxy-container {
             max-width: 1200px;
@@ -116,8 +127,10 @@
         <div class="subtitle">Simulador Galáctico en Vivo &bull; 157 Sistemas Registrados hacia el Núcleo</div>
     </header>
 
-    <div style="max-width: 1200px; margin: 0 auto;">
+    <!-- BOTONES DE NAVEGACIÓN -->
+    <div class="nav-buttons">
         <a href="index.html" class="back-btn">&larr; Volver al Inicio</a>
+        <a href="bases.html" class="back-btn bases-btn">&#128221;Registro de Bases</a>
     </div>
 
     <!-- SIMULADOR GRÁFICO DE LA GALAXIA (CANVAS) -->
@@ -1251,7 +1264,6 @@
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
 
-        // Partículas galácticas de fondo con gradiente de color según distancia
         const particles = [];
         for (let i = 0; i < 2000; i++) {
             const angle = Math.random() * Math.PI * 2;
@@ -1259,17 +1271,14 @@
             particles.push({ angle, dist, size: Math.random() * 1.8 + 0.5 });
         }
 
-        // Generar los 157 sistemas en línea recta hacia el centro con ligero desplazamiento lateral aleatorio
         const systems157 = [];
         const totalSys = 157;
         
-        // Coordenadas de inicio (borde exterior) y fin (centro exacto)
         const startX = cx - 360;
         const startY = cy - 120;
         const endX = cx;
         const endY = cy;
 
-        // Vector director y su perpendicular para el desvío lateral leve
         const dx = endX - startX;
         const dy = endY - startY;
         const len = Math.hypot(dx, dy);
@@ -1278,25 +1287,18 @@
 
         for (let i = 0; i < totalSys; i++) {
             const t = i / (totalSys - 1);
-            
-            // Interpolación lineal estricta hacia el centro
             const baseX = startX * (1 - t) + endX * t;
             const baseY = startY * (1 - t) + endY * t;
-
-            // Desvío lateral aleatorio pequeño para que no sea una línea robótica perfecta
             const jitter = (Math.sin(i * 12.9898) * 43758.543) % 1 * 16 - 8;
             
             const x = baseX + nx * jitter;
             const y = baseY + ny * jitter;
-
-            // Calcular distancia al centro para el color
             const distToCenter = Math.hypot(x - cx, y - cy);
 
-            let isEdge = (i === 1 || i === 0);
             systems157.push({ 
                 name: (i === 1) ? "eahams-ayg" : (i === 0 ? "boylosa lx" : "sistema-" + i), 
                 x, y, 
-                isEdge: (i === 1), // Eahams-ayg en el extremo más alejado
+                isEdge: (i === 1), 
                 dist: distToCenter
             });
         }
@@ -1305,19 +1307,18 @@
             const maxDist = 400;
             const norm = Math.min(Math.max(dist / maxDist, 0), 1);
 
-            if (norm > 0.85) return '#facc15'; // Amarillo exterior
-            if (norm > 0.70) return '#4ade80'; // Verde
-            if (norm > 0.55) return '#c084fc'; // Morado
-            if (norm > 0.40) return '#f87171'; // Rojo
-            if (norm > 0.25) return '#38bdf8'; // Azul
-            if (norm > 0.10) return '#fb923c'; // Naranjo
-            return '#ffffff'; // Blanco puro en el núcleo
+            if (norm > 0.85) return '#facc15';
+            if (norm > 0.70) return '#4ade80';
+            if (norm > 0.55) return '#c084fc';
+            if (norm > 0.40) return '#f87171';
+            if (norm > 0.25) return '#38bdf8';
+            if (norm > 0.10) return '#fb923c';
+            return '#ffffff';
         }
 
         function drawGalaxy() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Dibujar partículas de fondo
             particles.forEach(p => {
                 const currentAngle = p.angle + Date.now() * 0.00004;
                 const x = cx + Math.cos(currentAngle) * p.dist;
@@ -1335,7 +1336,6 @@
 
             ctx.globalAlpha = 1.0;
 
-            // 2. Dibujar la línea de ruta recta principal entre los sistemas
             ctx.beginPath();
             ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
             ctx.lineWidth = 1.5;
@@ -1347,11 +1347,9 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // 3. Dibujar los sistemas sobre la línea recta
             systems157.forEach((sys) => {
                 ctx.beginPath();
                 if (sys.isEdge) {
-                    // Eahams-ayg en el confín exterior
                     ctx.fillStyle = '#ef4444';
                     ctx.shadowColor = '#ef4444';
                     ctx.shadowBlur = 15;
@@ -1369,7 +1367,6 @@
                 }
             });
 
-            // 4. Núcleo central blanco puro brillante
             const coreGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, 45);
             coreGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
             coreGradient.addColorStop(0.25, 'rgba(250, 204, 21, 0.85)');

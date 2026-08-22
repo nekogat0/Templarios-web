@@ -5,115 +5,248 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galaxia de Euclides - Sistemas del Templario</title>
     <style>
-        body {
-            background-color: #04060b;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
+        :root {
+            --bg-deep: #000000;
+            --bg-panel: rgba(5, 2, 2, 0.95);
+            --border-red: #b91c1c;
+            --border-gold: #eab308;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-red: #ef4444;
+            --accent-gold: #eab308;
         }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 2vw;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* FONDO DINÁMICO DE ESCANEO Y LÍNEAS CUÁNTICAS */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(239, 68, 68, 0.03), rgba(234, 179, 8, 0.01), rgba(0, 0, 0, 0.05));
+            z-index: 999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .space-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #110202 0%, #000000 85%);
+            z-index: -2;
+        }
+
+        /* POLVO ESPACIAL CÓSMICO */
+        .cosmic-dust {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eab308, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ef4444, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #b91c1c, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #fde047, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 250px 250px;
+            animation: cosmic-drift 20s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes cosmic-drift {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-250px) rotate(5deg); }
+        }
+
+        /* MARCO DORADO Y ROJO FIJO ESTABLE */
+        .golden-frame {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 100;
+            border: 2px solid rgba(234, 179, 8, 0.35);
+            margin: clamp(8px, 1.5vw, 20px);
+            box-shadow: inset 0 0 25px rgba(234, 179, 8, 0.1), 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .golden-frame::before, .golden-frame::after {
+            content: "";
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: var(--border-gold);
+            border-style: solid;
+        }
+
+        .golden-frame::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+        .golden-frame::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+
+        .corner-bottom-left, .corner-bottom-right {
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: var(--border-gold);
+            border-style: solid;
+        }
+        .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+        .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
         }
+
         h1 {
-            color: #38bdf8;
+            color: var(--accent-gold);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 15px rgba(234, 179, 8, 0.5);
         }
+
         .subtitle {
-            color: #94a3b8;
-            font-size: 0.95rem;
+            color: var(--accent-red);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
         }
+
+        /* CONTENEDOR DE BOTONES DE NAVEGACIÓN */
         .nav-buttons {
             max-width: 1200px;
             margin: 0 auto 15px auto;
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            position: relative;
+            z-index: 2;
         }
+
         .back-btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #0284c7;
-            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #0d0202;
+            color: var(--accent-gold);
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 4px;
             font-weight: bold;
-            transition: background 0.3s;
+            font-size: 0.85rem;
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            transition: all 0.3s ease;
         }
+
         .back-btn:hover {
-            background-color: #0369a1;
+            background: #991b1b;
+            color: #fde047;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7);
         }
-        .bases-btn {
-            background-color: #059669;
-        }
-        .bases-btn:hover {
-            background-color: #047857;
-        }
+
+        /* CONTENEDOR DEL SIMULADOR */
         .galaxy-container {
             max-width: 1200px;
             margin: 0 auto 30px auto;
-            background: #090d16;
-            border: 2px solid #38bdf8;
+            background: var(--bg-panel);
+            border: 2px solid var(--border-red);
             border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+            padding: 20px;
+            box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
             text-align: center;
+            position: relative;
+            z-index: 2;
         }
+
         canvas {
-            background: radial-gradient(circle at center, #1e1b4b 0%, #030712 80%);
+            background: radial-gradient(circle at center, #110202 0%, #000000 85%);
             border-radius: 6px;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+            border: 1px solid #450a0a;
+            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.85), 0 0 20px rgba(185, 28, 28, 0.2);
             max-width: 100%;
             height: auto;
-            cursor: crosshair;
+            display: block;
+            margin: 0 auto;
         }
+
         .galaxy-info {
-            margin-top: 10px;
+            margin-top: 15px;
             font-size: 0.9rem;
-            color: #94a3b8;
+            color: var(--text-muted);
+            line-height: 1.6;
         }
+
         .highlight-name {
-            color: #f87171;
+            color: var(--accent-red);
             font-weight: bold;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
         }
+
+        /* TABLA DE SISTEMAS ESTILIZADA AL ESTILO ATLAS */
         .table-container {
             max-width: 1200px;
             margin: 0 auto;
             overflow-x: auto;
-            background: #1e293b;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-            border: 1px solid #334155;
+            background: var(--bg-panel);
+            border-radius: 10px;
+            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--border-red);
+            position: relative;
+            z-index: 2;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
             white-space: nowrap;
         }
+
         th, td {
             padding: 12px 16px;
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid #450a0a;
         }
+
         th {
-            background-color: #0f172a;
-            color: #38bdf8;
+            background-color: #0d0202;
+            color: var(--accent-gold);
             text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
+
         tr:hover {
-            background-color: #334155;
+            background-color: rgba(185, 28, 28, 0.1);
         }
+
         td {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            color: #cbd5e1;
         }
+
         tr.highlighted-row {
-            background-color: rgba(239, 68, 68, 0.15) !important;
-            border-left: 5px solid #ef4444;
+            background-color: rgba(185, 28, 28, 0.2) !important;
+            border-left: 4px solid var(--accent-red);
         }
+
         tr.highlighted-row td {
             color: #fca5a5;
             font-weight: bold;
@@ -122,22 +255,31 @@
 </head>
 <body>
 
+    <div class="golden-frame">
+        <div class="corner-bottom-left"></div>
+        <div class="corner-bottom-right"></div>
+    </div>
+
+    <div class="space-bg"></div>
+    <div class="cosmic-dust"></div>
+
     <header>
         <h1>Galaxia de Euclides - Sistemas del Templario</h1>
-        <div class="subtitle">Simulador Galáctico en Vivo &bull; 157 Sistemas Registrados hacia el Núcleo</div>
+        <div class="subtitle">RADAR EXAOESPECTRAL // 16 / 16 / 16</div>
     </header>
 
     <!-- BOTONES DE NAVEGACIÓN -->
     <div class="nav-buttons">
         <a href="index.html" class="back-btn">&larr; Volver al Inicio</a>
-        <a href="bases.html" class="back-btn bases-btn">&#128221;Registro de Bases</a>
+        <a href="bases.html" class="back-btn" style="border-color: rgba(234, 179, 8, 0.4);">&#128221; Registro de Bases</a>
     </div>
 
-    <!-- SIMULADOR GRÁFICO DE LA GALAXIA (CANVAS) -->
+    <!-- SIMULADOR GRÁFICO -->
     <div class="galaxy-container">
         <canvas id="euclidCanvas" width="900" height="600"></canvas>
         <div class="galaxy-info">
-            Visualización de la Galaxia de Euclides. El sistema <span class="highlight-name">Eahams-ayg</span> se encuentra en el confín exterior con la ruta recta hacia el centro.
+            &gt; Visualización estelar de la Galaxia de Euclides.<br>
+            Sistema destacado: <span class="highlight-name">eahams-ayg</span> | Ubicación: <strong>1,022,456 años luz</strong> | Economía: <strong>Equilibrada</strong> | Conflicto: <strong>Nivel 2</strong> | Raza: <strong>Gek</strong> | Cuerpos: <strong>5 cuerpos celestes y 1 luna</strong>.
         </div>
     </div>
 
@@ -163,9 +305,9 @@
                 </tr>
                 <tr class="highlighted-row">
                     <td>eahams-ayg</td>
-                    <td>5 y luna 1</td>
+                    <td>5 cuerpos y 1 luna</td>
                     <td>gek</td>
-                    <td>c 2 e equilibrado ganacias</td>
+                    <td>conflicto 2 / economía equilibrada</td>
                     <td>si</td>
                 </tr>
                 <tr>
@@ -1257,6 +1399,7 @@
         </table>
     </div>
 
+    <!-- SCRIPT -->
     <script>
         const canvas = document.getElementById('euclidCanvas');
         const ctx = canvas.getContext('2d');
@@ -1307,12 +1450,12 @@
             const maxDist = 400;
             const norm = Math.min(Math.max(dist / maxDist, 0), 1);
 
-            if (norm > 0.85) return '#facc15';
-            if (norm > 0.70) return '#4ade80';
-            if (norm > 0.55) return '#c084fc';
-            if (norm > 0.40) return '#f87171';
+            if (norm > 0.85) return '#eab308';
+            if (norm > 0.70) return '#ef4444';
+            if (norm > 0.55) return '#b91c1c';
+            if (norm > 0.40) return '#fde047';
             if (norm > 0.25) return '#38bdf8';
-            if (norm > 0.10) return '#fb923c';
+            if (norm > 0.10) return '#fca5a5';
             return '#ffffff';
         }
 
@@ -1337,7 +1480,7 @@
             ctx.globalAlpha = 1.0;
 
             ctx.beginPath();
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+            ctx.strokeStyle = 'rgba(234, 179, 8, 0.45)';
             ctx.lineWidth = 1.5;
             ctx.setLineDash([4, 4]);
             for (let i = 0; i < systems157.length; i++) {
@@ -1347,19 +1490,40 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
+            const edgeSys = systems157.find(s => s.isEdge);
+            if (edgeSys) {
+                const compassTime = Date.now() * 0.0025;
+                const pulseRadius = 14 + Math.sin(compassTime) * 5;
+                
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)';
+                ctx.lineWidth = 1.2;
+                ctx.arc(edgeSys.x, edgeSys.y, pulseRadius, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(234, 179, 8, 0.5)';
+                ctx.lineWidth = 1;
+                ctx.moveTo(edgeSys.x - 14, edgeSys.y);
+                ctx.lineTo(edgeSys.x + 14, edgeSys.y);
+                ctx.moveTo(edgeSys.x, edgeSys.y - 14);
+                ctx.lineTo(edgeSys.x, edgeSys.y + 14);
+                ctx.stroke();
+            }
+
             systems157.forEach((sys) => {
                 ctx.beginPath();
                 if (sys.isEdge) {
                     ctx.fillStyle = '#ef4444';
                     ctx.shadowColor = '#ef4444';
-                    ctx.shadowBlur = 15;
-                    ctx.arc(sys.x, sys.y, 6, 0, Math.PI * 2);
+                    ctx.shadowBlur = 18;
+                    ctx.arc(sys.x, sys.y, 6.5, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.shadowBlur = 0;
 
-                    ctx.fillStyle = '#fca5a5';
-                    ctx.font = 'bold 11px sans-serif';
-                    ctx.fillText("Eahams-ayg (Confín)", sys.x + 10, sys.y + 4);
+                    ctx.fillStyle = '#fde047';
+                    ctx.font = 'bold 11px "Courier New", monospace';
+                    ctx.fillText("Eahams-ayg (1.022.456 Años Luz)", sys.x + 12, sys.y + 4);
                 } else {
                     ctx.fillStyle = '#94a3b8';
                     ctx.arc(sys.x, sys.y, 2.5, 0, Math.PI * 2);
@@ -1369,7 +1533,7 @@
 
             const coreGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, 45);
             coreGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-            coreGradient.addColorStop(0.25, 'rgba(250, 204, 21, 0.85)');
+            coreGradient.addColorStop(0.25, 'rgba(234, 179, 8, 0.85)');
             coreGradient.addColorStop(1, 'transparent');
             ctx.fillStyle = coreGradient;
             ctx.beginPath();

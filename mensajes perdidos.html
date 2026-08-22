@@ -5,16 +5,148 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mensajes Perdidos - Templarios del Atlas</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+        :root {
+            --atlas-gold: #d4af37;
+            --atlas-gold-dim: #854d0e;
+            --atlas-red: #8b0000;
+            --atlas-red-dark: #b91c1c;
+            --atlas-bg: #020203;
+            --atlas-panel: #060608;
+            --atlas-border: rgba(212, 175, 55, 0.3);
+            --atlas-glow: rgba(212, 175, 55, 0.15);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: #020203;
+            font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
+            background-color: var(--atlas-bg);
             color: #e2e8f0;
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-x: hidden;
         }
+
+        /* Fondo cósmico y partículas estelares de Brújula */
+        .space-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 50%, #110c1d 0%, #020203 100%);
+            z-index: -3;
+        }
+
+        .cosmic-dust {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                radial-gradient(white 1px, transparent 0),
+                radial-gradient(rgba(212, 175, 55, 0.5) 1px, transparent 0);
+            background-size: 50px 50px, 80px 80px;
+            background-position: 0 0, 25px 35px;
+            opacity: 0.25;
+            animation: driftDust 60s linear infinite;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        @keyframes driftDust {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-800px); }
+        }
+
+        /* Efecto CRT / Líneas de escaneo */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 999;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* Marco dorado y esquinas técnicas de Brújula */
+        .golden-frame {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid var(--atlas-border);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .golden-frame::before, .golden-frame::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: var(--atlas-gold);
+            border-style: solid;
+        }
+
+        .golden-frame::before {
+            top: 0; left: 0;
+            border-width: 2px 0 0 2px;
+        }
+
+        .golden-frame::after {
+            top: 0; right: 0;
+            border-width: 2px 2px 0 0;
+        }
+
+        .frame-bottom-corners {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .frame-bottom-corners::before, .frame-bottom-corners::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: var(--atlas-gold);
+            border-style: solid;
+        }
+
+        .frame-bottom-corners::before {
+            bottom: 0; left: 0;
+            border-width: 0 0 2px 2px;
+        }
+
+        .frame-bottom-corners::after {
+            bottom: 0; right: 0;
+            border-width: 0 2px 2px 0;
+        }
+
         .container {
             max-width: 800px;
+            width: 100%;
             margin: 0 auto;
+            z-index: 1;
+            position: relative;
         }
         .back-btn {
             background-color: #0d0d0f;
@@ -32,12 +164,13 @@
             background-color: #1a1a1f;
         }
         h1 {
+            font-family: 'Orbitron', 'Courier New', Courier, monospace;
             color: #d4af37;
             text-transform: uppercase;
             letter-spacing: 2px;
             font-size: 1.5em;
             margin-bottom: 5px;
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
         }
         .subtitle {
             color: #94a3b8;
@@ -51,6 +184,17 @@
             padding: 20px;
             box-shadow: 0 0 25px rgba(139, 0, 0, 0.25);
             margin-bottom: 20px;
+            position: relative;
+        }
+        .terminal-box::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid #d4af37;
+            border-bottom: 2px solid #d4af37;
         }
         .terminal-header {
             display: flex;
@@ -132,7 +276,7 @@
             border: 1px solid #550000;
             color: #ffffff;
             border-radius: 6px;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
             font-size: 1em;
             pointer-events: auto !important;
             user-select: text !important;
@@ -147,12 +291,12 @@
             background-color: #8b0000;
             color: #d4af37;
             border: 1px solid #8b0000;
-            padding: 0 14px; /* Botón más compacto y estilizado */
-            min-width: 90px;  /* Evita que se estire demasiado */
+            padding: 0 14px;
+            min-width: 90px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
             font-size: 0.9em;
         }
         .send-btn:hover {
@@ -168,6 +312,11 @@
     </style>
 </head>
 <body>
+
+    <div class="space-bg"></div>
+    <div class="cosmic-dust"></div>
+    <div class="golden-frame"></div>
+    <div class="frame-bottom-corners"></div>
 
     <div class="container">
         <a href="index.html" class="back-btn">&larr; Volver al Terminal Principal</a>

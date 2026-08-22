@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escáner de Señales Exoespectrales - Templarios del Atlas</title>
     <style>
+        :root {
+            --scale-factor: 1rem;
+        }
+
         body {
-            background-color: #04060b;
+            background-color: #000000;
             color: #e2e8f0;
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
-            padding: 20px;
+            padding: 2vw;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -19,24 +23,104 @@
             box-sizing: border-box;
             overflow-x: hidden;
         }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* FONDO DINÁMICO DE ESCANEO Y LÍNEAS CUÁNTICAS */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(239, 68, 68, 0.03), rgba(234, 179, 8, 0.01), rgba(0, 0, 0, 0.05));
+            z-index: 999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .space-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #110202 0%, #000000 85%);
+            z-index: -2;
+        }
+
+        /* POLVO ESPACIAL CÓSMICO */
+        .cosmic-dust {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eab308, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ef4444, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #b91c1c, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #fde047, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 250px 250px;
+            animation: cosmic-drift 20s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes cosmic-drift {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-250px) rotate(5deg); }
+        }
+
+        /* MARCO DORADO Y ROJO FIJO ESTABLE */
+        .golden-frame {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 100;
+            border: 2px solid rgba(234, 179, 8, 0.35);
+            margin: clamp(8px, 1.5vw, 20px);
+            box-shadow: inset 0 0 25px rgba(234, 179, 8, 0.1), 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .golden-frame::before, .golden-frame::after {
+            content: "";
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+
+        .golden-frame::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+        .golden-frame::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+
+        .corner-bottom-left, .corner-bottom-right {
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+        .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+        .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
         .container {
             width: 100%;
             max-width: 650px;
-            background: #090d16;
-            border: 2px solid #ef4444;
+            background: rgba(5, 2, 2, 0.95);
+            border: 2px solid #b91c1c;
             border-radius: 10px;
             padding: 25px;
-            box-shadow: 0 0 35px rgba(239, 68, 68, 0.25);
+            box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
             text-align: center;
             position: relative;
+            z-index: 2;
         }
         .back-btn {
             position: absolute;
             top: 20px;
             left: 20px;
-            background: #1e1e24;
-            color: #fbbf24;
-            border: 1px solid #fbbf24;
+            background: #0d0202;
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.3);
             padding: 6px 12px;
             font-size: 12px;
             text-decoration: none;
@@ -45,20 +129,21 @@
             transition: all 0.3s ease;
         }
         .back-btn:hover {
-            background: #fbbf24;
-            color: #04060b;
-            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+            background: #991b1b;
+            color: #fde047;
+            border-color: #eab308;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7);
         }
         h2 {
-            color: #ef4444;
+            color: #eab308;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-top: 15px;
             margin-bottom: 5px;
-            text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+            text-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
         }
         .subtitle {
-            color: #fbbf24;
+            color: #ef4444;
             font-size: 0.85rem;
             margin-bottom: 25px;
             letter-spacing: 1px;
@@ -66,8 +151,8 @@
 
         /* HUD NMS */
         .hud-compass-wrapper {
-            background: #020617;
-            border: 1px solid #334155;
+            background: rgba(2, 1, 1, 0.9);
+            border: 1px solid #450a0a;
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
@@ -78,9 +163,9 @@
             position: relative;
             width: 100%;
             height: 60px;
-            background: rgba(2, 6, 23, 0.9);
-            border-bottom: 2px solid #ef4444;
-            border-top: 1px solid #1e293b;
+            background: rgba(2, 1, 1, 0.95);
+            border-bottom: 2px solid #b91c1c;
+            border-top: 1px solid #450a0a;
             overflow: hidden;
             margin-bottom: 15px;
         }
@@ -91,8 +176,8 @@
             transform: translateX(-50%);
             width: 4px;
             height: 100%;
-            background: #fbbf24;
-            box-shadow: 0 0 10px #fbbf24;
+            background: #eab308;
+            box-shadow: 0 0 10px #eab308;
             z-index: 10;
         }
         .compass-strip {
@@ -108,14 +193,14 @@
             position: absolute;
             font-size: 14px;
             font-weight: bold;
-            color: #94a3b8;
+            color: #64748b;
             transform: translateX(-50%);
             text-align: center;
         }
         .compass-marker.cardinal {
-            color: #fbbf24;
+            color: #eab308;
             font-size: 18px;
-            text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+            text-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
         }
         
         /* TELEMETRÍA */
@@ -126,8 +211,8 @@
             margin-bottom: 15px;
         }
         .telemetry-box {
-            background: #020617;
-            border: 1px solid #1e293b;
+            background: rgba(15, 3, 3, 0.9);
+            border: 1px solid #450a0a;
             padding: 10px;
             border-radius: 6px;
             text-align: left;
@@ -146,8 +231,8 @@
 
         /* CAJA DE SEÑAL / ALERTA DEL ATLAS */
         .signal-alert-box {
-            background: #020617;
-            border: 2px solid #334155;
+            background: rgba(15, 3, 3, 0.9);
+            border: 2px solid #450a0a;
             padding: 15px;
             border-radius: 6px;
             color: #94a3b8;
@@ -157,16 +242,16 @@
             transition: all 0.4s ease;
         }
         .signal-alert-box.active-signal {
-            border-color: #ef4444;
+            border-color: #b91c1c;
             color: #fca5a5;
-            background: rgba(239, 68, 68, 0.08);
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+            background: rgba(185, 28, 28, 0.15);
+            box-shadow: 0 0 20px rgba(185, 28, 28, 0.4);
             animation: pulseWarning 1.5s infinite alternate;
         }
 
         @keyframes pulseWarning {
-            0% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
-            100% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); }
+            0% { box-shadow: 0 0 10px rgba(185, 28, 28, 0.3); }
+            100% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.7); }
         }
 
         /* CONTROLES */
@@ -178,9 +263,9 @@
         .action-btn {
             flex: 1;
             min-width: 140px;
-            background: #1e1e24;
-            color: #f1f5f9;
-            border: 1px solid #ef4444;
+            background: #0d0202;
+            color: #e2e8f0;
+            border: 1px solid #b91c1c;
             padding: 12px;
             border-radius: 6px;
             cursor: pointer;
@@ -191,13 +276,14 @@
             font-size: 13px;
         }
         .action-btn.active {
-            background: #ef4444;
-            color: #fff;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+            background: #991b1b;
+            color: #fde047;
+            border-color: #eab308;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
         }
         .action-btn:hover {
-            border-color: #fbbf24;
-            color: #fbbf24;
+            border-color: #eab308;
+            color: #eab308;
         }
         
         .footer-note {
@@ -205,12 +291,20 @@
             color: #64748b;
             margin-top: 20px;
             letter-spacing: 0.5px;
-            border-top: 1px solid #1e293b;
+            border-top: 1px solid #450a0a;
             padding-top: 10px;
         }
     </style>
 </head>
 <body>
+
+<div class="golden-frame">
+    <div class="corner-bottom-left"></div>
+    <div class="corner-bottom-right"></div>
+</div>
+
+<div class="space-bg"></div>
+<div class="cosmic-dust"></div>
 
 <div class="container">
     <a href="index.html" class="back-btn">&larr; VOLVER</a>
@@ -231,7 +325,7 @@
             </div>
             <div class="telemetry-box">
                 <div class="telemetry-label">Tipo de Red Captada</div>
-                <div class="telemetry-value" id="valTipoRed" style="color: #fbbf24;">DESCONOCIDA</div>
+                <div class="telemetry-value" id="valTipoRed" style="color: #eab308;">DESCONOCIDA</div>
             </div>
             <div class="telemetry-box">
                 <div class="telemetry-label">Intensidad de Enlace</div>
@@ -289,7 +383,7 @@
 
             if (esCardinal) {
                 marker.classList.add('cardinal');
-                marker.innerHTML = `${textoLabel}<br><span style="font-size:10px; color:#ef4444;">|</span>`;
+                marker.innerHTML = `${textoLabel}<br><span style="font-size:10px; color:#b91c1c;">|</span>`;
             } else {
                 marker.innerHTML = `${textoLabel}<br><span style="font-size:8px; color:#475569;">|</span>`;
             }
@@ -308,7 +402,7 @@
         let cardinalTxt = "NORTE";
         if (headingActual >= 337.5 || headingActual < 22.5) cardinalTxt = "NORTE (N)";
         else if (headingActual >= 22.5 && headingActual < 67.5) cardinalTxt = "NORTE-ESTE (NE)";
-        else if (headingActual >= 67.5 && headingActual < 112.5) cardinalTxt, cardinalTxt = "ESTE (E)";
+        else if (headingActual >= 67.5 && headingActual < 112.5) cardinalTxt = "ESTE (E)";
         else if (headingActual >= 112.5 && headingActual < 157.5) cardinalTxt = "SUR-ESTE (SE)";
         else if (headingActual >= 157.5 && headingActual < 202.5) cardinalTxt = "SUR (S)";
         else if (headingActual >= 202.5 && headingActual < 247.5) cardinalTxt = "SUR-OESTE (SO)";
@@ -326,7 +420,6 @@
             actualizarVista(nuevoH);
             ultimaPosicionX = e.clientX;
 
-            // Simular proximidad de señal según el movimiento aleatorio o la posición simulada
             evaluarSeñalSimulada(Math.abs(deltaX));
         }
     });
@@ -366,13 +459,12 @@
             btnSim.classList.add('active');
             btnRadar.classList.remove('active');
             valModo.innerText = "SIMULACIÓN";
-            valModo.style.color = "#fbbf24";
+            valModo.style.color = "#eab308";
             signalBox.className = "signal-alert-box";
             signalBox.innerHTML = `&gt; Modo simulación activo. Mueva el cursor o deslice el dedo.`;
         }
     }
 
-    // ACTIVAR RADAR REAL (Analiza tipo de conexión y datos de red móviles / wifi del dispositivo)
     function activarRadarReal() {
         modo = 'radar';
         btnSim.classList.remove('active');
@@ -380,7 +472,6 @@
         valModo.innerText = "RADAR EN LÍNEA";
         valModo.style.color = "#22c55e";
 
-        // Detectar tipo de red del dispositivo (Datos móviles 4G/5G, Wifi, etc.)
         const conexion = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         
         if (conexion) {
@@ -391,14 +482,10 @@
             valIntensidad.innerText = "Estable";
         }
 
-        // Activar GPS para medir cercanía a puntos del sistema
         if (navigator.geolocation) {
             navigator.geolocation.watchPosition((pos) => {
-                // Usamos las coordenadas reales para simular la cercanía a una baliza del Atlas
                 let lat = pos.coords.latitude;
                 let lon = pos.coords.longitude;
-                
-                // Generamos un umbral basado en decimales para disparar la frase exacta que pediste
                 let cercaniaVariable = Math.floor((Math.abs(lat + lon) * 1000) % 100);
                 
                 if (cercaniaVariable > 50) {
@@ -433,7 +520,6 @@
         signalBox.innerHTML = `&gt; Enlace de red detectado (${downlink}). <br><strong>¡El Atlas te está observando a través de la red!</strong>`;
     }
 
-    // Orientación por giroscopio si está en móvil
     if (window.DeviceOrientationEvent) {
         window.addEventListener('deviceorientation', (event) => {
             if (modo === 'radar' && event.alpha !== null) {

@@ -5,36 +5,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guerra Táctica - Templarios del Atlas</title>
     <style>
+        :root {
+            --scale-factor: 1rem;
+        }
+
         body {
-            background-color: #04060b;
+            background-color: #000000;
             color: #e2e8f0;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 2vw;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+        }
+
+        *, *::before, *::after {
             box-sizing: border-box;
         }
+
+        /* FONDO DINÁMICO DE ESCANEO Y LÍNEAS CUÁNTICAS */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(239, 68, 68, 0.03), rgba(234, 179, 8, 0.01), rgba(0, 0, 0, 0.05));
+            z-index: 999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .space-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #110202 0%, #000000 85%);
+            z-index: -2;
+        }
+
+        /* POLVO ESPACIAL CÓSMICO */
+        .cosmic-dust {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eab308, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ef4444, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #b91c1c, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #fde047, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 250px 250px;
+            animation: cosmic-drift 20s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes cosmic-drift {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-250px) rotate(5deg); }
+        }
+
+        /* MARCO DORADO Y ROJO FIJO ESTABLE */
+        .golden-frame {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 100;
+            border: 2px solid rgba(234, 179, 8, 0.35);
+            margin: clamp(8px, 1.5vw, 20px);
+            box-shadow: inset 0 0 25px rgba(234, 179, 8, 0.1), 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .golden-frame::before, .golden-frame::after {
+            content: "";
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+
+        .golden-frame::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+        .golden-frame::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+
+        .corner-bottom-left, .corner-bottom-right {
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+        .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+        .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
+        header {
+            text-align: center;
+            margin-bottom: 2vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        h2 {
+            color: #eab308;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 5px;
+            font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+            position: relative;
+            display: inline-block;
+            text-shadow: 0 0 15px rgba(234, 179, 8, 0.5);
+        }
+
+        .subtitle {
+            color: #ef4444;
+            font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
         .container {
             width: 100%;
             max-width: 650px;
-            background: #090d16;
-            border: 2px solid #ef4444;
+            background: rgba(5, 2, 2, 0.95);
+            border: 2px solid #b91c1c;
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 0 35px rgba(239, 68, 68, 0.25);
+            box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
             text-align: center;
             position: relative;
+            z-index: 2;
         }
+
         .back-btn {
             position: absolute;
             top: 20px;
             left: 20px;
-            background: #1e1e24;
-            color: #fbbf24;
-            border: 1px solid #fbbf24;
+            background: #0d0202;
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.3);
             padding: 6px 12px;
             font-size: 12px;
             text-decoration: none;
@@ -43,32 +154,21 @@
             transition: all 0.3s ease;
         }
         .back-btn:hover {
-            background: #fbbf24;
-            color: #04060b;
-            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+            background-color: #991b1b;
+            color: #fde047;
+            border-color: #eab308;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7);
         }
-        h2 {
-            color: #ef4444;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 15px;
-            margin-bottom: 5px;
-            text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
-        }
-        .subtitle {
-            color: #fbbf24;
-            font-size: 0.85rem;
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-        }
+
         .status-panel {
-            background: #020617;
-            border: 1px solid #334155;
+            background: rgba(2, 1, 1, 0.9);
+            border: 1px solid #450a0a;
             padding: 10px;
             border-radius: 6px;
             margin-bottom: 15px;
             font-size: 0.9rem;
             color: #38bdf8;
+            font-family: 'Courier New', Courier, monospace;
         }
         
         /* TABLERO DE AJEDREZ TÁCTICO */
@@ -80,8 +180,8 @@
             max-width: 480px;
             aspect-ratio: 1 / 1;
             margin: 0 auto 20px auto;
-            border: 3px solid #ef4444;
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+            border: 3px solid #eab308;
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.3);
             border-radius: 4px;
         }
         .cell {
@@ -101,8 +201,8 @@
             background-color: #020617;
         }
         .cell.selected {
-            background-color: rgba(251, 191, 36, 0.4) !important;
-            box-shadow: inset 0 0 10px #fbbf24;
+            background-color: rgba(234, 179, 8, 0.4) !important;
+            box-shadow: inset 0 0 10px #eab308;
         }
         .cell.highlight::after {
             content: '';
@@ -124,16 +224,16 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #090d16;
-            border: 2px solid #fbbf24;
+            background: rgba(5, 2, 2, 0.98);
+            border: 2px solid #eab308;
             padding: 20px;
             border-radius: 8px;
             z-index: 100;
-            box-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
+            box-shadow: 0 0 30px rgba(234, 179, 8, 0.4);
             text-align: center;
         }
         .modal-promocion h3 {
-            color: #fbbf24;
+            color: #eab308;
             margin-top: 0;
             font-size: 1rem;
         }
@@ -144,9 +244,9 @@
             margin-top: 15px;
         }
         .promo-btn {
-            background: #1e1e24;
-            color: #ef4444;
-            border: 1px solid #ef4444;
+            background: #0d0202;
+            color: #eab308;
+            border: 1px solid #eab308;
             font-size: 24px;
             padding: 10px 15px;
             cursor: pointer;
@@ -154,8 +254,9 @@
             transition: 0.2s;
         }
         .promo-btn:hover {
-            background: #ef4444;
-            color: #fff;
+            background: #991b1b;
+            color: #fde047;
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
         }
 
         .controls-row {
@@ -164,64 +265,74 @@
             justify-content: center;
         }
         .action-btn {
-            background: #1e1e24;
-            color: #f1f5f9;
-            border: 1px solid #ef4444;
+            background: #0d0202;
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.5);
             padding: 10px 20px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-family: inherit;
+            font-family: 'Courier New', Courier, monospace;
             letter-spacing: 1px;
             transition: all 0.3s ease;
             font-size: 13px;
         }
         .action-btn:hover {
-            background: #ef4444;
-            color: #fff;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+            background: #991b1b;
+            color: #fde047;
+            border-color: #eab308;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7);
         }
         .footer-note {
             font-size: 11px;
             color: #64748b;
             margin-top: 15px;
             letter-spacing: 0.5px;
-            border-top: 1px solid #1e293b;
+            border-top: 1px solid #450a0a;
             padding-top: 10px;
+            font-family: 'Courier New', Courier, monospace;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <a href="index.html" class="back-btn">&larr; VOLVER</a>
-    <h2>Guerra Táctica</h2>
-    <div class="subtitle">GAMBITO DEL ATLAS // CONDICIÓN DE VICTORIA Y PROMOCIÓN</div>
-
-    <div class="status-panel" id="statusPanel">
-        Turno de: <span style="color: #ef4444; font-weight: bold;">Templarios del Atlas (Tus Unidades)</span>
+    <div class="golden-frame">
+        <div class="corner-bottom-left"></div>
+        <div class="corner-bottom-right"></div>
     </div>
 
-    <!-- TABLERO -->
-    <div class="chessboard" id="chessboard"></div>
+    <div class="space-bg"></div>
+    <div class="cosmic-dust"></div>
 
-    <!-- MODAL DE PROMOCIÓN DE PEÓN -->
-    <div class="modal-promocion" id="modalPromocion">
-        <h3>¡ASCENSIÓN DE UNIDAD! Elige el nuevo componente:</h3>
-        <div class="promo-options">
-            <button class="promo-btn" onclick="promocionarPeon('q')">♛</button>
-            <button class="promo-btn" onclick="promocionarPeon('r')">♜</button>
-            <button class="promo-btn" onclick="promocionarPeon('b')">♝</button>
-            <button class="promo-btn" onclick="promocionarPeon('n')">♞</button>
+    <div class="container">
+        <a href="index.html" class="back-btn">&larr; VOLVER</a>
+        <h2>Guerra Táctica</h2>
+        <div class="subtitle">GAMBITO DEL ATLAS // CONDICIÓN DE VICTORIA Y PROMOCIÓN</div>
+
+        <div class="status-panel" id="statusPanel">
+            Turno de: <span style="color: #eab308; font-weight: bold;">Templarios del Atlas (Tus Unidades)</span>
         </div>
-    </div>
 
-    <div class="controls-row">
-        <button class="action-btn" onclick="reiniciarPartida()">[ REINICIAR SIMULACIÓN ]</button>
-    </div>
+        <!-- TABLERO -->
+        <div class="chessboard" id="chessboard"></div>
 
-    <div class="footer-note">EL CÓDICE RIGE EL COMBATE // DESTRUYE AL ENEMIGO O ASCIENDE TUS FILAS</div>
-</div>
+        <!-- MODAL DE PROMOCIÓN DE PEÓN -->
+        <div class="modal-promocion" id="modalPromocion">
+            <h3>¡ASCENSIÓN DE UNIDAD! Elige el nuevo componente:</h3>
+            <div class="promo-options">
+                <button class="promo-btn" onclick="promocionarPeon('q')">♛</button>
+                <button class="promo-btn" onclick="promocionarPeon('r')">♜</button>
+                <button class="promo-btn" onclick="promocionarPeon('b')">♝</button>
+                <button class="promo-btn" onclick="promocionarPeon('n')">♞</button>
+            </div>
+        </div>
+
+        <div class="controls-row">
+            <button class="action-btn" onclick="reiniciarPartida()">[ REINICIAR SIMULACIÓN ]</button>
+        </div>
+
+        <div class="footer-note">EL CÓDICE RIGE EL COMBATE // DESTRUYE AL ENEMIGO O ASCIENDE TUS FILAS</div>
+    </div>
 
 <script>
     let tablero = [
@@ -240,7 +351,7 @@
         'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙'  
     };
 
-    let turnoActual = 'atlas'; // 'atlas', 'ia', o 'promocion', 'fin'
+    let turnoActual = 'atlas';
     let seleccionFila = null;
     let seleccionCol = null;
     let movimientosValidos = [];
@@ -381,11 +492,11 @@
                 if (pieza) {
                     cell.innerText = piezasIconos[pieza] || pieza;
                     if (pieza === pieza.toLowerCase()) {
+                        cell.style.color = '#eab308';
+                        cell.style.textShadow = '0 0 6px rgba(234, 179, 8, 0.6)';
+                    } else {
                         cell.style.color = '#ef4444';
                         cell.style.textShadow = '0 0 6px rgba(239, 68, 68, 0.6)';
-                    } else {
-                        cell.style.color = '#fbbf24';
-                        cell.style.textShadow = '0 0 6px rgba(251, 191, 36, 0.6)';
                     }
                 }
 
@@ -429,7 +540,6 @@
                 seleccionCol = null;
                 movimientosValidos = [];
 
-                // Verificar si un peón llegó al otro lado (fila 0 para el jugador)
                 if (piezaMovida === 'p' && f === 0) {
                     peonPendientePromo = {f: f, c: c};
                     turnoActual = 'promocion';
@@ -453,10 +563,9 @@
         }
     }
 
-    // Promocionar peón al llegar al otro lado
     function promocionarPeon(tipoPieza) {
         if (peonPendientePromo) {
-            tablero[peonPendientePromo.f][peonPendientePromo.c] = tipoPieza; // Se mantiene minúscula para el jugador
+            tablero[peonPendientePromo.f][peonPendientePromo.c] = tipoPieza;
             peonPendientePromo = null;
         }
         modalPromocion.style.display = 'none';
@@ -471,7 +580,6 @@
         setTimeout(ejecutarIAAgresiva, 600);
     }
 
-    // IA AGRESIVA
     function ejecutarIAAgresiva() {
         if (turnoActual === 'fin') return;
 
@@ -497,8 +605,6 @@
 
         if (todosLosAtaques.length > 0) {
             let ataqueElegido = todosLosAtaques[Math.floor(Math.random() * todosLosAtaques.length)];
-            
-            // Promoción automática de IA si su peón llega a la fila 7
             let piezaMovida = tablero[ataqueElegido.origenF][ataqueElegido.origenC];
             tablero[ataqueElegido.destinoF][ataqueElegido.destinoC] = (piezaMovida === 'P' && ataqueElegido.destinoF === 7) ? 'Q' : piezaMovida;
             tablero[ataqueElegido.origenF][ataqueElegido.origenC] = '';
@@ -516,7 +622,6 @@
         renderizarTablero();
     }
 
-    // Verificar si quedan piezas para determinar Victoria o Derrota
     function verificarFinJuego() {
         let tieneAtlas = false;
         let tieneEnemigo = false;
@@ -546,9 +651,9 @@
 
     function actualizarEstadoPanel() {
         if (turnoActual === 'atlas') {
-            statusPanel.innerHTML = `Turno de: <span style="color: #ef4444; font-weight: bold;">Templarios del Atlas (Tus Unidades)</span>`;
+            statusPanel.innerHTML = `Turno de: <span style="color: #eab308; font-weight: bold;">Templarios del Atlas (Tus Unidades)</span>`;
         } else if (turnoActual === 'ia') {
-            statusPanel.innerHTML = `Turno de la IA: <span style="color: #fbbf24; font-weight: bold;">Invasores Hostiles (Atacando sin piedad...)</span>`;
+            statusPanel.innerHTML = `Turno de la IA: <span style="color: #ef4444; font-weight: bold;">Invasores Hostiles (Atacando sin piedad...)</span>`;
         }
     }
 

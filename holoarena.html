@@ -9,93 +9,171 @@
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap');
 
     :root {
-      --bg-dark: #020208;
-      --panel-bg: rgba(8, 12, 22, 0.92);
+      --bg-dark: #000000;
+      --panel-bg: rgba(5, 2, 2, 0.95);
       --neon-green: #00ff66;
-      --neon-red: #ff2a55;
-      --neon-cyan: #00f0ff;
-      --neon-gold: #ffaa00;
+      --neon-red: #ef4444;
+      --neon-cyan: #38bdf8;
+      --neon-gold: #eab308;
       --glow-green: 0 0 15px rgba(0, 255, 102, 0.5);
-      --glow-red: 0 0 15px rgba(255, 42, 85, 0.5);
-      --glow-cyan: 0 0 15px rgba(0, 240, 255, 0.5);
+      --glow-red: 0 0 15px rgba(239, 68, 68, 0.5);
+      --glow-cyan: 0 0 15px rgba(56, 189, 248, 0.5);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Rajdhani', sans-serif; }
 
     body {
-      background: var(--bg-dark);
-      color: #fff;
+      background-color: var(--bg-dark);
+      color: #e2e8f0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
+      padding: clamp(15px, 2.5vw, 30px);
+      box-sizing: border-box;
+      position: relative;
     }
+
+    /* EFECTO DE ESCANEO Y LÍNEAS CUÁNTICAS */
+    body::before {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(239, 68, 68, 0.03), rgba(234, 179, 8, 0.01), rgba(0, 0, 0, 0.05));
+      z-index: 999;
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+    }
+
+    .space-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at 50% 50%, #110202 0%, #000000 85%);
+      z-index: -2;
+    }
+
+    /* POLVO ESPACIAL CÓSMICO */
+    .cosmic-dust {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      background-image: 
+          radial-gradient(2px 2px at 20px 30px, #eab308, rgba(0,0,0,0)),
+          radial-gradient(2px 2px at 40px 70px, #ef4444, rgba(0,0,0,0)),
+          radial-gradient(1px 1px at 90px 40px, #b91c1c, rgba(0,0,0,0)),
+          radial-gradient(2px 2px at 160px 120px, #fde047, rgba(0,0,0,0));
+      background-repeat: repeat;
+      background-size: 250px 250px;
+      animation: cosmic-drift 20s linear infinite;
+      opacity: 0.6;
+    }
+
+    @keyframes cosmic-drift {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-250px) rotate(5deg); }
+    }
+
+    /* MARCO DORADO Y ROJO FIJO ESTABLE */
+    .golden-frame {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 100;
+      border: 2px solid rgba(234, 179, 8, 0.35);
+      margin: clamp(8px, 1.5vw, 20px);
+      box-shadow: inset 0 0 25px rgba(234, 179, 8, 0.1), 0 0 15px rgba(239, 68, 68, 0.2);
+    }
+
+    .golden-frame::before, .golden-frame::after {
+      content: "";
+      position: absolute;
+      width: clamp(15px, 3vw, 30px);
+      height: clamp(15px, 3vw, 30px);
+      border-color: #eab308;
+      border-style: solid;
+    }
+
+    .golden-frame::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+    .golden-frame::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+
+    .corner-bottom-left, .corner-bottom-right {
+      position: absolute;
+      width: clamp(15px, 3vw, 30px);
+      height: clamp(15px, 3vw, 30px);
+      border-color: #eab308;
+      border-style: solid;
+    }
+    .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+    .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
 
     nav {
       width: 100%; max-width: 900px;
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+      z-index: 2; position: relative;
     }
 
     .nav-title {
-      font-family: 'Orbitron', sans-serif; font-size: 1.2rem;
-      color: var(--neon-green); font-weight: 900; letter-spacing: 2px;
-      text-shadow: var(--glow-green);
+      font-family: 'Orbitron', sans-serif; font-size: 1.1rem;
+      color: var(--neon-gold); font-weight: 900; letter-spacing: 2px;
+      text-shadow: 0 0 15px rgba(234, 179, 8, 0.5);
     }
 
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
 
     .btn-nav {
-      background: rgba(0, 240, 255, 0.1); color: var(--neon-cyan);
-      border: 1px solid var(--neon-cyan); padding: 8px 16px;
-      font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 0.8rem;
+      background: #0d0202; color: var(--neon-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.4); padding: 8px 16px;
+      font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 0.75rem;
       text-decoration: none; border-radius: 4px; cursor: pointer;
-      box-shadow: var(--glow-cyan); transition: all 0.2s ease;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); transition: all 0.3s ease;
     }
 
-    .btn-nav:hover { background: var(--neon-cyan); color: #000; }
+    .btn-nav:hover { background: #991b1b; color: #fde047; border-color: var(--neon-gold); box-shadow: 0 0 15px rgba(239, 68, 68, 0.7); }
 
     .btn-music {
-      background: rgba(255, 170, 0, 0.15); color: var(--neon-gold);
-      border-color: var(--neon-gold);
+      background: #0d0202; color: var(--neon-gold);
+      border-color: rgba(234, 179, 8, 0.4);
     }
-    .btn-music:hover { background: var(--neon-gold); color: #000; }
+    .btn-music:hover { background: #991b1b; color: #fde047; border-color: var(--neon-gold); }
 
     /* ESCENARIO DE COMBATE */
     .battle-arena {
       width: 100%; max-width: 900px; height: 430px;
-      background: radial-gradient(circle at 50% 30%, #10192d 0%, #03050b 90%);
-      border: 2px solid var(--neon-green);
-      box-shadow: var(--glow-green);
-      border-radius: 8px; position: relative;
+      background: rgba(5, 2, 2, 0.95);
+      border: 2px solid #b91c1c;
+      box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
+      border-radius: 10px; position: relative;
       overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
       padding: 20px;
+      z-index: 2;
     }
 
     .arena-grid-bg {
       position: absolute; width: 100%; height: 100%; top: 0; left: 0;
-      background-image: linear-gradient(rgba(0, 255, 102, 0.05) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(0, 255, 102, 0.05) 1px, transparent 1px);
+      background-image: linear-gradient(rgba(234, 179, 8, 0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(234, 179, 8, 0.03) 1px, transparent 1px);
       background-size: 30px 30px; pointer-events: none;
     }
 
     /* HUDS DE COMBATIENTES */
     .creature-hud {
-      background: var(--panel-bg);
-      border: 1px solid var(--neon-cyan);
+      background: rgba(2, 1, 1, 0.9);
+      border: 1px solid #450a0a;
       padding: 10px 15px; border-radius: 6px; width: 280px;
       z-index: 5; position: relative;
     }
 
-    .hud-enemy { align-self: flex-start; border-color: var(--neon-red); }
-    .hud-player { align-self: flex-end; border-color: var(--neon-green); }
+    .hud-enemy { align-self: flex-start; border-color: #b91c1c; }
+    .hud-player { align-self: flex-start; border-color: rgba(234, 179, 8, 0.4); }
 
     .creature-name { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: #fff; font-weight: bold; }
 
     .hp-bar-bg {
-      width: 100%; height: 12px; background: #111;
-      border: 1px solid rgba(255,255,255,0.2); border-radius: 3px; margin-top: 6px; overflow: hidden;
+      width: 100%; height: 12px; background: #000;
+      border: 1px solid #450a0a; border-radius: 3px; margin-top: 6px; overflow: hidden;
     }
 
     .hp-bar-fill { height: 100%; background: var(--neon-green); width: 100%; transition: width 0.3s ease, background-color 0.3s; }
@@ -104,7 +182,7 @@
     .sprite-box {
       position: absolute; width: 130px; height: 130px;
       display: flex; justify-content: center; align-items: center;
-      font-size: 4rem; filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.4));
+      font-size: 4rem; filter: drop-shadow(0 0 12px rgba(234, 179, 8, 0.4));
       transition: transform 0.2s ease, opacity 0.4s ease;
       z-index: 3;
     }
@@ -120,6 +198,7 @@
     .controls-panel {
       width: 100%; max-width: 900px; margin-top: 15px;
       display: grid; grid-template-columns: 1fr 300px; gap: 15px;
+      z-index: 2; position: relative;
     }
 
     @media (max-width: 768px) {
@@ -129,7 +208,7 @@
     }
 
     .log-box {
-      background: var(--panel-bg); border: 1px solid var(--neon-cyan);
+      background: rgba(5, 2, 2, 0.95); border: 1px solid #b91c1c;
       border-radius: 6px; padding: 12px; font-family: 'Share Tech Mono', monospace;
       font-size: 0.88rem; color: var(--neon-gold); height: 130px; overflow-y: auto;
       box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
@@ -138,17 +217,25 @@
     .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
     .btn-action {
-      background: rgba(0, 255, 102, 0.1); border: 1px solid var(--neon-green);
-      color: #fff; font-family: 'Orbitron', sans-serif; font-size: 0.72rem;
-      padding: 12px 8px; cursor: pointer; border-radius: 4px; text-transform: uppercase;
-      font-weight: bold; transition: all 0.2s ease;
+      background: #0d0202; border: 1px solid rgba(234, 179, 8, 0.5);
+      color: #eab308; font-family: 'Orbitron', sans-serif; font-size: 0.72rem;
+      padding: 12px 8px; cursor: pointer; border-radius: 6px; text-transform: uppercase;
+      font-weight: bold; transition: all 0.3s ease;
     }
 
-    .btn-action:hover:not(:disabled) { background: var(--neon-green); color: #000; box-shadow: var(--glow-green); }
-    .btn-action:disabled { opacity: 0.4; cursor: not-allowed; border-color: #555; }
+    .btn-action:hover:not(:disabled) { background: #991b1b; color: #fde047; border-color: #eab308; box-shadow: 0 0 15px rgba(239, 68, 68, 0.7); }
+    .btn-action:disabled { opacity: 0.4; cursor: not-allowed; border-color: #333; color: #666; }
   </style>
 </head>
 <body>
+
+  <div class="golden-frame">
+    <div class="corner-bottom-left"></div>
+    <div class="corner-bottom-right"></div>
+  </div>
+
+  <div class="space-bg"></div>
+  <div class="cosmic-dust"></div>
 
   <nav>
     <div class="nav-title">HOLO ARENA | BATALLA INFINITA NMS</div>
@@ -193,9 +280,6 @@
   </div>
 
   <script>
-    /* ===================================================
-       1. BANCO DE DATOS DE MONSTRUOS
-    =================================================== */
     const playerMonstersDB = [
       { name: "ENGENDRO BIOLÓGICO", sprite: "👾", maxHp: 110, atk: 26, moves: ["Coletazo Venenoso", "Ráfaga Ácida", "Refugio Escamoso", "Regeneración Celular"] },
       { name: "CENTINELA CUADRÚPEDO", sprite: "🤖", maxHp: 95, atk: 30, moves: ["Láser Calentador", "Cañón de Implosión", "Muro Energético", "Reinicio de Sistemas"] },
@@ -223,9 +307,6 @@
       logBox.scrollTop = logBox.scrollHeight;
     }
 
-    /* ===================================================
-       2. LÓGICA DE BATALLA Y RELEVOS CONTINUOS
-    =================================================== */
     function updateHpBars() {
       if (!currentPlyr || !currentEnmy) return;
 
@@ -251,14 +332,13 @@
       document.getElementById('playerSprite').innerText = currentPlyr.sprite;
       document.getElementById('playerSprite').classList.remove('anim-faint');
 
-      // Actualizar nombres de botones
       document.getElementById('btnAtk1').innerText = `⚡ ${currentPlyr.moves[0]}`;
       document.getElementById('btnAtk2').innerText = `💥 ${currentPlyr.moves[1]}`;
       document.getElementById('btnAtk3').innerText = `🛡️ ${currentPlyr.moves[2]}`;
       document.getElementById('btnAtk4').innerText = `🧪 ${currentPlyr.moves[3]}`;
 
       updateHpBars();
-      log(`<strong style="color: var(--neon-green);">¡Desplegado a la arena: ${currentPlyr.name}!</strong>`);
+      log(`<strong style="color: var(--neon-gold);">¡Desplegado a la arena: ${currentPlyr.name}!</strong>`);
     }
 
     function spawnEnemyMonster() {
@@ -371,9 +451,6 @@
       }, 1500);
     }
 
-    /* ===================================================
-       3. SINTETIZADOR MÚSICA 8-BIT GAME BOY (WEB AUDIO API)
-    =================================================== */
     let audioCtx = null;
     let isMusicPlaying = false;
     let musicInterval = null;
@@ -407,14 +484,14 @@
 
       if (isMusicPlaying) {
         btn.innerText = "🎮 MÚSICA 8-BIT: ON";
-        btn.style.borderColor = "var(--neon-green)";
-        btn.style.color = "var(--neon-green)";
+        btn.style.borderColor = "var(--neon-gold)";
+        btn.style.color = "var(--neon-gold)";
         
         musicInterval = setInterval(playChiptuneStep, 140);
         log("<span style='color: var(--neon-cyan);'>♪ Sintetizador 8-Bit Game Boy Activado. ¡A combatir!</span>");
       } else {
         btn.innerText = "🎮 MÚSICA 8-BIT: OFF";
-        btn.style.borderColor = "var(--neon-gold)";
+        btn.style.borderColor = "rgba(234, 179, 8, 0.4)";
         btn.style.color = "var(--neon-gold)";
         clearInterval(musicInterval);
       }
@@ -484,7 +561,6 @@
       }
     }
 
-    /* INICIALIZACIÓN CONTROLADA */
     window.addEventListener('DOMContentLoaded', () => {
       spawnPlayerMonster();
       spawnEnemyMonster();
@@ -492,4 +568,3 @@
   </script>
 </body>
 </html>
-si

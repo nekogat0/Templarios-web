@@ -11,16 +11,50 @@
             color: #ffffff;
             margin: 0;
             padding: 20px;
+            overflow-x: hidden;
+            position: relative;
         }
+
+        /* Efecto de líneas de escaneo CRT */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 99999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* Partículas estelares de fondo */
+        .stars-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                              radial-gradient(2px 2px at 40px 70px, #d4af37, rgba(0,0,0,0)),
+                              radial-gradient(1px 1px at 90px 40px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.3;
+        }
+
         .top-bar {
             max-width: 800px;
             margin: 0 auto 20px auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 2;
         }
         .nav-btn {
-            background-color: #1a1a1a;
+            background-color: #090d16;
             color: #d4af37;
             border: 1px solid #d4af37;
             padding: 6px 12px;
@@ -28,14 +62,51 @@
             cursor: pointer;
             text-decoration: none;
             font-size: 0.9em;
+            transition: all 0.3s ease;
         }
         .nav-btn:hover {
-            background-color: #2a2a2a;
+            background-color: #d4af37;
+            color: #04060b;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
         }
         .container {
             max-width: 800px;
             margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 25px;
+            background-color: rgba(4, 6, 11, 0.85);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
         }
+
+        /* Esquinas técnicas doradas */
+        .container::before, .container::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-color: #d4af37;
+            border-style: solid;
+            pointer-events: none;
+        }
+        .container::before {
+            top: -2px; left: -2px;
+            border-width: 2px 0 0 2px;
+        }
+        .container::after {
+            bottom: -2px; right: -2px;
+            border-width: 0 2px 2px 0;
+        }
+
+        h1 {
+            color: #d4af37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            text-align: center;
+            margin-top: 0;
+        }
+
         .points-box {
             background-color: #090d16;
             border: 1px solid #ef4444;
@@ -49,6 +120,11 @@
         }
         .points-box span {
             color: #f87171;
+            transition: color 0.3s ease;
+        }
+        .points-box span.pulse {
+            color: #4ade80;
+            text-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
         }
         .skip-btn {
             display: block;
@@ -61,9 +137,11 @@
             cursor: pointer;
             font-size: 0.75em;
             font-weight: normal;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
         .skip-btn:hover {
             background-color: #b91c1c;
+            transform: scale(1.02);
         }
         .license-promo-box {
             background-color: #090d16;
@@ -75,6 +153,10 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+            transition: box-shadow 0.3s ease;
+        }
+        .license-promo-box:hover {
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
         }
         .license-promo-box h3 {
             margin: 0 0 5px 0;
@@ -94,9 +176,11 @@
             cursor: pointer;
             font-weight: bold;
             text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
         .license-btn:hover {
             background-color: #e6c547;
+            transform: scale(1.05);
         }
         .timer-box {
             background-color: #090d16;
@@ -106,6 +190,8 @@
             text-align: center;
             font-size: 1.2em;
             border: 1px solid #334155;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            color: #cbd5e1;
         }
         .mission-card {
             background-color: #090d16;
@@ -116,6 +202,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: border-color 0.3s ease, transform 0.2s ease, background-color 0.3s ease;
+        }
+        .mission-card:hover {
+            border-color: #475569;
+            transform: translateX(3px);
+            background-color: #0c1220;
         }
         .mission-info h3 {
             margin: 0 0 5px 0;
@@ -133,19 +225,36 @@
             padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .mission-btn:hover:not(:disabled) {
+            background-color: #b91c1c;
+            transform: scale(1.05);
         }
         .mission-btn:disabled {
-            background-color: #334155;
+            background-color: #1e293b;
+            color: #64748b;
             cursor: not-allowed;
+        }
+        .mission-card.completed {
+            opacity: 0.65;
+            border-color: #14532d;
+            background-color: #050b07;
         }
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.8);
+            background-color: rgba(0,0,0,0.85);
             justify-content: center;
             align-items: center;
             z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal.show {
+            display: flex;
+            opacity: 1;
         }
         .modal-content {
             background-color: #090d16;
@@ -155,6 +264,12 @@
             max-width: 450px;
             width: 90%;
             text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.3);
+        }
+        .modal.show .modal-content {
+            transform: scale(1);
         }
         .modal-content input[type="password"] {
             margin: 15px 0;
@@ -165,6 +280,12 @@
             color: #fff;
             border-radius: 4px;
             text-align: center;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .modal-content input[type="password"]:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
         }
         .modal-btns {
             display: flex;
@@ -178,6 +299,11 @@
             padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .modal-btn-confirm:hover {
+            background-color: #15803d;
+            transform: scale(1.05);
         }
         .modal-btn-cancel {
             background-color: #dc2626;
@@ -186,10 +312,41 @@
             padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .modal-btn-cancel:hover {
+            background-color: #b91c1c;
+            transform: scale(1.05);
+        }
+
+        #notification-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #090d16;
+            border: 1px solid #d4af37;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+        }
+        #notification-toast.show {
+            transform: translateY(0);
+            opacity: 1;
         }
     </style>
 </head>
 <body>
+
+    <!-- Fondo de partículas estelares -->
+    <div class="stars-bg"></div>
 
     <div class="top-bar">
         <a href="index.html" class="nav-btn">← Volver al Inicio</a>
@@ -230,6 +387,10 @@
         </div>
     </div>
 
+    <div id="notification-toast">
+        <span id="toast-message">¡Acción realizada con éxito!</span>
+    </div>
+
     <script>
         const allMissions = [
             { id: 1, title: "Purga Menor Gek", desc: "Infiltra puesto de avanzada y debilita patrulla Gek local.", points: 70, hard: false },
@@ -242,6 +403,15 @@
         ];
 
         let selectedMissionIndex = null;
+
+        function showToast(message) {
+            const toast = document.getElementById('notification-toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
 
         function getTodayKey() {
             const d = new Date();
@@ -275,7 +445,7 @@
 
             missions.forEach((mission, index) => {
                 const card = document.createElement('div');
-                card.className = 'mission-card';
+                card.className = `mission-card ${mission.completed ? 'completed' : ''}`;
                 card.innerHTML = `
                     <div class="mission-info">
                         <h3>${mission.title} ${mission.hard ? '⚡ [ALTA DIFICULTAD]' : ''}</h3>
@@ -289,9 +459,17 @@
             });
         }
 
-        function updatePointsDisplay() {
+        function updatePointsDisplay(animate = false) {
             let currentPoints = localStorage.getItem('templarios_puntos') || '0';
-            document.getElementById('points-display').innerText = currentPoints;
+            const pointsEl = document.getElementById('points-display');
+            pointsEl.innerText = currentPoints;
+
+            if (animate) {
+                pointsEl.classList.add('pulse');
+                setTimeout(() => {
+                    pointsEl.classList.remove('pulse');
+                }, 600);
+            }
         }
 
         function handleMissionClick(index) {
@@ -302,7 +480,9 @@
                 selectedMissionIndex = index;
                 document.getElementById('modal-mission-title').innerText = mission.title;
                 document.getElementById('missionPassword').value = '';
-                document.getElementById('verifyModal').style.display = 'flex';
+                const modal = document.getElementById('verifyModal');
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('show'), 10);
             } else {
                 finalizeMission(index);
             }
@@ -319,12 +499,16 @@
                     selectedMissionIndex = null;
                 }
             } else {
-                alert("Contraseña incorrecta. Acceso denegado por los protocolos del Atlas.");
+                showToast("⚠️ Contraseña incorrecta. Acceso denegado por los protocolos del Atlas.");
             }
         }
 
         function closeModal() {
-            document.getElementById('verifyModal').style.display = 'none';
+            const modal = document.getElementById('verifyModal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
         }
 
         function finalizeMission(index) {
@@ -334,11 +518,13 @@
                 localStorage.setItem('templarios_misiones', JSON.stringify(savedData));
                 
                 let currentPoints = parseInt(localStorage.getItem('templarios_puntos') || '0');
-                currentPoints += savedData.missions[index].points;
+                const gained = savedData.missions[index].points;
+                currentPoints += gained;
                 localStorage.setItem('templarios_puntos', currentPoints);
 
                 renderMissions(savedData.missions);
-                updatePointsDisplay();
+                updatePointsDisplay(true);
+                showToast(`¡Misión completada! +${gained} puntos añadidos.`);
             }
         }
 
@@ -356,9 +542,10 @@
                 
                 localStorage.setItem('templarios_active_date', nextKey);
                 loadDailyMissions();
-                updatePointsDisplay();
+                updatePointsDisplay(true);
+                showToast("⚡ Tiempo de reutilización reiniciado con éxito.");
             } else {
-                alert("No tienes suficientes puntos para saltar el tiempo de reutilización (Necesitas 150 pts).");
+                showToast("❌ No tienes suficientes puntos (Necesitas 150 pts).");
             }
         }
 

@@ -5,9 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Traductor Cuántico - Templarios del Atlas</title>
     <style>
+        :root {
+            --bg-dark: #000000;
+            --container-bg: #050505;
+            --neon-red: #ff003c;
+            --neon-gold: #ffaa00;
+            --text-main: #ffffff;
+            --text-dim: #b3b3b3;
+            --glow-red: 0 0 25px rgba(255, 0, 60, 0.8), inset 0 0 15px rgba(255, 0, 60, 0.4);
+            --glow-gold: 0 0 15px rgba(255, 170, 0, 0.6);
+        }
+
         body {
-            background-color: #04060b;
-            color: #e2e8f0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             flex-direction: column;
@@ -15,110 +26,224 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .container {
-            background: #090d16;
-            border: 2px solid #ef4444;
-            border-radius: 10px;
             padding: 30px;
-            box-shadow: 0 0 35px rgba(239, 68, 68, 0.25);
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* EFECTO CRT / BOMBILLA INTENSIFICADO GLOBAL */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 999;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: rgba(255, 0, 60, 0.06);
+            opacity: 0;
+            z-index: 1000;
+            pointer-events: none;
+            animation: crtFlicker 0.12s infinite;
+        }
+
+        @keyframes crtFlicker {
+            0% { opacity: 0.04; }
+            50% { opacity: 0.12; }
+            100% { opacity: 0.04; }
+        }
+
+        /* MARCO EXTERIOR DE LA PANTALLA (ROJO NEÓN FOSFORESCENTE CON ESQUINAS DORADAS) */
+        .screen-frame {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            border: 2px solid var(--neon-red);
+            box-shadow: var(--glow-red);
+            pointer-events: none;
+            z-index: 998;
+        }
+
+        .screen-corner {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border: 3px solid var(--neon-gold);
+            box-shadow: var(--glow-gold);
+            background: rgba(255, 170, 0, 0.2);
+        }
+        .sc-tl { top: -3px; left: -3px; border-right: none; border-bottom: none; }
+        .sc-tr { top: -3px; right: -3px; border-left: none; border-bottom: none; }
+        .sc-bl { bottom: -3px; left: -3px; border-right: none; border-top: none; }
+        .sc-br { bottom: -3px; right: -3px; border-left: none; border-top: none; }
+
+        /* PARTÍCULAS DINÁMICAS */
+        .particle {
+            position: fixed;
+            background: var(--neon-gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            animation: floatParticle linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(105vh) translateX(0); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
+        }
+
+        .container {
+            background: var(--container-bg);
+            border: 2px solid var(--neon-red);
+            border-radius: 8px;
+            padding: 22px;
+            box-shadow: var(--glow-red);
             width: 100%;
-            max-width: 650px;
+            max-width: 580px;
             text-align: center;
             position: relative;
+            z-index: 2;
         }
+
         .back-btn {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            background: #1e1e24;
-            color: #fbbf24;
-            border: 1px solid #fbbf24;
-            padding: 6px 12px;
-            font-size: 12px;
+            top: 15px;
+            left: 15px;
+            background: #000000;
+            color: var(--neon-gold);
+            border: 1px solid var(--neon-gold);
+            padding: 5px 10px;
+            font-size: 11px;
             text-decoration: none;
             border-radius: 4px;
             font-weight: bold;
+            box-shadow: 0 0 8px rgba(255, 170, 0, 0.3);
             transition: all 0.3s ease;
         }
         .back-btn:hover {
-            background: #fbbf24;
-            color: #04060b;
-            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+            background: var(--neon-gold);
+            color: #000000;
+            box-shadow: var(--glow-gold);
         }
+
         h2 {
-            color: #ef4444;
+            color: var(--neon-red);
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(255, 0, 60, 0.8);
         }
+
         label {
             display: block;
             text-align: left;
-            color: #fbbf24;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
+            color: var(--neon-gold);
+            font-size: 0.82rem;
+            margin-bottom: 4px;
             font-weight: bold;
             letter-spacing: 1px;
+            text-shadow: 0 0 6px rgba(255, 170, 0, 0.4);
         }
+
         textarea {
             width: 100%;
-            height: 110px;
-            background: #020617;
-            color: #f1f5f9;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 12px;
-            font-size: 16px;
+            height: 85px;
+            background: #000000;
+            color: var(--text-main);
+            border: 1px solid var(--neon-gold);
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 14px;
             resize: none;
             box-sizing: border-box;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-family: 'Courier New', Courier, monospace;
             transition: border-color 0.3s, box-shadow 0.3s;
         }
         textarea:focus {
             outline: none;
-            border-color: #ef4444;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+            border-color: var(--neon-red);
+            box-shadow: 0 0 12px rgba(255, 0, 60, 0.7);
         }
+
         .controls {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 15px;
         }
+
         button.action-btn {
-            background: #ef4444;
-            color: #fff;
-            border: 1px solid #f87171;
-            padding: 10px 20px;
-            border-radius: 6px;
+            background: var(--neon-red);
+            color: #ffffff;
+            border: 1px solid var(--neon-gold);
+            padding: 8px 16px;
+            border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
             font-family: inherit;
             letter-spacing: 1px;
+            font-size: 0.85rem;
             transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+            box-shadow: 0 0 15px rgba(255, 0, 60, 0.6);
         }
         button.action-btn:hover {
-            background: #dc2626;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+            background: #ff1a4d;
+            box-shadow: 0 0 20px rgba(255, 0, 60, 0.9);
         }
+
         .note {
-            font-size: 11px;
-            color: #94a3b8;
-            margin-top: 15px;
-            border-top: 1px solid #1e293b;
-            padding-top: 10px;
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-top: 12px;
+            border-top: 1px solid rgba(255, 170, 0, 0.2);
+            padding-top: 8px;
             letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
+
+    <!-- MARCO EXTERIOR CON ESQUINAS DORADAS -->
+    <div class="screen-frame">
+        <div class="screen-corner sc-tl"></div>
+        <div class="screen-corner sc-tr"></div>
+        <div class="screen-corner sc-bl"></div>
+        <div class="screen-corner sc-br"></div>
+    </div>
+
+    <!-- GENERADOR DE PARTÍCULAS -->
+    <script>
+        for (let i = 0; i < 25; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.top = Math.random() * 100 + 'vh';
+            const size = Math.random() * 3 + 1;
+            p.style.width = size + 'px';
+            p.style.height = size + 'px';
+            p.style.animationDuration = (Math.random() * 8 + 4) + 's';
+            p.style.animationDelay = (Math.random() * 4) + 's';
+            document.body.appendChild(p);
+        }
+    </script>
 
 <div class="container">
     <a href="index.html" class="back-btn">&larr; VOLVER</a>
@@ -129,7 +254,7 @@
 
     <div class="controls">
         <button class="action-btn" onclick="cifrarMezcla()">[ CIFRAR CAOS ]</button>
-        <button class="action-btn" onclick="descifrarSeleccion()" style="background-color: #b91c1c;">[ DESCIFRAR PARTE ]</button>
+        <button class="action-btn" onclick="descifrarSeleccion()">[ DESCIFRAR PARTE ]</button>
     </div>
 
     <label for="outputTexto">&gt; RESULTADO DE LA TRANSMISIÓN:</label>

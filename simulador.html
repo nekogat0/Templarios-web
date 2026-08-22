@@ -3,39 +3,195 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Simulador de Combate</title>
+  <title>Simulador de Combate - Templarios del Atlas</title>
   <style>
-    body { background: #010103; color: #e2f1f8; font-family: sans-serif; padding: 10px 10px 60px 10px; margin: 0; }
-    body.touch-active { overflow-y: auto; touch-action: pan-y; }
-    
-    .container { 
-      max-width: 1100px; 
-      margin: 0 auto; 
-      display: flex; 
+    :root {
+      --scale-factor: 1rem;
+    }
+
+    body {
+      background-color: #000000;
+      color: #e2e8f0;
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 15px;
+      display: flex;
       flex-direction: column;
-      gap: 15px; 
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body.touch-active {
+      overflow-y: auto;
+      touch-action: pan-y;
+    }
+
+    /* LÍNEAS DE ESCANEO Y EFECTO CRT */
+    body::before {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(239, 68, 68, 0.03), rgba(234, 179, 8, 0.01), rgba(0, 0, 0, 0.05));
+      z-index: 999;
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+    }
+
+    .space-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at 50% 50%, #110202 0%, #000000 85%);
+      z-index: -2;
+    }
+
+    /* POLVO ESPACIAL CÓSMICO */
+    .cosmic-dust {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      background-image: 
+        radial-gradient(2px 2px at 20px 30px, #eab308, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, #ef4444, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 90px 40px, #b91c1c, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, #fde047, rgba(0,0,0,0));
+      background-repeat: repeat;
+      background-size: 250px 250px;
+      animation: cosmic-drift 20s linear infinite;
+      opacity: 0.6;
+    }
+
+    @keyframes cosmic-drift {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-250px) rotate(5deg); }
+    }
+
+    /* MARCO DORADO Y ROJO FIJO */
+    .golden-frame {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 100;
+      border: 2px solid rgba(234, 179, 8, 0.35);
+      margin: clamp(6px, 1.2vw, 16px);
+      box-shadow: inset 0 0 25px rgba(234, 179, 8, 0.1), 0 0 15px rgba(239, 68, 68, 0.2);
+    }
+
+    .golden-frame::before, .golden-frame::after {
+      content: "";
+      position: absolute;
+      width: clamp(15px, 3vw, 30px);
+      height: clamp(15px, 3vw, 30px);
+      border-color: #eab308;
+      border-style: solid;
+    }
+
+    .golden-frame::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+    .golden-frame::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+
+    .corner-bottom-left, .corner-bottom-right {
+      position: absolute;
+      width: clamp(15px, 3vw, 30px);
+      height: clamp(15px, 3vw, 30px);
+      border-color: #eab308;
+      border-style: solid;
+    }
+    .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+    .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
+    /* BOTÓN VOLVER */
+    .back-btn {
+      align-self: flex-start;
+      background: #0d0202;
+      color: #eab308;
+      border: 1px solid rgba(234, 179, 8, 0.4);
+      padding: 6px 14px;
+      font-size: 12px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      margin-bottom: 12px;
+      z-index: 10;
+    }
+    .back-btn:hover {
+      background: #991b1b;
+      color: #fde047;
+      border-color: #eab308;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.7);
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(5, 2, 2, 0.95);
+      border: 2px solid #b91c1c;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
     @media (min-width: 850px) {
       .container { flex-direction: row; align-items: flex-start; }
     }
 
-    .panel { 
-      background: rgba(6, 9, 16, 0.95); 
-      border: 1px solid #00f0ff; 
-      padding: 12px; 
-      width: 100%; 
+    .header-titles {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 5px;
+    }
+
+    h2 {
+      color: #eab308;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin: 0 0 4px 0;
+      font-size: 1.4rem;
+      text-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+    }
+
+    .subtitle {
+      color: #ef4444;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    /* PANEL LATERAL DE CONFIGURACIÓN */
+    .panel {
+      background: rgba(15, 3, 3, 0.9);
+      border: 1px solid #450a0a;
+      padding: 16px;
+      width: 100%;
       max-width: 380px;
-      border-radius: 4px; 
+      border-radius: 6px;
       box-sizing: border-box;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
     }
 
     .panel h3 {
-      font-size: 0.9rem;
-      margin: 0 0 10px 0;
-      color: #00f0ff;
-      border-bottom: 1px solid rgba(0,240,255,0.3);
-      padding-bottom: 5px;
+      font-size: 0.85rem;
+      margin: 0 0 12px 0;
+      color: #eab308;
+      border-bottom: 1px solid #450a0a;
+      padding-bottom: 6px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: left;
     }
 
     .inputs-grid {
@@ -44,61 +200,99 @@
       gap: 8px;
     }
 
-    .input-group { margin-bottom: 6px; }
+    .input-group { margin-bottom: 6px; text-align: left; }
     .input-group.full { grid-column: span 2; }
 
-    label { display: block; font-size: 0.7rem; color: #00f0ff; margin-bottom: 2px; }
-    input, select { width: 100%; background: #000; border: 1px solid #00f0ff; color: #fff; padding: 4px 6px; font-size: 0.85rem; border-radius: 3px; box-sizing: border-box; }
-    
-    .btn-back { background: transparent; border: 1px solid #00f0ff; color: #00f0ff; padding: 4px 8px; cursor: pointer; margin-bottom: 10px; display: inline-block; font-size: 0.8rem; }
-    
+    label {
+      display: block;
+      font-size: 0.65rem;
+      color: #94a3b8;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    input, select {
+      width: 100%;
+      background: #0d0202;
+      border: 1px solid #450a0a;
+      color: #e2e8f0;
+      padding: 7px 8px;
+      font-size: 0.8rem;
+      font-family: inherit;
+      border-radius: 3px;
+      box-sizing: border-box;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: #eab308;
+      box-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
+    }
+
+    /* BOTONES DE ACCIÓN ESTILO BRÚJULA */
     .btn-action {
-      background: linear-gradient(135deg, #00f0ff, #0088cc);
-      color: #000;
-      border: none;
-      font-weight: bold;
-      padding: 8px;
+      background: #0d0202;
+      color: #e2e8f0;
+      border: 1px solid #b91c1c;
+      padding: 10px;
       width: 100%;
       cursor: pointer;
-      border-radius: 3px;
-      margin-top: 6px;
+      border-radius: 4px;
+      margin-top: 8px;
       text-transform: uppercase;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+
+    .btn-action:hover:not(:disabled) {
+      border-color: #eab308;
+      color: #eab308;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-action:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-action.active, .btn-action.btn-start-active {
+      background: #991b1b;
+      color: #fde047;
+      border-color: #eab308;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
     }
 
     .btn-pause {
-      background: linear-gradient(135deg, #ff2a55, #cc0044);
-      color: #fff;
-    }
-
-    .btn-mobile {
-      background: rgba(255, 170, 0, 0.2);
-      color: #ffaa00;
-      border: 1px solid #ffaa00;
-    }
-
-    .btn-mobile.active {
-      background: #ffaa00;
-      color: #000;
+      border-color: #ef4444;
+      color: #ef4444;
     }
 
     .btn-editor {
-      background: linear-gradient(135deg, #a020f0, #6600cc);
-      color: #fff;
+      border-color: #eab308;
+      color: #eab308;
+    }
+
+    .btn-mobile {
+      border-color: #38bdf8;
+      color: #38bdf8;
     }
 
     .btn-eject-mobile {
-      background: linear-gradient(135deg, #ff8800, #ff2a55);
-      color: #fff;
+      border-color: #f97316;
+      color: #f97316;
       display: none;
     }
-    .btn-eject-mobile.visible {
-      display: block;
-    }
+    .btn-eject-mobile.visible { display: block; }
 
-    .viewport-container { 
-      flex-grow: 1; 
-      width: 100%; 
+    /* ÁREA DEL CANAL Y VISOR */
+    .viewport-container {
+      flex-grow: 1;
+      width: 100%;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -106,15 +300,15 @@
 
     .viewport-box {
       background: #000;
-      border: 2px solid #00f0ff;
-      border-radius: 4px;
+      border: 2px solid #b91c1c;
+      border-radius: 6px;
       position: relative;
       aspect-ratio: 16 / 9;
       overflow: hidden;
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+      box-shadow: 0 0 25px rgba(185, 28, 28, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.9);
       width: 100%;
     }
-    
+
     canvas {
       width: 100%;
       height: 100%;
@@ -124,27 +318,26 @@
 
     .touch-pad-external {
       width: 100%;
-      height: 140px;
-      background: rgba(0, 240, 255, 0.05);
-      border: 2px dashed rgba(0, 240, 255, 0.4);
+      height: 120px;
+      background: rgba(15, 3, 3, 0.9);
+      border: 1px dashed #b91c1c;
       border-radius: 6px;
       display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: rgba(0, 240, 255, 0.8);
-      font-size: 0.8rem;
+      color: #ef4444;
+      font-size: 0.75rem;
       font-weight: bold;
       letter-spacing: 1px;
       user-select: none;
       touch-action: none;
       box-sizing: border-box;
-      margin-bottom: 40px;
+      margin-bottom: 10px;
     }
-    .touch-pad-external.visible {
-      display: flex;
-    }
+    .touch-pad-external.visible { display: flex; }
 
+    /* MODALES CON ESTILO ATLAS */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -153,966 +346,901 @@
       justify-content: center;
       align-items: center;
       z-index: 1000;
+      backdrop-filter: blur(4px);
     }
     .modal-overlay.active { display: flex; }
+
     .modal-content {
-      background: #060910;
-      border: 2px solid #a020f0;
+      background: rgba(15, 3, 3, 0.98);
+      border: 2px solid #b91c1c;
       padding: 20px;
-      border-radius: 6px;
+      border-radius: 8px;
       width: 90%;
       max-width: 400px;
-      box-shadow: 0 0 20px rgba(160, 32, 240, 0.4);
+      box-shadow: 0 0 30px rgba(185, 28, 28, 0.5);
     }
-    .modal-content h3 { color: #a020f0; margin-top: 0; font-size: 1rem; border-bottom: 1px solid rgba(160,32,240,0.3); padding-bottom: 5px; }
-    .editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+
+    .modal-content h3 {
+      color: #eab308;
+      margin-top: 0;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #450a0a;
+      padding-bottom: 6px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
 
     .death-modal {
       text-align: center;
-      border-color: #ff2a55;
-      box-shadow: 0 0 25px rgba(255, 42, 85, 0.6);
+      border-color: #ef4444;
     }
+
     .death-modal h2 {
-      color: #ff2a55;
-      font-size: 1.8rem;
+      color: #ef4444;
+      font-size: 1.4rem;
       margin-top: 0;
       text-transform: uppercase;
       letter-spacing: 2px;
     }
+
     .death-modal p {
-      color: #e2f1f8;
-      font-size: 0.95rem;
+      color: #e2e8f0;
+      font-size: 0.85rem;
       margin-bottom: 20px;
+    }
+
+    .editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+
+    .footer-note {
+      width: 100%;
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+      border-top: 1px solid #450a0a;
+      padding-top: 10px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <button class="btn-back" onclick="window.location.href='index.html'">⬅ Volver a Index</button>
+<div class="golden-frame">
+  <div class="corner-bottom-left"></div>
+  <div class="corner-bottom-right"></div>
+</div>
 
-  <div class="container">
-    <div class="panel">
-      <h3>Configuración de Nave</h3>
-      
-      <div class="inputs-grid">
-        <div class="input-group full">
-          <label>Nombre de la nave</label>
-          <input type="text" id="shipName" value="Espíritu Akkan">
-        </div>
+<div class="space-bg"></div>
+<div class="cosmic-dust"></div>
 
-        <div class="input-group">
-          <label>Clase</label>
-          <select id="shipClass">
-            <option value="C">Clase C</option>
-            <option value="B">Clase B</option>
-            <option value="A">Clase A</option>
-            <option value="S" selected>Clase S</option>
-          </select>
-        </div>
+<a href="index.html" class="back-btn">&larr; VOLVER</a>
 
-        <div class="input-group">
-          <label>Agilidad (Vertical)</label>
-          <input type="number" id="agility" value="5">
-        </div>
-
-        <div class="input-group">
-          <label>Daño Láser (DPS)</label>
-          <input type="number" id="damage" value="350">
-        </div>
-
-        <div class="input-group">
-          <label>Infracuchillo (Impacto)</label>
-          <input type="number" id="infraDamage" value="1200">
-        </div>
-
-        <div class="input-group">
-          <label>Escudo (HP)</label>
-          <input type="number" id="shield" value="500">
-        </div>
-
-        <div class="input-group">
-          <label>Hiperpulso (Combustible)</label>
-          <input type="number" id="hyperPulse" value="100">
-        </div>
+<div class="container">
+  <div class="panel">
+    <h3>Configuración de Nave</h3>
+    
+    <div class="inputs-grid">
+      <div class="input-group full">
+        <label>Nombre de la nave</label>
+        <input type="text" id="shipName" value="Espíritu Akkan">
       </div>
 
-      <button class="btn-action" id="btnStart">Iniciar Combate</button>
-      <button class="btn-action btn-pause" id="btnPause" disabled>Pausa</button>
-      <button class="btn-action btn-editor" id="btnEditor">Modificar Apariencia</button>
-      <button class="btn-action btn-mobile" id="btnTouch">Modo Teléfono: DESACTIVADO</button>
-      <button class="btn-action btn-eject-mobile" id="btnEjectMobile">⚠️ Eyectar / Salir de Nave</button>
-    </div>
-
-    <div class="viewport-container">
-      <div class="viewport-box">
-        <canvas id="simCanvas"></canvas>
+      <div class="input-group">
+        <label>Clase</label>
+        <select id="shipClass">
+          <option value="C">Clase C</option>
+          <option value="B">Clase B</option>
+          <option value="A">Clase A</option>
+          <option value="S" selected>Clase S</option>
+        </select>
       </div>
 
-      <div class="touch-pad-external" id="touchPad">
-        <span>🎮 ZONA TÁCTIL DE CONTROL</span>
-        <span style="font-size: 0.65rem; color: rgba(255,255,255,0.5); margin-top: 4px;">1 dedo: Mover | 2 dedos: Disparar</span>
+      <div class="input-group">
+        <label>Agilidad (Vertical)</label>
+        <input type="number" id="agility" value="5">
+      </div>
+
+      <div class="input-group">
+        <label>Daño Láser (DPS)</label>
+        <input type="number" id="damage" value="350">
+      </div>
+
+      <div class="input-group">
+        <label>Infracuchillo (Impacto)</label>
+        <input type="number" id="infraDamage" value="1200">
+      </div>
+
+      <div class="input-group">
+        <label>Escudo (HP)</label>
+        <input type="number" id="shield" value="500">
+      </div>
+
+      <div class="input-group">
+        <label>Hiperpulso (Combustible)</label>
+        <input type="number" id="hyperPulse" value="100">
       </div>
     </div>
+
+    <button class="btn-action" id="btnStart">Iniciar Combate</button>
+    <button class="btn-action btn-pause" id="btnPause" disabled>Pausa</button>
+    <button class="btn-action btn-editor" id="btnEditor">Modificar Apariencia</button>
+    <button class="btn-action btn-mobile" id="btnTouch">Modo Teléfono: DESACTIVADO</button>
+    <button class="btn-action btn-eject-mobile" id="btnEjectMobile">⚠️ Eyectar / Salir de Nave</button>
   </div>
 
-  <!-- Modal Editor -->
-  <div class="modal-overlay" id="editorModal">
-    <div class="modal-content">
-      <h3>🎨 Editor de Apariencia de Nave</h3>
-      <div class="editor-grid">
-        <div class="input-group">
-          <label>Forma de Nave</label>
-          <select id="editShape">
-            <option value="rect">Rectangular</option>
-            <option value="circle">Circular</option>
-            <option value="triangle">Triangular</option>
-          </select>
-        </div>
-        <div class="input-group">
-          <label>Color de Nave</label>
-          <input type="color" id="editColor" value="#ff2a55">
-        </div>
-        <div class="input-group">
-          <label>Color de Balas</label>
-          <input type="color" id="editBulletColor" value="#00ff66">
-        </div>
-        <div class="input-group">
-          <label>Color Propulsores</label>
-          <input type="color" id="editEngineColor" value="#ff5500">
-        </div>
+  <div class="viewport-container">
+    <div class="viewport-box">
+      <canvas id="simCanvas"></canvas>
+    </div>
+
+    <div class="touch-pad-external" id="touchPad">
+      <span>[ ZONA TÁCTIL DE CONTROL ]</span>
+      <span style="font-size: 0.65rem; color: #94a3b8; margin-top: 4px;">1 dedo: Mover | 2 dedos: Disparar</span>
+    </div>
+
+    <div class="footer-note">EL CÓDICE RIGE EL RUMBO // TEMPLARIOS DEL ATLAS</div>
+  </div>
+</div>
+
+<!-- Modal Editor -->
+<div class="modal-overlay" id="editorModal">
+  <div class="modal-content">
+    <h3>Editor de Apariencia</h3>
+    <div class="editor-grid">
+      <div class="input-group">
+        <label>Forma de Nave</label>
+        <select id="editShape">
+          <option value="rect">Rectangular</option>
+          <option value="circle">Circular</option>
+          <option value="triangle">Triangular</option>
+        </select>
       </div>
-      <button class="btn-action" id="btnCloseEditor" style="background: #a020f0; color: #fff;">Guardar y Cerrar</button>
+      <div class="input-group">
+        <label>Color de Nave</label>
+        <input type="color" id="editColor" value="#ef4444">
+      </div>
+      <div class="input-group">
+        <label>Color de Balas</label>
+        <input type="color" id="editBulletColor" value="#eab308">
+      </div>
+      <div class="input-group">
+        <label>Color Propulsores</label>
+        <input type="color" id="editEngineColor" value="#f97316">
+      </div>
     </div>
+    <button class="btn-action" id="btnCloseEditor" style="border-color: #eab308; color: #eab308;">Guardar y Cerrar</button>
   </div>
+</div>
 
-  <!-- Modal Muerte / Reintentar -->
-  <div class="modal-overlay" id="deathModal">
-    <div class="modal-content death-modal">
-      <h2>Has Muerto</h2>
-      <p id="deathReason">Te has quedado sin combustible en el espacio profundo.</p>
-      <button class="btn-action" id="btnRetry" style="background: linear-gradient(135deg, #ff2a55, #cc0044); color: #fff; font-size: 0.9rem; padding: 12px;">Sí, Reintentar</button>
-    </div>
+<!-- Modal Muerte -->
+<div class="modal-overlay" id="deathModal">
+  <div class="modal-content death-modal">
+    <h2>Has Muerto</h2>
+    <p id="deathReason">Te has quedado sin combustible en el espacio profundo.</p>
+    <button class="btn-action btn-pause" id="btnRetry">Sí, Reintentar</button>
   </div>
+</div>
 
-  <script>
-    const canvas = document.getElementById('simCanvas');
-    const ctx = canvas.getContext('2d');
-    const btnStart = document.getElementById('btnStart');
-    const btnPause = document.getElementById('btnPause');
-    const btnTouch = document.getElementById('btnTouch');
-    const btnEditor = document.getElementById('btnEditor');
-    const editorModal = document.getElementById('editorModal');
-    const btnCloseEditor = document.getElementById('btnCloseEditor');
-    const touchPad = document.getElementById('touchPad');
-    const deathModal = document.getElementById('deathModal');
-    const btnRetry = document.getElementById('btnRetry');
-    const btnEjectMobile = document.getElementById('btnEjectMobile');
-    const deathReason = document.getElementById('deathReason');
+<script>
+  const canvas = document.getElementById('simCanvas');
+  const ctx = canvas.getContext('2d');
+  const btnStart = document.getElementById('btnStart');
+  const btnPause = document.getElementById('btnPause');
+  const btnTouch = document.getElementById('btnTouch');
+  const btnEditor = document.getElementById('btnEditor');
+  const editorModal = document.getElementById('editorModal');
+  const btnCloseEditor = document.getElementById('btnCloseEditor');
+  const touchPad = document.getElementById('touchPad');
+  const deathModal = document.getElementById('deathModal');
+  const btnRetry = document.getElementById('btnRetry');
+  const btnEjectMobile = document.getElementById('btnEjectMobile');
+  const deathReason = document.getElementById('deathReason');
 
-    const inputClass = document.getElementById('shipClass');
-    const inputAgility = document.getElementById('agility');
-    const inputDamage = document.getElementById('damage');
-    const inputInfra = document.getElementById('infraDamage');
-    const inputShield = document.getElementById('shield');
-    const inputHyper = document.getElementById('hyperPulse');
+  const inputClass = document.getElementById('shipClass');
+  const inputAgility = document.getElementById('agility');
+  const inputDamage = document.getElementById('damage');
+  const inputInfra = document.getElementById('infraDamage');
+  const inputShield = document.getElementById('shield');
+  const inputHyper = document.getElementById('hyperPulse');
 
-    const editShape = document.getElementById('editShape');
-    const editColor = document.getElementById('editColor');
-    const editBulletColor = document.getElementById('editBulletColor');
-    const editEngineColor = document.getElementById('editEngineColor');
+  const editShape = document.getElementById('editShape');
+  const editColor = document.getElementById('editColor');
+  const editBulletColor = document.getElementById('editBulletColor');
+  const editEngineColor = document.getElementById('editEngineColor');
 
-    canvas.width = 640;
-    canvas.height = 360;
+  canvas.width = 640;
+  canvas.height = 360;
 
-    let gameActive = false;
-    let isPaused = false;
-    let touchMode = false;
-    let isFiring = false;
-    let gameState = 'PLAYING'; // 'PLAYING', 'SHIP_HALTED', 'EJECTED', 'DEAD', 'LANDING'
+  let gameActive = false;
+  let isPaused = false;
+  let touchMode = false;
+  let isFiring = false;
+  let gameState = 'PLAYING';
 
-    // Sistema de Niveles y Planetas (ahora con progreso mucho más lento para niveles largos)
-    let currentLevel = 1;
-    let levelProgress = 0; 
-    let planetX = canvas.width + 200;
-    let planetRadius = 80;
-    let levelTransitionTimer = 0;
+  let currentLevel = 1;
+  let levelProgress = 0; 
+  let planetX = canvas.width + 200;
+  let planetRadius = 80;
+  let levelTransitionTimer = 0;
 
-    let ship = {
-      x: 80,
-      y: canvas.height / 2,
-      w: 35,
-      h: 20,
-      shape: 'rect',
-      color: '#ff2a55',
-      bulletColor: '#00ff66',
-      engineColor: '#ff5500',
-      verticalSpeed: 5,
-      maxShield: 500,
-      currentShield: 500,
-      dps: 350,
-      infraImpactDamage: 1200,
-      fireRateCooldown: 10,
-      maxFuel: 100,
-      currentFuel: 100,
-      overheatHeat: 0,
-      isOverheated: false
-    };
+  let ship = {
+    x: 80,
+    y: canvas.height / 2,
+    w: 35,
+    h: 20,
+    shape: 'rect',
+    color: '#ef4444',
+    bulletColor: '#eab308',
+    engineColor: '#f97316',
+    verticalSpeed: 5,
+    maxShield: 500,
+    currentShield: 500,
+    dps: 350,
+    infraImpactDamage: 1200,
+    fireRateCooldown: 10,
+    maxFuel: 100,
+    currentFuel: 100,
+    overheatHeat: 0,
+    isOverheated: false
+  };
 
-    let pilot = {
-      x: 0,
-      y: 0,
-      w: 10,
-      h: 8,
-      maxJetpack: 50,
-      currentJetpack: 50,
-      speed: 1.2,
-      maxAmmo: 100,
-      currentAmmo: 100
-    };
+  let pilot = {
+    x: 0,
+    y: 0,
+    w: 10,
+    h: 8,
+    maxJetpack: 50,
+    currentJetpack: 50,
+    speed: 1.2,
+    maxAmmo: 100,
+    currentAmmo: 100
+  };
 
-    let particles = [];
-    for (let i = 0; i < 60; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 2 + 0.5,
-        speed: Math.random() * 3 + 1
-      });
-    }
-
-    let asteroids = [];
-    let enemyShips = []; 
-    let enemyBullets = [];
-    let engineParticles = [];
-    let bullets = [];
-    let floatingItems = [];
-    let keys = {};
-
-    function resetGame() {
-      gameActive = true;
-      isPaused = false;
-      gameState = 'PLAYING';
-      currentLevel = 1;
-      levelProgress = 0;
-      planetX = canvas.width + 600; // Planeta más lejos para mayor duración del nivel
-      deathModal.classList.remove('active');
-      
-      const cls = inputClass.value;
-      let rawAgility = parseFloat(inputAgility.value) || 5;
-      let rawDamage = parseFloat(inputDamage.value) || 0;
-      let rawInfra = parseFloat(inputInfra.value) || 0;
-      let rawShield = parseFloat(inputShield.value) || 100;
-      let rawFuel = parseFloat(inputHyper.value) || 100;
-
-      let classMultiplier = 1.0;
-      if (cls === 'B') classMultiplier = 1.25;
-      if (cls === 'A') classMultiplier = 1.5;
-      if (cls === 'S') classMultiplier = 2.0;
-
-      ship.x = 80;
-      ship.y = canvas.height / 2;
-      ship.verticalSpeed = rawAgility * (classMultiplier * 0.5);
-      ship.maxShield = rawShield * classMultiplier;
-      ship.currentShield = ship.maxShield;
-      ship.dps = rawDamage * classMultiplier;
-      ship.infraImpactDamage = rawInfra * classMultiplier;
-      ship.maxFuel = rawFuel * classMultiplier;
-      ship.currentFuel = ship.maxFuel;
-      ship.overheatHeat = 0;
-      ship.isOverheated = false;
-
-      pilot.maxJetpack = 50 * (classMultiplier * 0.8);
-      pilot.currentJetpack = pilot.maxJetpack;
-      pilot.maxAmmo = 100;
-      pilot.currentAmmo = 100;
-
-      bullets = [];
-      enemyBullets = [];
-      engineParticles = [];
-      asteroids = [];
-      enemyShips = [];
-      floatingItems = [];
-      
-      for(let i=0; i<3; i++) {
-        spawnAsteroid(canvas.width + i * 150);
-      }
-
-      btnStart.innerText = "COMBATE EN CURSO";
-      btnStart.disabled = true;
-      btnPause.disabled = false;
-      
-      if (touchMode) {
-        btnEjectMobile.classList.add('visible');
-      }
-      loop();
-    }
-
-    function spawnAsteroid(startX) {
-      asteroids.push({
-        x: startX || canvas.width + Math.random() * 200,
-        y: Math.random() * (canvas.height - 40) + 20,
-        size: Math.random() * 15 + 15,
-        speed: (1.5 + currentLevel * 0.1) + Math.random(),
-        hp: 30 + currentLevel * 5,
-        maxHp: 30 + currentLevel * 5
-      });
-    }
-
-    function spawnEnemyShip() {
-      let rand = Math.random();
-      let isHostileByDefault = rand < (0.15 + currentLevel * 0.02); 
-
-      // Escudo dinámico similar al del jugador pero balanceado (entre 150 y 400 HP máximo)
-      let randomizedShield = Math.floor(Math.random() * 250) + 150 + (currentLevel * 20);
-
-      enemyShips.push({
-        x: canvas.width + 100,
-        y: Math.random() * (canvas.height - 60) + 30,
-        w: 32,
-        h: 18,
-        maxShield: randomizedShield,
-        currentShield: randomizedShield,
-        speed: 1 + currentLevel * 0.15,
-        hostile: isHostileByDefault,
-        shootTimer: 0
-      });
-    }
-
-    window.addEventListener('keydown', (e) => { 
-      keys[e.code] = true; 
-      if (e.code === 'Space') {
-        isFiring = true;
-      }
-      if (e.code === 'KeyR' && gameState !== 'DEAD' && gameState !== 'EJECTED' && gameState !== 'LANDING') {
-        triggerEject();
-      }
+  let particles = [];
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 2 + 0.5,
+      speed: Math.random() * 3 + 1
     });
+  }
 
-    window.addEventListener('keyup', (e) => { 
-      keys[e.code] = false; 
-      if (e.code === 'Space') {
-        isFiring = false;
-      }
-    });
+  let asteroids = [];
+  let enemyShips = []; 
+  let enemyBullets = [];
+  let engineParticles = [];
+  let bullets = [];
+  let floatingItems = [];
+  let keys = {};
 
-    function triggerEject() {
-      if (gameState === 'DEAD' || gameState === 'EJECTED' || gameState === 'LANDING') return;
-      gameState = 'EJECTED';
-      pilot.x = ship.x + ship.w / 2;
-      pilot.y = ship.y + ship.h / 2;
+  function resetGame() {
+    gameActive = true;
+    isPaused = false;
+    gameState = 'PLAYING';
+    currentLevel = 1;
+    levelProgress = 0;
+    planetX = canvas.width + 600;
+    deathModal.classList.remove('active');
+    
+    const cls = inputClass.value;
+    let rawAgility = parseFloat(inputAgility.value) || 5;
+    let rawDamage = parseFloat(inputDamage.value) || 0;
+    let rawInfra = parseFloat(inputInfra.value) || 0;
+    let rawShield = parseFloat(inputShield.value) || 100;
+    let rawFuel = parseFloat(inputHyper.value) || 100;
+
+    let classMultiplier = 1.0;
+    if (cls === 'B') classMultiplier = 1.25;
+    if (cls === 'A') classMultiplier = 1.5;
+    if (cls === 'S') classMultiplier = 2.0;
+
+    ship.x = 80;
+    ship.y = canvas.height / 2;
+    ship.verticalSpeed = rawAgility * (classMultiplier * 0.5);
+    ship.maxShield = rawShield * classMultiplier;
+    ship.currentShield = ship.maxShield;
+    ship.dps = rawDamage * classMultiplier;
+    ship.infraImpactDamage = rawInfra * classMultiplier;
+    ship.maxFuel = rawFuel * classMultiplier;
+    ship.currentFuel = ship.maxFuel;
+    ship.overheatHeat = 0;
+    ship.isOverheated = false;
+
+    pilot.maxJetpack = 50 * (classMultiplier * 0.8);
+    pilot.currentJetpack = pilot.maxJetpack;
+    pilot.maxAmmo = 100;
+    pilot.currentAmmo = 100;
+
+    bullets = [];
+    enemyBullets = [];
+    engineParticles = [];
+    asteroids = [];
+    enemyShips = [];
+    floatingItems = [];
+    
+    for(let i=0; i<3; i++) {
+      spawnAsteroid(canvas.width + i * 150);
     }
 
-    btnEjectMobile.addEventListener('click', () => {
+    btnStart.innerText = "COMBATE EN CURSO";
+    btnStart.classList.add('btn-start-active');
+    btnStart.disabled = true;
+    btnPause.disabled = false;
+    
+    if (touchMode) {
+      btnEjectMobile.classList.add('visible');
+    }
+    loop();
+  }
+
+  function spawnAsteroid(startX) {
+    asteroids.push({
+      x: startX || canvas.width + Math.random() * 200,
+      y: Math.random() * (canvas.height - 40) + 20,
+      size: Math.random() * 15 + 15,
+      speed: (1.5 + currentLevel * 0.1) + Math.random(),
+      hp: 30 + currentLevel * 5,
+      maxHp: 30 + currentLevel * 5
+    });
+  }
+
+  function spawnEnemyShip() {
+    let rand = Math.random();
+    let isHostileByDefault = rand < (0.15 + currentLevel * 0.02); 
+    let randomizedShield = Math.floor(Math.random() * 250) + 150 + (currentLevel * 20);
+
+    enemyShips.push({
+      x: canvas.width + 100,
+      y: Math.random() * (canvas.height - 60) + 30,
+      w: 32,
+      h: 18,
+      maxShield: randomizedShield,
+      currentShield: randomizedShield,
+      speed: 1 + currentLevel * 0.15,
+      hostile: isHostileByDefault,
+      shootTimer: 0
+    });
+  }
+
+  window.addEventListener('keydown', (e) => { 
+    keys[e.code] = true; 
+    if (e.code === 'Space') isFiring = true;
+    if (e.code === 'KeyR' && gameState !== 'DEAD' && gameState !== 'EJECTED' && gameState !== 'LANDING') {
       triggerEject();
-    });
+    }
+  });
 
-    function fireBullet() {
+  window.addEventListener('keyup', (e) => { 
+    keys[e.code] = false; 
+    if (e.code === 'Space') isFiring = false;
+  });
+
+  function triggerEject() {
+    if (gameState === 'DEAD' || gameState === 'EJECTED' || gameState === 'LANDING') return;
+    gameState = 'EJECTED';
+    pilot.x = ship.x + ship.w / 2;
+    pilot.y = ship.y + ship.h / 2;
+  }
+
+  btnEjectMobile.addEventListener('click', () => { triggerEject(); });
+
+  function fireBullet() {
+    if (gameState === 'PLAYING' || gameState === 'SHIP_HALTED') {
+      if (ship.isOverheated) return;
+      
+      let bulletDamage = ship.infraImpactDamage + (ship.dps / 10);
+      bullets.push({
+        x: ship.x + ship.w,
+        y: ship.y + ship.h / 2 - 2,
+        w: 10 + Math.min(ship.infraImpactDamage / 300, 10),
+        h: 4,
+        speed: 8 + (ship.dps / 500),
+        damage: bulletDamage,
+        color: ship.bulletColor,
+        isPilot: false
+      });
+
+      ship.overheatHeat += 8;
+      if (ship.overheatHeat >= 100) {
+        ship.overheatHeat = 100;
+        ship.isOverheated = true;
+      }
+    } else if (gameState === 'EJECTED') {
+      if (pilot.currentAmmo <= 0) return;
+      pilot.currentAmmo--;
+
+      bullets.push({
+        x: pilot.x + pilot.w,
+        y: pilot.y + pilot.h / 2 - 1,
+        w: 6,
+        h: 2,
+        speed: 6,
+        damage: 15,
+        color: '#fde047',
+        isPilot: true
+      });
+    }
+  }
+
+  touchPad.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const rect = touchPad.getBoundingClientRect();
+    if (e.touches.length > 0) {
+      let touchY = e.touches[0].clientY - rect.top;
+      let targetY = (touchY / rect.height) * canvas.height;
       if (gameState === 'PLAYING' || gameState === 'SHIP_HALTED') {
-        if (ship.isOverheated) return;
-        
-        let bulletDamage = ship.infraImpactDamage + (ship.dps / 10);
-        bullets.push({
-          x: ship.x + ship.w,
-          y: ship.y + ship.h / 2 - 2,
-          w: 10 + Math.min(ship.infraImpactDamage / 300, 10),
-          h: 4,
-          speed: 8 + (ship.dps / 500),
-          damage: bulletDamage,
-          color: ship.bulletColor,
-          isPilot: false
-        });
-
-        ship.overheatHeat += 8;
-        if (ship.overheatHeat >= 100) {
-          ship.overheatHeat = 100;
-          ship.isOverheated = true;
-        }
+        ship.y = targetY;
       } else if (gameState === 'EJECTED') {
-        if (pilot.currentAmmo <= 0) return;
-        pilot.currentAmmo--;
+        pilot.y = targetY;
+      }
+    }
+    isFiring = e.touches.length >= 2;
+  }, { passive: false });
 
-        bullets.push({
-          x: pilot.x + pilot.w,
-          y: pilot.y + pilot.h / 2 - 1,
-          w: 6,
-          h: 2,
-          speed: 6,
-          damage: 15,
-          color: '#ffff00',
-          isPilot: true
-        });
+  touchPad.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (e.touches.length >= 2) isFiring = true;
+  }, { passive: false });
+
+  touchPad.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    if (e.touches.length < 2) isFiring = false;
+  }, { passive: false });
+
+  let fireTimer = 0;
+
+  btnStart.addEventListener('click', () => { resetGame(); });
+  btnRetry.addEventListener('click', () => { resetGame(); });
+
+  btnPause.addEventListener('click', () => {
+    if (!gameActive || gameState === 'DEAD') return;
+    isPaused = !isPaused;
+    btnPause.innerText = isPaused ? "Reanudar" : "Pausa";
+    if (!isPaused) loop();
+  });
+
+  btnEditor.addEventListener('click', () => { editorModal.classList.add('active'); });
+  btnCloseEditor.addEventListener('click', () => {
+    ship.shape = editShape.value;
+    ship.color = editColor.value;
+    ship.bulletColor = editBulletColor.value;
+    ship.engineColor = editEngineColor.value;
+    editorModal.classList.remove('active');
+  });
+
+  btnTouch.addEventListener('click', () => {
+    touchMode = !touchMode;
+    btnTouch.classList.toggle('active', touchMode);
+    btnTouch.innerText = touchMode ? "Modo Teléfono: ACTIVADO" : "Modo Teléfono: DESACTIVADO";
+    touchPad.classList.toggle('visible', touchMode);
+    
+    if (touchMode) {
+      document.body.classList.add('touch-active');
+      if (gameActive && gameState !== 'LANDING') btnEjectMobile.classList.add('visible');
+    } else {
+      document.body.classList.remove('touch-active');
+      isFiring = false;
+      btnEjectMobile.classList.remove('visible');
+    }
+  });
+
+  function die(reason) {
+    gameState = 'DEAD';
+    gameActive = false;
+    btnEjectMobile.classList.remove('visible');
+    deathReason.innerText = reason;
+    deathModal.classList.add('active');
+  }
+
+  function startNextLevel() {
+    currentLevel++;
+    levelProgress = 0;
+    planetX = canvas.width + 600;
+    gameState = 'PLAYING';
+    asteroids = [];
+    enemyShips = [];
+    bullets = [];
+    enemyBullets = [];
+    floatingItems = [];
+    for(let i=0; i<3; i++) {
+      spawnAsteroid(canvas.width + i * 150);
+    }
+    if (touchMode) btnEjectMobile.classList.add('visible');
+  }
+
+  function loop() {
+    if (!gameActive || isPaused) return;
+
+    if (ship.overheatHeat > 0) {
+      ship.overheatHeat -= ship.isOverheated ? 0.05 : 0.2;
+      if (ship.overheatHeat <= 0) {
+        ship.overheatHeat = 0;
+        ship.isOverheated = false;
       }
     }
 
-    touchPad.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      const rect = touchPad.getBoundingClientRect();
-      
-      if (e.touches.length > 0) {
-        let touchY = e.touches[0].clientY - rect.top;
-        let targetY = (touchY / rect.height) * canvas.height;
-        if (gameState === 'PLAYING' || gameState === 'SHIP_HALTED') {
-          ship.y = targetY;
-        } else if (gameState === 'EJECTED') {
-          pilot.y = targetY;
+    if (gameState === 'PLAYING') {
+      if (ship.currentFuel > 0) {
+        ship.currentFuel -= 0.02;
+        if (ship.currentFuel <= 0) {
+          ship.currentFuel = 0;
+          gameState = 'SHIP_HALTED';
         }
       }
-
-      if (e.touches.length >= 2) {
-        isFiring = true;
-      } else {
-        isFiring = false;
-      }
-    }, { passive: false });
-
-    touchPad.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      if (e.touches.length >= 2) {
-        isFiring = true;
-      }
-    }, { passive: false });
-
-    touchPad.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      if (e.touches.length < 2) {
-        isFiring = false;
-      }
-    }, { passive: false });
-
-    let fireTimer = 0;
-
-    btnStart.addEventListener('click', () => {
-      resetGame();
-    });
-
-    btnRetry.addEventListener('click', () => {
-      resetGame();
-    });
-
-    btnPause.addEventListener('click', () => {
-      if (!gameActive || gameState === 'DEAD') return;
-      isPaused = !isPaused;
-      btnPause.innerText = isPaused ? "Reanudar" : "Pausa";
-      if (!isPaused) loop();
-    });
-
-    btnEditor.addEventListener('click', () => {
-      editorModal.classList.add('active');
-    });
-
-    btnCloseEditor.addEventListener('click', () => {
-      ship.shape = editShape.value;
-      ship.color = editColor.value;
-      ship.bulletColor = editBulletColor.value;
-      ship.engineColor = editEngineColor.value;
-      editorModal.classList.remove('active');
-    });
-
-    btnTouch.addEventListener('click', () => {
-      touchMode = !touchMode;
-      btnTouch.classList.toggle('active', touchMode);
-      btnTouch.innerText = touchMode ? "Modo Teléfono: ACTIVADO" : "Modo Teléfono: DESACTIVADO";
-      touchPad.classList.toggle('visible', touchMode);
       
-      if (touchMode) {
-        document.body.classList.add('touch-active');
-        if (gameActive && gameState !== 'LANDING') {
-          btnEjectMobile.classList.add('visible');
-        }
-      } else {
-        document.body.classList.remove('touch-active');
-        isFiring = false;
+      levelProgress += 0.02 + (currentLevel * 0.001);
+      if (levelProgress >= 100) {
+        levelProgress = 100;
+        gameState = 'LANDING';
         btnEjectMobile.classList.remove('visible');
       }
+    }
+
+    if (gameState === 'PLAYING') {
+      if (!touchMode) {
+        if (keys['KeyW'] || keys['ArrowUp']) ship.y -= ship.verticalSpeed;
+        if (keys['KeyS'] || keys['ArrowDown']) ship.y += ship.verticalSpeed;
+      }
+      if (ship.y < 10) ship.y = 10;
+      if (ship.y > canvas.height - 30) ship.y = canvas.height - 30;
+
+      if (isFiring) {
+        fireTimer++;
+        if (fireTimer >= ship.fireRateCooldown) {
+          fireBullet();
+          fireTimer = 0;
+        }
+      } else { fireTimer = 0; }
+    } else if (gameState === 'SHIP_HALTED') {
+      if (isFiring) {
+        fireTimer++;
+        if (fireTimer >= ship.fireRateCooldown) {
+          fireBullet();
+          fireTimer = 0;
+        }
+      } else { fireTimer = 0; }
+    } else if (gameState === 'EJECTED') {
+      pilot.currentJetpack -= 0.07;
+      if (!touchMode) {
+        if (keys['KeyW'] || keys['ArrowUp']) pilot.y -= pilot.speed;
+        if (keys['KeyS'] || keys['ArrowDown']) pilot.y += pilot.speed;
+        if (keys['KeyA'] || keys['ArrowLeft']) pilot.x -= pilot.speed;
+        if (keys['KeyD'] || keys['ArrowRight']) pilot.x += pilot.speed;
+      }
+      if (pilot.y < 5) pilot.y = 5;
+      if (pilot.y > canvas.height - 15) pilot.y = canvas.height - 15;
+      if (pilot.x < 5) pilot.x = 5;
+      if (pilot.x > canvas.width - 15) pilot.x = canvas.width - 15;
+
+      if (pilot.currentJetpack <= 0) {
+        pilot.currentJetpack = 0;
+        die("El combustible del jetpack se ha agotado en el vacío.");
+      }
+
+      if (isFiring) {
+        fireTimer++;
+        if (fireTimer >= 15) {
+          fireBullet();
+          fireTimer = 0;
+        }
+      } else { fireTimer = 0; }
+    } else if (gameState === 'LANDING') {
+      planetX -= 2;
+      ship.x += (planetX - ship.x) * 0.05;
+      ship.y += ((canvas.height / 2) - ship.y) * 0.05;
+
+      if (planetX <= canvas.width / 2 + 20) {
+        levelTransitionTimer++;
+        if (levelTransitionTimer > 120) {
+          levelTransitionTimer = 0;
+          startNextLevel();
+        }
+      }
+    }
+
+    if (gameState === 'PLAYING') {
+      if (Math.random() < 0.02 && asteroids.length < 4) spawnAsteroid();
+      if (Math.random() < 0.012 && enemyShips.length < 2 + Math.floor(currentLevel / 2)) spawnEnemyShip();
+    }
+
+    for (let i = asteroids.length - 1; i >= 0; i--) {
+      let ast = asteroids[i];
+      ast.x -= ast.speed;
+
+      if (gameState === 'PLAYING' || gameState === 'SHIP_HALTED') {
+        let distX = (ship.x + ship.w / 2) - ast.x;
+        let distY = (ship.y + ship.h / 2) - ast.y;
+        if (Math.sqrt(distX * distX + distY * distY) < ast.size + ship.w / 3) {
+          ship.currentShield -= 5;
+          asteroids.splice(i, 1);
+          if (ship.currentShield <= 0) die("La nave ha sido destruida por impactos.");
+          continue;
+        }
+      }
+
+      for (let j = bullets.length - 1; j >= 0; j--) {
+        let b = bullets[j];
+        let bDistX = b.x - ast.x;
+        let bDistY = b.y - ast.y;
+        if (Math.sqrt(bDistX * bDistX + bDistY * bDistY) < ast.size) {
+          bullets.splice(j, 1);
+          ast.hp -= b.damage;
+          if (ast.hp <= 0) {
+            let itemType = Math.random() < 0.3 ? 'coolant' : (Math.random() < 0.6 ? (gameState === 'EJECTED' ? 'ammo' : 'fuel') : 'fuel');
+            floatingItems.push({ x: ast.x, y: ast.y, type: itemType, size: 8, speed: ast.speed });
+            asteroids.splice(i, 1);
+            spawnAsteroid();
+            break;
+          }
+        }
+      }
+
+      if (ast && ast.x < -50) {
+        asteroids.splice(i, 1);
+        spawnAsteroid();
+      }
+    }
+
+    for (let i = enemyShips.length - 1; i >= 0; i--) {
+      let es = enemyShips[i];
+      es.x -= es.speed;
+
+      if (es.hostile && gameState === 'PLAYING') {
+        if (es.y < ship.y) es.y += 0.8;
+        if (es.y > ship.y) es.y -= 0.8;
+
+        es.shootTimer++;
+        if (es.shootTimer > 90) {
+          es.shootTimer = 0;
+          enemyBullets.push({ x: es.x, y: es.y + es.h / 2, vx: -5, damage: 20 + currentLevel * 5 });
+        }
+      }
+
+      if (gameState === 'PLAYING' || gameState === 'SHIP_HALTED') {
+        let dX = (ship.x + ship.w / 2) - (es.x + es.w / 2);
+        let dY = (ship.y + ship.h / 2) - (es.y + es.h / 2);
+        if (Math.sqrt(dX * dX + dY * dY) < 25) {
+          ship.currentShield -= 15;
+          es.currentShield = 0;
+          if (ship.currentShield <= 0) die("Tu nave fue destruida en combate.");
+        }
+      }
+
+      for (let j = bullets.length - 1; j >= 0; j--) {
+        let b = bullets[j];
+        if (b.x > es.x && b.x < es.x + es.w && b.y > es.y && b.y < es.y + es.h) {
+          bullets.splice(j, 1);
+          es.currentShield -= b.damage;
+          if (!es.hostile) es.hostile = true;
+
+          if (es.currentShield <= 0) {
+            floatingItems.push({ x: es.x, y: es.y, type: Math.random() < 0.5 ? 'fuel' : 'repair', size: 10, speed: es.speed });
+            enemyShips.splice(i, 1);
+            break;
+          }
+        }
+      }
+
+      if (es && es.x < -60) enemyShips.splice(i, 1);
+    }
+
+    for (let i = enemyBullets.length - 1; i >= 0; i--) {
+      let eb = enemyBullets[i];
+      eb.x += eb.vx;
+
+      if (gameState === 'PLAYING' || gameState === 'SHIP_HALTED') {
+        if (eb.x > ship.x && eb.x < ship.x + ship.w && eb.y > ship.y && eb.y < ship.y + ship.h) {
+          ship.currentShield -= eb.damage;
+          enemyBullets.splice(i, 1);
+          if (ship.currentShield <= 0) die("Tu nave fue abatida por fuego enemigo.");
+          continue;
+        }
+      }
+      if (eb && eb.x < -10) enemyBullets.splice(i, 1);
+    }
+
+    for (let i = floatingItems.length - 1; i >= 0; i--) {
+      let fit = floatingItems[i];
+      fit.x -= fit.speed * 0.5;
+
+      if (gameState === 'PLAYING' || gameState === 'SHIP_HALTED') {
+        let dX = (ship.x + ship.w/2) - fit.x;
+        let dY = (ship.y + ship.h/2) - fit.y;
+        if (Math.sqrt(dX*dX + dY*dY) < ship.w/2 + fit.size) {
+          if (fit.type === 'fuel') {
+            ship.currentFuel = Math.min(ship.maxFuel, ship.currentFuel + 30);
+            if (gameState === 'SHIP_HALTED') gameState = 'PLAYING';
+          } else if (fit.type === 'coolant') {
+            ship.overheatHeat = Math.max(0, ship.overheatHeat - 40);
+            ship.isOverheated = false;
+          } else if (fit.type === 'repair') {
+            ship.currentShield = ship.maxShield;
+          } else {
+            ship.currentFuel = Math.min(ship.maxFuel, ship.currentFuel + 15);
+          }
+          floatingItems.splice(i, 1);
+          continue;
+        }
+      } else if (gameState === 'EJECTED') {
+        let dX = (pilot.x + pilot.w/2) - fit.x;
+        let dY = (pilot.y + pilot.h/2) - fit.y;
+        if (Math.sqrt(dX*dX + dY*dY) < 15 + fit.size) {
+          if (fit.type === 'ammo') {
+            pilot.currentAmmo = Math.min(pilot.maxAmmo, pilot.currentAmmo + 30);
+          } else {
+            pilot.currentJetpack = Math.min(pilot.maxJetpack, pilot.currentJetpack + 20);
+          }
+          floatingItems.splice(i, 1);
+          continue;
+        }
+      }
+      if (fit.x < -20) floatingItems.splice(i, 1);
+    }
+
+    /* RENDERIZADO DEL LIENZO */
+    ctx.fillStyle = '#050202';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    let starSpeed = (gameState === 'PLAYING') ? 2 : 0;
+    ctx.fillStyle = 'rgba(234, 179, 8, 0.6)';
+    particles.forEach(p => {
+      p.x -= starSpeed;
+      if (p.x < 0) {
+        p.x = canvas.width;
+        p.y = Math.random() * canvas.height;
+      }
+      ctx.fillRect(p.x, p.y, p.size, p.size);
     });
 
-    function die(reason) {
-      gameState = 'DEAD';
-      gameActive = false;
-      btnEjectMobile.classList.remove('visible');
-      deathReason.innerText = reason;
-      deathModal.classList.add('active');
-    }
+    ctx.fillStyle = currentLevel % 2 === 0 ? "#b91c1c" : "#eab308";
+    ctx.beginPath();
+    ctx.arc(planetX, canvas.height / 2, planetRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#ef4444";
+    ctx.lineWidth = 2;
+    ctx.stroke();
 
-    function startNextLevel() {
-      currentLevel++;
-      levelProgress = 0;
-      planetX = canvas.width + 600; // Mantener niveles largos y extensos
-      gameState = 'PLAYING';
-      asteroids = [];
-      enemyShips = [];
-      bullets = [];
-      enemyBullets = [];
-      floatingItems = [];
-      for(let i=0; i<3; i++) {
-        spawnAsteroid(canvas.width + i * 150);
-      }
-      if (touchMode) btnEjectMobile.classList.add('visible');
-    }
-
-    function loop() {
-      if (!gameActive || isPaused) return;
-
-      // Enfriamiento del infracuchillo
-      if (ship.overheatHeat > 0) {
-        ship.overheatHeat -= ship.isOverheated ? 0.05 : 0.2;
-        if (ship.overheatHeat <= 0) {
-          ship.overheatHeat = 0;
-          ship.isOverheated = false;
-        }
-      }
-
-      // Consumo de combustible del hiperpulso
-      if (gameState === 'PLAYING') {
-        if (ship.currentFuel > 0) {
-          ship.currentFuel -= 0.02; // Consumo más lento para que los niveles largos no te maten por falta de combustible
-          if (ship.currentFuel <= 0) {
-            ship.currentFuel = 0;
-            gameState = 'SHIP_HALTED';
-          }
-        }
-        
-        // Progreso del nivel más lento para que duren más tiempo
-        levelProgress += 0.02 + (currentLevel * 0.001);
-        if (levelProgress >= 100) {
-          levelProgress = 100;
-          gameState = 'LANDING';
-          btnEjectMobile.classList.remove('visible');
-        }
-      }
-
-      // Movimiento de la nave / personaje según estado
-      if (gameState === 'PLAYING') {
-        if (!touchMode) {
-          if (keys['KeyW'] || keys['ArrowUp']) ship.y -= ship.verticalSpeed;
-          if (keys['KeyS'] || keys['ArrowDown']) ship.y += ship.verticalSpeed;
-        }
-        if (ship.y < 10) ship.y = 10;
-        if (ship.y > canvas.height - 30) ship.y = canvas.height - 30;
-
-        if (isFiring) {
-          fireTimer++;
-          if (fireTimer >= ship.fireRateCooldown) {
-            fireBullet();
-            fireTimer = 0;
-          }
-        } else {
-          fireTimer = 0;
-        }
-      } else if (gameState === 'SHIP_HALTED') {
-        if (isFiring) {
-          fireTimer++;
-          if (fireTimer >= ship.fireRateCooldown) {
-            fireBullet();
-            fireTimer = 0;
-          }
-        } else {
-          fireTimer = 0;
-        }
-      } else if (gameState === 'EJECTED') {
-        pilot.currentJetpack -= 0.07;
-        if (!touchMode) {
-          if (keys['KeyW'] || keys['ArrowUp']) pilot.y -= pilot.speed;
-          if (keys['KeyS'] || keys['ArrowDown']) pilot.y += pilot.speed;
-          if (keys['KeyA'] || keys['ArrowLeft']) pilot.x -= pilot.speed;
-          if (keys['KeyD'] || keys['ArrowRight']) pilot.x += pilot.speed;
-        }
-        if (pilot.y < 5) pilot.y = 5;
-        if (pilot.y > canvas.height - 15) pilot.y = canvas.height - 15;
-        if (pilot.x < 5) pilot.x = 5;
-        if (pilot.x > canvas.width - 15) pilot.x = canvas.width - 15;
-
-        if (pilot.currentJetpack <= 0) {
-          pilot.currentJetpack = 0;
-          die("El combustible del jetpack se ha agotado en el vacío.");
-        }
-
-        if (isFiring) {
-          fireTimer++;
-          if (fireTimer >= 15) {
-            fireBullet();
-            fireTimer = 0;
-          }
-        } else {
-          fireTimer = 0;
-        }
-      } else if (gameState === 'LANDING') {
-        planetX -= 2;
-        ship.x += (planetX - ship.x) * 0.05;
-        ship.y += ((canvas.height / 2) - ship.y) * 0.05;
-
-        if (planetX <= canvas.width / 2 + 20) {
-          levelTransitionTimer++;
-          if (levelTransitionTimer > 120) {
-            levelTransitionTimer = 0;
-            startNextLevel();
-          }
-        }
-      }
-
-      // Spawn dinámico
-      if (gameState === 'PLAYING') {
-        if (Math.random() < 0.02 && asteroids.length < 4) {
-          spawnAsteroid();
-        }
-        if (Math.random() < 0.012 && enemyShips.length < 2 + Math.floor(currentLevel / 2)) {
-          spawnEnemyShip();
-        }
-      }
-
-      // Actualizar asteroides
-      for (let i = asteroids.length - 1; i >= 0; i--) {
-        let ast = asteroids[i];
-        ast.x -= ast.speed;
-
-        if (gameState === 'PLAYING' || gameState === 'SHIP_HALTED') {
-          let distX = (ship.x + ship.w / 2) - ast.x;
-          let distY = (ship.y + ship.h / 2) - ast.y;
-          if (Math.sqrt(distX * distX + distY * distY) < ast.size + ship.w / 3) {
-            ship.currentShield -= 5;
-            asteroids.splice(i, 1);
-            if (ship.currentShield <= 0) {
-              die("La nave ha sido destruida por impactos.");
-            }
-            continue;
-          }
-        }
-
-        for (let j = bullets.length - 1; j >= 0; j--) {
-          let b = bullets[j];
-          let bDistX = b.x - ast.x;
-          let bDistY = b.y - ast.y;
-          if (Math.sqrt(bDistX * bDistX + bDistY * bDistY) < ast.size) {
-            bullets.splice(j, 1);
-            ast.hp -= b.damage;
-            if (ast.hp <= 0) {
-              let itemType = 'fuel';
-              let rand = Math.random();
-              if (rand < 0.3) itemType = 'coolant';
-              else if (rand < 0.6) itemType = gameState === 'EJECTED' ? 'ammo' : 'fuel';
-
-              floatingItems.push({
-                x: ast.x,
-                y: ast.y,
-                type: itemType,
-                size: 8,
-                speed: ast.speed
-              });
-
-              asteroids.splice(i, 1);
-              spawnAsteroid();
-              break;
-            }
-          }
-        }
-
-        if (ast && ast.x < -50) {
-          asteroids.splice(i, 1);
-          spawnAsteroid();
-        }
-      }
-
-      // Actualizar naves enemigas/neutrales
-      for (let i = enemyShips.length - 1; i >= 0; i--) {
-        let es = enemyShips[i];
-        es.x -= es.speed;
-
-        if (es.hostile && gameState === 'PLAYING') {
-          if (es.y < ship.y) es.y += 0.8;
-          if (es.y > ship.y) es.y -= 0.8;
-
-          es.shootTimer++;
-          if (es.shootTimer > 90) {
-            es.shootTimer = 0;
-            enemyBullets.push({
-              x: es.x,
-              y: es.y + es.h / 2,
-              vx: -5,
-              damage: 20 + currentLevel * 5
-            });
-          }
-        }
-
-        if (gameState === 'PLAYING' || gameState === 'SHIP_HALTED') {
-          let dX = (ship.x + ship.w / 2) - (es.x + es.w / 2);
-          let dY = (ship.y + ship.h / 2) - (es.y + es.h / 2);
-          if (Math.sqrt(dX * dX + dY * dY) < 25) {
-            ship.currentShield -= 15;
-            es.currentShield = 0; // Se destruye al chocar
-            if (ship.currentShield <= 0) die("Tu nave fue destruida en combate.");
-          }
-        }
-
-        for (let j = bullets.length - 1; j >= 0; j--) {
-          let b = bullets[j];
-          if (b.x > es.x && b.x < es.x + es.w && b.y > es.y && b.y < es.y + es.h) {
-            bullets.splice(j, 1);
-            es.currentShield -= b.damage;
-
-            if (!es.hostile) {
-              es.hostile = true; // Si le disparas a una neutral, se vuelve hostil inmediatamente
-            }
-
-            if (es.currentShield <= 0) {
-              let rewardType = Math.random() < 0.5 ? 'fuel' : 'repair';
-              floatingItems.push({
-                x: es.x,
-                y: es.y,
-                type: rewardType,
-                size: 10,
-                speed: es.speed
-              });
-
-              enemyShips.splice(i, 1);
-              break;
-            }
-          }
-        }
-
-        if (es && es.x < -60) {
-          enemyShips.splice(i, 1);
-        }
-      }
-
-      // Actualizar balas enemigas
-      for (let i = enemyBullets.length - 1; i >= 0; i--) {
-        let eb = enemyBullets[i];
-        eb.x += eb.vx;
-
-        if (gameState === 'PLAYING' || gameState === 'SHIP_HALTED') {
-          if (eb.x > ship.x && eb.x < ship.x + ship.w && eb.y > ship.y && eb.y < ship.y + ship.h) {
-            ship.currentShield -= eb.damage;
-            enemyBullets.splice(i, 1);
-            if (ship.currentShield <= 0) die("Tu nave fue abatida por fuego enemigo.");
-            continue;
-          }
-        }
-
-        if (eb && eb.x < -10) {
-          enemyBullets.splice(i, 1);
-        }
-      }
-
-      // Actualizar ítems flotantes
-      for (let i = floatingItems.length - 1; i >= 0; i--) {
-        let fit = floatingItems[i];
-        fit.x -= fit.speed * 0.5;
-
-        if (gameState === 'PLAYING' || gameState === 'SHIP_HALTED') {
-          let dX = (ship.x + ship.w/2) - fit.x;
-          let dY = (ship.y + ship.h/2) - fit.y;
-          if (Math.sqrt(dX*dX + dY*dY) < ship.w/2 + fit.size) {
-            if (fit.type === 'fuel') {
-              ship.currentFuel = Math.min(ship.maxFuel, ship.currentFuel + 30);
-              if (gameState === 'SHIP_HALTED') gameState = 'PLAYING';
-            } else if (fit.type === 'coolant') {
-              ship.overheatHeat = Math.max(0, ship.overheatHeat - 40);
-              ship.isOverheated = false;
-            } else if (fit.type === 'repair') {
-              ship.currentShield = ship.maxShield; // Escudos/nave al 100%
-            } else {
-              ship.currentFuel = Math.min(ship.maxFuel, ship.currentFuel + 15);
-            }
-            floatingItems.splice(i, 1);
-            continue;
-          }
-        } else if (gameState === 'EJECTED') {
-          let dX = (pilot.x + pilot.w/2) - fit.x;
-          let dY = (pilot.y + pilot.h/2) - fit.y;
-          if (Math.sqrt(dX*dX + dY*dY) < 15 + fit.size) {
-            if (fit.type === 'ammo') {
-              pilot.currentAmmo = Math.min(pilot.maxAmmo, pilot.currentAmmo + 30);
-            } else {
-              pilot.currentJetpack = Math.min(pilot.maxJetpack, pilot.currentJetpack + 20);
-            }
-            floatingItems.splice(i, 1);
-            continue;
-          }
-        }
-
-        if (fit.x < -20) {
-          floatingItems.splice(i, 1);
-        }
-      }
-
-      // RENDERIZADO
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      let starSpeed = (gameState === 'PLAYING') ? 2 : 0;
-      ctx.fillStyle = 'rgba(0, 240, 255, 0.7)';
-      particles.forEach(p => {
-        p.x -= starSpeed;
-        if (p.x < 0) {
-          p.x = canvas.width;
-          p.y = Math.random() * canvas.height;
-        }
-        ctx.fillRect(p.x, p.y, p.size, p.size);
+    if (gameState === 'PLAYING') {
+      engineParticles.push({
+        x: ship.x,
+        y: ship.y + ship.h / 2 + (Math.random() * 6 - 3),
+        size: Math.random() * 4 + 2,
+        speedX: Math.random() * 3 + 2,
+        color: ship.engineColor
       });
+    }
 
-      // Dibujar Planeta
-      ctx.fillStyle = currentLevel % 2 === 0 ? "#8a2be2" : "#ff5500";
+    for (let i = engineParticles.length - 1; i >= 0; i--) {
+      let ep = engineParticles[i];
+      ep.x -= ep.speedX;
+      ctx.fillStyle = ep.color;
+      ctx.fillRect(ep.x, ep.y, ep.size, ep.size);
+      if (ep.x < ship.x - 30) engineParticles.splice(i, 1);
+    }
+
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      let b = bullets[i];
+      b.x += b.speed;
+      ctx.fillStyle = b.color;
+      ctx.fillRect(b.x, b.y, b.w, b.h);
+      if (b.x > canvas.width) bullets.splice(i, 1);
+    }
+
+    for (let i = enemyBullets.length - 1; i >= 0; i--) {
+      let eb = enemyBullets[i];
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(eb.x, eb.y, 8, 3);
+    }
+
+    floatingItems.forEach(fit => {
       ctx.beginPath();
-      ctx.arc(planetX, canvas.height / 2, planetRadius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = "#00f0ff";
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      if (gameState === 'PLAYING') {
-        engineParticles.push({
-          x: ship.x,
-          y: ship.y + ship.h / 2 + (Math.random() * 6 - 3),
-          size: Math.random() * 4 + 2,
-          speedX: Math.random() * 3 + 2,
-          color: ship.engineColor
-        });
-      }
-
-      for (let i = engineParticles.length - 1; i >= 0; i--) {
-        let ep = engineParticles[i];
-        ep.x -= ep.speedX;
-        ctx.fillStyle = ep.color;
-        ctx.fillRect(ep.x, ep.y, ep.size, ep.size);
-        if (ep.x < ship.x - 30) {
-          engineParticles.splice(i, 1);
-        }
-      }
-
-      // Balas del jugador
-      for (let i = bullets.length - 1; i >= 0; i--) {
-        let b = bullets[i];
-        b.x += b.speed;
-        ctx.fillStyle = b.color;
-        ctx.fillRect(b.x, b.y, b.w, b.h);
-        if (b.x > canvas.width) {
-          bullets.splice(i, 1);
-        }
-      }
-
-      // Balas enemigas
-      for (let i = enemyBullets.length - 1; i >= 0; i--) {
-        let eb = enemyBullets[i];
-        ctx.fillStyle = '#ff2a55';
-        ctx.fillRect(eb.x, eb.y, 8, 3);
-      }
-
-      // Ítems Flotantes
-      floatingItems.forEach(fit => {
-        ctx.beginPath();
-        if (fit.type === 'fuel') {
-          ctx.fillStyle = '#ff8800';
-          ctx.fillRect(fit.x - 4, fit.y - 6, 8, 12);
-        } else if (fit.type === 'coolant') {
-          ctx.fillStyle = '#00f0ff';
-          ctx.arc(fit.x, fit.y, fit.size, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (fit.type === 'repair') {
-          ctx.fillStyle = '#00ff66';
-          ctx.fillRect(fit.x - 5, fit.y - 5, 10, 10);
-        } else {
-          ctx.fillStyle = '#ffff00';
-          ctx.fillRect(fit.x - 3, fit.y - 3, 6, 6);
-        }
-      });
-
-      // Asteroides
-      ctx.fillStyle = '#888899';
-      asteroids.forEach(ast => {
-        ctx.beginPath();
-        ctx.arc(ast.x, ast.y, ast.size, 0, Math.PI * 2);
+      if (fit.type === 'fuel') {
+        ctx.fillStyle = '#f97316';
+        ctx.fillRect(fit.x - 4, fit.y - 6, 8, 12);
+      } else if (fit.type === 'coolant') {
+        ctx.fillStyle = '#38bdf8';
+        ctx.arc(fit.x, fit.y, fit.size, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = '#bbbbcc';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      });
-
-      // Naves Enemigas / Neutrales con su barra de escudo respectiva
-      enemyShips.forEach(es => {
-        ctx.fillStyle = es.hostile ? '#ff2a55' : '#8888aa';
-        ctx.fillRect(es.x, es.y, es.w, es.h);
-        ctx.fillStyle = es.hostile ? '#ffaa00' : '#00f0ff';
-        ctx.fillRect(es.x + 4, es.y + 4, 6, es.h - 8);
-
-        // Barra de escudo de la nave enemiga / neutral
-        ctx.fillStyle = 'rgba(0,0,0,0.6)';
-        ctx.fillRect(es.x, es.y - 8, es.w, 4);
-        ctx.fillStyle = es.hostile ? '#ff2a55' : '#00f0ff';
-        let shieldPercent = Math.max(0, es.currentShield / es.maxShield);
-        ctx.fillRect(es.x, es.y - 8, es.w * shieldPercent, 4);
-      });
-
-      // Nave Principal
-      if (gameState !== 'DEAD' && gameState !== 'EJECTED') {
-        ctx.fillStyle = ship.color;
-        if (ship.shape === 'rect') {
-          ctx.fillRect(ship.x, ship.y, ship.w, ship.h);
-          ctx.fillStyle = '#00f0ff';
-          ctx.fillRect(ship.x + ship.w - 8, ship.y + 4, 8, ship.h - 8);
-        } else if (ship.shape === 'circle') {
-          ctx.beginPath();
-          ctx.arc(ship.x + ship.w / 2, ship.y + ship.h / 2, ship.h / 1.2, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#00f0ff';
-          ctx.beginPath();
-          ctx.arc(ship.x + ship.w / 2 + 4, ship.y + ship.h / 2, ship.h / 3, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (ship.shape === 'triangle') {
-          ctx.beginPath();
-          ctx.moveTo(ship.x, ship.y);
-          ctx.lineTo(ship.x + ship.w, ship.y + ship.h / 2);
-          ctx.lineTo(ship.x, ship.y + ship.h);
-          ctx.closePath();
-          ctx.fill();
-          ctx.fillStyle = '#00f0ff';
-          ctx.fillRect(ship.x + ship.w / 2 - 4, ship.y + ship.h / 2 - 3, 6, 6);
-        }
+      } else if (fit.type === 'repair') {
+        ctx.fillStyle = '#22c55e';
+        ctx.fillRect(fit.x - 5, fit.y - 5, 10, 10);
+      } else {
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(fit.x - 3, fit.y - 3, 6, 6);
       }
+    });
 
-      // Personaje Eyectado
-      if (gameState === 'EJECTED') {
-        ctx.fillStyle = '#ffff00';
-        ctx.fillRect(pilot.x, pilot.y, pilot.w, pilot.h);
-        ctx.fillStyle = '#00f0ff';
-        ctx.fillRect(pilot.x - 6, pilot.y + 2, 5, 4);
-      }
+    ctx.fillStyle = '#450a0a';
+    asteroids.forEach(ast => {
+      ctx.beginPath();
+      ctx.arc(ast.x, ast.y, ast.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#b91c1c';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    });
 
-      // Pantalla de Aterrizaje
-      if (gameState === 'LANDING') {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#00f0ff';
-        ctx.font = 'bold 20px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(`¡NIVEL ${currentLevel} COMPLETADO!`, canvas.width / 2, canvas.height / 2 - 20);
-        ctx.fillStyle = '#ffaa00';
-        ctx.font = '14px sans-serif';
-        ctx.fillText(`Aterrizando en el planeta... Despegando al siguiente nivel en breve.`, canvas.width / 2, canvas.height / 2 + 15);
-        ctx.textAlign = 'left';
-      }
+    enemyShips.forEach(es => {
+      ctx.fillStyle = es.hostile ? '#ef4444' : '#64748b';
+      ctx.fillRect(es.x, es.y, es.w, es.h);
+      ctx.fillStyle = es.hostile ? '#fde047' : '#38bdf8';
+      ctx.fillRect(es.x + 4, es.y + 4, 6, es.h - 8);
 
-      // HUD Principal
-      ctx.fillStyle = 'rgba(0, 240, 255, 0.9)';
-      ctx.font = '10px sans-serif';
-      ctx.fillText(`NIVEL: ${currentLevel} | PROGRESO PLANETA: ${Math.round(levelProgress)}%`, 15, 20);
-      ctx.fillText(`ESCUDO: ${Math.round(ship.currentShield)} / ${Math.round(ship.maxShield)} | COMBUSTIBLE: ${Math.round(ship.currentFuel)}`, 15, 34);
-      
-      let heatText = `INFRACUCHILLO CALOR: ${Math.round(ship.overheatHeat)}%` + (ship.isOverheated ? " [¡SOBRECALENTADO!]" : "");
-      ctx.fillStyle = ship.isOverheated ? '#ff2a55' : 'rgba(0, 240, 255, 0.9)';
-      ctx.fillText(heatText, 15, 48);
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(es.x, es.y - 8, es.w, 4);
+      ctx.fillStyle = es.hostile ? '#ef4444' : '#eab308';
+      let shieldPercent = Math.max(0, es.currentShield / es.maxShield);
+      ctx.fillRect(es.x, es.y - 8, es.w * shieldPercent, 4);
+    });
 
-      if (gameState === 'SHIP_HALTED') {
-        ctx.fillStyle = '#ffaa00';
-        ctx.fillText(`¡SIN COMBUSTIBLE! Nave estática. ¡Destruye asteroides/naves, agarra combustible o eyéctate ([R])!`, 15, 62);
-      } else if (gameState === 'EJECTED') {
-        ctx.fillStyle = '#ffff00';
-        ctx.fillText(`JETPACK: ${Math.round(pilot.currentJetpack)}% | MUNICIÓN PERSONAJE: ${pilot.currentAmmo} / ${pilot.maxAmmo}`, 15, 62);
-      }
-
-      if (gameActive && !isPaused) {
-        requestAnimationFrame(loop);
+    if (gameState !== 'DEAD' && gameState !== 'EJECTED') {
+      ctx.fillStyle = ship.color;
+      if (ship.shape === 'rect') {
+        ctx.fillRect(ship.x, ship.y, ship.w, ship.h);
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(ship.x + ship.w - 8, ship.y + 4, 8, ship.h - 8);
+      } else if (ship.shape === 'circle') {
+        ctx.beginPath();
+        ctx.arc(ship.x + ship.w / 2, ship.y + ship.h / 2, ship.h / 1.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#eab308';
+        ctx.beginPath();
+        ctx.arc(ship.x + ship.w / 2 + 4, ship.y + ship.h / 2, ship.h / 3, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (ship.shape === 'triangle') {
+        ctx.beginPath();
+        ctx.moveTo(ship.x, ship.y);
+        ctx.lineTo(ship.x + ship.w, ship.y + ship.h / 2);
+        ctx.lineTo(ship.x, ship.y + ship.h);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(ship.x + ship.w / 2 - 4, ship.y + ship.h / 2 - 3, 6, 6);
       }
     }
-  </script>
+
+    if (gameState === 'EJECTED') {
+      ctx.fillStyle = '#fde047';
+      ctx.fillRect(pilot.x, pilot.y, pilot.w, pilot.h);
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(pilot.x - 6, pilot.y + 2, 5, 4);
+    }
+
+    if (gameState === 'LANDING') {
+      ctx.fillStyle = 'rgba(5, 2, 2, 0.85)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#eab308';
+      ctx.font = 'bold 16px "Courier New", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(`[ NIVEL ${currentLevel} COMPLETADO ]`, canvas.width / 2, canvas.height / 2 - 20);
+      ctx.fillStyle = '#ef4444';
+      ctx.font = '12px "Courier New", monospace';
+      ctx.fillText(`Aterrizando... Transición al siguiente sector espacial en breve.`, canvas.width / 2, canvas.height / 2 + 15);
+      ctx.textAlign = 'left';
+    }
+
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '10px "Courier New", monospace';
+    ctx.fillText(`NIVEL: ${currentLevel} | PROGRESO PLANETA: ${Math.round(levelProgress)}%`, 15, 20);
+    ctx.fillText(`ESCUDO: ${Math.round(ship.currentShield)} / ${Math.round(ship.maxShield)} | COMBUSTIBLE: ${Math.round(ship.currentFuel)}`, 15, 34);
+    
+    let heatText = `CALOR INFRACUCHILLO: ${Math.round(ship.overheatHeat)}%` + (ship.isOverheated ? " [¡SOBRECALENTADO!]" : "");
+    ctx.fillStyle = ship.isOverheated ? '#ef4444' : '#e2e8f0';
+    ctx.fillText(heatText, 15, 48);
+
+    if (gameState === 'SHIP_HALTED') {
+      ctx.fillStyle = '#f97316';
+      ctx.fillText(`[¡SIN COMBUSTIBLE!] Nave estática. Destruye asteroides, toma recursos o eyéctate ([R])`, 15, 62);
+    } else if (gameState === 'EJECTED') {
+      ctx.fillStyle = '#fde047';
+      ctx.fillText(`JETPACK: ${Math.round(pilot.currentJetpack)}% | MUNICIÓN: ${pilot.currentAmmo} / ${pilot.maxAmmo}`, 15, 62);
+    }
+
+    if (gameActive && !isPaused) {
+      requestAnimationFrame(loop);
+    }
+  }
+</script>
 </body>
 </html>

@@ -7,94 +7,306 @@
     <!-- Cliente oficial de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: Arial, sans-serif; background: #121212; color: #fff; padding: 20px; max-width: 900px; margin: auto; }
-        h2, h3 { color: #4CAF50; border-bottom: 1px solid #333; padding-bottom: 8px; }
-        
-        /* Botón de Navegación */
-        .nav-header { margin-bottom: 20px; }
-        .btn-regresar { display: inline-block; padding: 8px 14px; background: #333; color: #ffeb3b; border: 1px solid #555; border-radius: 4px; text-decoration: none; font-size: 14px; font-weight: bold; }
-        .btn-regresar:hover { background: #444; border-color: #ffeb3b; }
+        :root {
+            --scale-factor: 1rem;
+        }
 
-        /* Formulario */
-        form { background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 40px; }
-        label { display: block; margin-top: 10px; font-size: 14px; color: #ccc; }
-        input, select { width: 100%; padding: 8px; margin-top: 5px; background: #2d2d2d; border: 1px solid #444; color: #fff; border-radius: 4px; box-sizing: border-box; }
-        button[type="submit"] { width: 100%; margin-top: 20px; padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
-        button[type="submit"]:hover { background: #45a049; }
-        #mensaje { text-align: center; margin-top: 15px; font-weight: bold; }
+        body {
+            background-color: #000000;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 2vw;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* FONDO DINÁMICO DE ESCANEO Y LÍNEAS CUÁNTICAS */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(239, 68, 68, 0.03), rgba(234, 179, 8, 0.01), rgba(0, 0, 0, 0.05));
+            z-index: 999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .space-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #110202 0%, #000000 85%);
+            z-index: -2;
+        }
+
+        /* POLVO ESPACIAL CÓSMICO */
+        .cosmic-dust {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eab308, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ef4444, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #b91c1c, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #fde047, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 250px 250px;
+            animation: cosmic-drift 20s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes cosmic-drift {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-250px) rotate(5deg); }
+        }
+
+        /* MARCO DORADO Y ROJO FIJO ESTABLE */
+        .golden-frame {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 100;
+            border: 2px solid rgba(234, 179, 8, 0.35);
+            margin: clamp(8px, 1.5vw, 20px);
+            box-shadow: inset 0 0 25px rgba(234, 179, 8, 0.1), 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .golden-frame::before, .golden-frame::after {
+            content: "";
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+
+        .golden-frame::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+        .golden-frame::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+
+        .corner-bottom-left, .corner-bottom-right {
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+        .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+        .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
+        .main-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 30px auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Botón de Navegación */
+        .nav-header { margin-bottom: 20px; width: 100%; max-width: 900px; z-index: 2; }
+        .btn-regresar {
+            display: inline-block;
+            padding: clamp(6px, 1.2vw, 10px) clamp(10px, 2vw, 18px);
+            background-color: #0d0202;
+            color: #eab308;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+            position: relative;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+        .btn-regresar:hover {
+            background-color: #991b1b;
+            color: #fde047;
+            border-color: #eab308;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7), inset 0 0 10px rgba(234, 179, 8, 0.3);
+            transform: translateY(-2px) scale(1.03);
+            letter-spacing: 1px;
+        }
+
+        h2, h3 { 
+            color: #eab308; 
+            border-bottom: 1px solid #7f1d1d; 
+            padding-bottom: 8px; 
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            text-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+        }
+        
+        /* Formulario estilo Terminal */
+        form { 
+            background: rgba(5, 2, 2, 0.95);
+            border: 2px solid #b91c1c;
+            border-radius: 10px;
+            padding: clamp(15px, 3vw, 30px);
+            box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
+            margin-bottom: 40px; 
+        }
+        label { display: block; margin-top: 12px; font-size: 0.9rem; color: #ef4444; font-family: monospace; letter-spacing: 1px; }
+        input, select { 
+            width: 100%; 
+            padding: 10px; 
+            margin-top: 5px; 
+            background: rgba(2, 1, 1, 0.9); 
+            border: 1px solid #450a0a; 
+            color: #f1f5f9; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            font-family: 'Courier New', Courier, monospace;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #eab308;
+            box-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
+        }
+        button[type="submit"] { 
+            width: 100%; 
+            margin-top: 25px; 
+            padding: 12px; 
+            background: #991b1b; 
+            color: #fde047; 
+            border: 1px solid #eab308; 
+            border-radius: 6px; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            font-weight: bold; 
+            letter-spacing: 1.5px;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 0 10px rgba(153, 27, 27, 0.6);
+        }
+        button[type="submit"]:hover { 
+            background: #b91c1c; 
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.8), inset 0 0 10px rgba(234, 179, 8, 0.4);
+            transform: scale(1.01);
+        }
+        #mensaje { text-align: center; margin-top: 15px; font-weight: bold; font-family: monospace; }
 
         /* Vista de Carpetas y Fichas */
-        .explorer-container { background: #181818; padding: 20px; border-radius: 8px; border: 1px solid #2a2a2a; }
-        .galaxy-folder, .system-folder { background: #242424; border: 1px solid #383838; border-radius: 6px; margin-bottom: 10px; overflow: hidden; }
-        .folder-header { padding: 10px 14px; background: #2d2d2d; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-weight: bold; font-size: 14px; }
-        .folder-header:hover { background: #353535; }
+        .explorer-container { 
+            background: rgba(5, 2, 2, 0.95);
+            border: 2px solid #b91c1c;
+            border-radius: 10px;
+            padding: clamp(15px, 3vw, 30px);
+            box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
+        }
+        .galaxy-folder, .system-folder { 
+            background: rgba(2, 1, 1, 0.9); 
+            border: 1px solid #450a0a; 
+            border-radius: 6px; 
+            margin-bottom: 10px; 
+            overflow: hidden; 
+        }
+        .folder-header { 
+            padding: 12px 14px; 
+            background: #110202; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            font-weight: bold; 
+            font-size: 0.95rem; 
+            color: #eab308;
+            font-family: monospace;
+            border-bottom: 1px solid #330505;
+        }
+        .folder-header:hover { background: #1a0303; color: #fde047; }
         
-        .folder-content { display: none; padding: 10px; background: #1a1a1a; }
+        .folder-content { display: none; padding: 12px; background: rgba(5, 2, 2, 0.6); }
         .folder-content.active { display: block; }
 
-        .base-card { background: #262626; border-left: 4px solid #4CAF50; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 8px; }
-        .base-card h4 { margin: 0 0 6px 0; color: #fff; font-size: 14px; }
-        .base-card p { margin: 3px 0; color: #bbb; }
-        .coords-badge { background: #111; color: #ffeb3b; padding: 3px 6px; border-radius: 3px; font-family: monospace; display: inline-block; margin-top: 4px; }
-        .nuevo-tag { background: #ff9800; color: #000; font-size: 10px; padding: 2px 5px; border-radius: 3px; margin-left: 8px; font-weight: bold; }
+        .base-card { 
+            background: rgba(15, 3, 3, 0.9); 
+            border-left: 4px solid #eab308; 
+            padding: 12px; 
+            border-radius: 4px; 
+            font-size: 0.9rem; 
+            margin-bottom: 8px; 
+            border: 1px solid rgba(234, 179, 8, 0.15);
+        }
+        .base-card h4 { margin: 0 0 6px 0; color: #fde047; font-size: 1rem; font-family: monospace; }
+        .base-card p { margin: 4px 0; color: #cbd5e1; }
+        .coords-badge { background: #020101; color: #eab308; padding: 4px 8px; border-radius: 3px; font-family: monospace; display: inline-block; margin-top: 6px; border: 1px solid rgba(234, 179, 8, 0.3); }
+        .nuevo-tag { background: #b91c1c; color: #fde047; font-size: 0.7rem; padding: 2px 6px; border-radius: 3px; margin-left: 8px; font-weight: bold; border: 1px solid #eab308; }
     </style>
 </head>
 <body>
+
+    <div class="golden-frame">
+        <div class="corner-bottom-left"></div>
+        <div class="corner-bottom-right"></div>
+    </div>
+
+    <div class="space-bg"></div>
+    <div class="cosmic-dust"></div>
 
     <!-- BOTÓN DE RETORNO RÁPIDO -->
     <div class="nav-header">
         <a href="sistema.html" class="btn-regresar">⬅ Volver a sistema</a>
     </div>
 
-    <!-- FORMULARIO DE REGISTRO -->
-    <form id="baseForm">
-        <h2>Registrar Base Templaria</h2>
-        
-        <!-- Galaxia -->
-        <label>Galaxia:</label>
-        <select id="galaxySelect" onchange="actualizarDependenciasGalaxia()">
-            <!-- Se llena dinámicamente -->
-        </select>
+    <div class="main-container">
+        <!-- FORMULARIO DE REGISTRO -->
+        <form id="baseForm">
+            <h2>Registrar Base Templaria</h2>
+            
+            <!-- Galaxia -->
+            <label>Galaxia:</label>
+            <select id="galaxySelect" onchange="actualizarDependenciasGalaxia()">
+                <!-- Se llena dinámicamente -->
+            </select>
 
-        <div id="otraGalaxiaContainer" style="display: none; margin-top: 10px;">
-            <label>Nombre de la nueva galaxia:</label>
-            <input type="text" id="galaxyCustom" placeholder="Ej: Isdoraijung">
+            <div id="otraGalaxiaContainer" style="display: none; margin-top: 10px;">
+                <label>Nombre de la nueva galaxia:</label>
+                <input type="text" id="galaxyCustom" placeholder="Ej: Isdoraijung">
+            </div>
+
+            <!-- Sistema -->
+            <label>Nombre del Sistema:</label>
+            <select id="systemSelect" onchange="verificarSistemaCustom()">
+                <!-- Se llena dinámicamente según la galaxia elegida -->
+            </select>
+
+            <div id="otroSistemaContainer" style="display: none; margin-top: 10px;">
+                <label>Nombre del nuevo sistema:</label>
+                <input type="text" id="systemCustom" placeholder="Ej: Sistema Nuevo X">
+            </div>
+
+            <label>Nombre de la Base:</label>
+            <input type="text" id="base_name" required>
+
+            <label>Propietario:</label>
+            <input type="text" id="owner" required>
+
+            <label>Tipo de Base:</label>
+            <input type="text" id="type" required>
+
+            <label>Planeta:</label>
+            <input type="text" id="planet" required>
+
+            <label>Coordenadas (Glyphs/Portal):</label>
+            <input type="text" id="coords" required>
+
+            <button type="submit">Guardar Base</button>
+            <p id="mensaje"></p>
+        </form>
+
+        <!-- EXPLORADOR DE SISTEMAS Y BASES -->
+        <div class="explorer-container">
+            <h3>📂 Archivo General de Galaxias y Sistemas Oficiales</h3>
+            <div id="treeContainer" style="margin-top: 15px; font-family: monospace; color: #94a3b8;">Cargando estructura...</div>
         </div>
-
-        <!-- Sistema -->
-        <label>Nombre del Sistema:</label>
-        <select id="systemSelect" onchange="verificarSistemaCustom()">
-            <!-- Se llena dinámicamente según la galaxia elegida -->
-        </select>
-
-        <div id="otroSistemaContainer" style="display: none; margin-top: 10px;">
-            <label>Nombre del nuevo sistema:</label>
-            <input type="text" id="systemCustom" placeholder="Ej: Sistema Nuevo X">
-        </div>
-
-        <label>Nombre de la Base:</label>
-        <input type="text" id="base_name" required>
-
-        <label>Propietario:</label>
-        <input type="text" id="owner" required>
-
-        <label>Tipo de Base:</label>
-        <input type="text" id="type" required>
-
-        <label>Planeta:</label>
-        <input type="text" id="planet" required>
-
-        <label>Coordenadas (Glyphs/Portal):</label>
-        <input type="text" id="coords" required>
-
-        <button type="submit">Guardar Base</button>
-        <p id="mensaje"></p>
-    </form>
-
-    <!-- EXPLORADOR DE SISTEMAS Y BASES -->
-    <div class="explorer-container">
-        <h3>📂 Archivo General de Galaxias y Sistemas Oficiales</h3>
-        <div id="treeContainer">Cargando estructura...</div>
     </div>
 
     <script>
@@ -210,7 +422,7 @@
                 .select('*');
 
             if (error) {
-                treeContainer.innerHTML = '<p style="color:#f44336;">Error al conectar con Supabase: ' + error.message + '</p>';
+                treeContainer.innerHTML = '<p style="color:#ef4444;">Error al conectar con Supabase: ' + error.message + '</p>';
                 return;
             }
 
@@ -267,7 +479,7 @@
                 const sistemasDeGalaxia = galaxiasCompletaGlobal[galaxiaNombre];
 
                 if (sistemasDeGalaxia.length === 0) {
-                    sistemasHtml = '<p style="color:#777; font-size:12px; padding: 5px 10px; margin:0;">No hay sistemas ni bases registradas en esta galaxia.</p>';
+                    sistemasHtml = '<p style="color:#64748b; font-size:12px; padding: 5px 10px; margin:0;">No hay sistemas ni bases registradas en esta galaxia.</p>';
                 } else {
                     sistemasDeGalaxia.forEach(sistemaNombre => {
                         const esEstatico = sistemasEstaticos[galaxiaNombre] && sistemasEstaticos[galaxiaNombre].includes(sistemaNombre);
@@ -290,7 +502,7 @@
                                             <p><strong>Propietario:</strong> ${b.owner}</p>
                                             <div class="coords-badge">📍 ${b.coords}</div>
                                         </div>
-                                    `).join('') : '<p style="color:#777; font-size:12px; margin:0;">Sin bases registradas en este sistema.</p>'}
+                                    `).join('') : '<p style="color:#64748b; font-size:12px; margin:0;">Sin bases registradas en este sistema.</p>'}
                                 </div>
                             </div>
                         `;
@@ -298,7 +510,7 @@
                 }
 
                 galaxiaDiv.innerHTML = `
-                    <div class="folder-header" onclick="toggleFolder(this)" style="background: #252525;">
+                    <div class="folder-header" onclick="toggleFolder(this)" style="background: #0d0202;">
                         <span>📁 Galaxia: <strong>${galaxiaNombre}</strong></span>
                         <span>▼</span>
                     </div>
@@ -318,7 +530,7 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            mensaje.style.color = '#ffeb3b';
+            mensaje.style.color = '#eab308';
             mensaje.textContent = 'Guardando registro...';
 
             let galaxiaFinal = galaxySelect.value;
@@ -347,10 +559,10 @@
 
             if (error) {
                 console.error(error);
-                mensaje.style.color = '#f44336';
+                mensaje.style.color = '#ef4444';
                 mensaje.textContent = 'Error al guardar: ' + error.message;
             } else {
-                mensaje.style.color = '#4CAF50';
+                mensaje.style.color = '#eab308';
                 mensaje.textContent = '¡Registrado con éxito!';
                 form.reset();
                 sincronizarYRenderizar();

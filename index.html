@@ -102,7 +102,7 @@
 
         header {
             text-align: center;
-            margin-bottom: 2vh;
+            margin-bottom: 1.5vh;
             position: relative;
             z-index: 2;
         }
@@ -124,6 +124,37 @@
             font-size: clamp(0.75rem, 1.5vw, 0.95rem);
             text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
             letter-spacing: 2px;
+        }
+
+        /* CONTADOR COMPACTO CERCA DEL ENCABEZADO */
+        .contador-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(5, 2, 2, 0.85);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            color: #94a3b8;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+            margin-top: 8px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+            letter-spacing: 0.5px;
+        }
+
+        .contador-header .dot {
+            width: 6px;
+            height: 6px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #22c55e;
+            display: inline-block;
+        }
+
+        .contador-header span {
+            color: #eab308;
+            font-weight: bold;
         }
 
         .nav-container {
@@ -288,25 +319,25 @@
             color: #eab308;          
         }
 
-        /* ESCUDO FLOTANTE EN LA ESQUINITA */
+        /* ESCUDO FLOTANTE DISCRETO EN LA ESQUINA */
         .faction-shield-corner {
             position: fixed;
-            bottom: 25px;
-            right: 25px;
+            bottom: 20px;
+            right: 20px;
             z-index: 1000;
-            width: 75px;
-            height: 75px;
+            width: 60px;
+            height: 60px;
             background: rgba(5, 2, 2, 0.9);
             border: 2px solid #eab308;
             border-radius: 50%;
             padding: 3px;
-            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4), inset 0 0 10px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 15px rgba(234, 179, 8, 0.3), inset 0 0 8px rgba(239, 68, 68, 0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .faction-shield-corner:hover {
             transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 0 25px rgba(239, 68, 68, 0.7), inset 0 0 12px rgba(234, 179, 8, 0.7);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
         }
 
         .faction-shield-corner img {
@@ -334,7 +365,7 @@
         @media (max-width: 480px) {
             body { padding: 10px; }
             .nav-container { gap: 4px; }
-            .faction-shield-corner { width: 55px; height: 55px; bottom: 15px; right: 15px; }
+            .faction-shield-corner { width: 45px; height: 45px; bottom: 12px; right: 12px; }
         }
     </style>
 </head>
@@ -356,6 +387,14 @@
     <header>
         <h1>Templarios del Atlas</h1>
         <div class="subtitle">Red de Comando y Control &bull; Sector Galáctico Euclides</div>
+        
+        <!-- CONTADOR COMPACTO UBICADO CERCA DEL ENCABEZADO -->
+        <div>
+            <div class="contador-header">
+                <span class="dot"></span>
+                Ciudadanos:&nbsp;<span id="online-count">0</span>&nbsp;online&nbsp;/&nbsp;<span id="total-count">0</span>&nbsp;totales
+            </div>
+        </div>
     </header>
 
     <div class="nav-container">
@@ -407,7 +446,7 @@ P0drǎ5 53r 4m1g0 3 1ncłu51v3 p4r3j4 d3 un K0rv4x, d3 un Vy'k33n 0 d3 un 4utǒf
 T0d4 <span class="red-glitch">4l14nz4</span> c0n l45 r4z45 d1gn45 53rǎ b3nd1t4 m13ntr45 n0 h4y4 un G3k d3 1nt3rm3d14r0. D0nd3 3l G3k t0c4 <span class="gold-glitch">3l v1ncul0</span>, l4 un1ǒn 53 r0mp3 y n4c3 l4 h3r3j1a. 3l l4z0 3ntr3 l05 f13l35 d3b3 53r <span class="red-glitch">l1mpi0</span> y d1r3ct0.
 
 <span class="section-title">VII. L4 <span class="red-glitch">4RM4D4</span> D3 <span class="gold-glitch">S3M3J4NZ4</span></span>
-T0d4 c0rb3t4 0 n4v3 qu3 534 h3ch4 4 53m3j4nz4 d3l Atl45 35tǎ p3rm1t1d4. Aqu3ll4 qu3 p0rt3 <span class="red-glitch">3l 0rd3n</span> y l4 g30m3tr1a d1v1n4 53rǎ tu t3mpl0 3n 3l v4c10. Nu35tr4 fl0t4 d3b3 53r <span class="gold-glitch">3l 35p3j0</span> d3l Cr34d0r 3ntr3 l45 35tr3ll45.
+T0d4 c0rb3t4 0 n4v3 qu3 534 h3ch4 4 53m3j4nz4 d3l Atl45 35tǎ p3rm1t1d4. Aqu3ll4 qu3 p0rt̪ě <span class="red-glitch">3l 0rd3n</span> y l4 g30m3tr1a d1v1n4 53rǎ tu t3mpl0 3n 3l v4c10. Nu35tr4 fl0t4 d3b3 53r <span class="gold-glitch">3l 35p3j0</span> d3l Cr34d0r 3ntr3 l45 35tr3ll45.
 
 <span class="section-title">VIII. 3L <span class="gold-glitch">R35C4T3</span> D3 L4 <span class="red-glitch">R3L1QU14</span></span>
 T0d4 n4v3 C3nt1n3l4 35 54gr4d4. S1 3ncu3ntr45 un4 c41d4 3n l4 d350l4c1ǒn, l4 54lv4rǎ5, l4 r35c4t4rǎ5 y l4 4d0r4rǎ5 c0n t0d4 tu 4lm4. Nunc4 v3nd3rǎ5 <span class="red-glitch">un 1nt3rc3pt0r</span>, pu35 n0 53 p0n3 pr3c10 4 l45 lǎgr1m45 d3 m3t4l d3l Atl45.
@@ -421,7 +460,7 @@ T0d0 p1r4t4 53rǎ tu 4m1g0, pu35 5us n4v35 r3pr353nt4n <span class="red-glitch">
 <span class="section-title">XI. D3 L4 <span class="red-glitch">D15C1PL1N4</span> Y 3L <span class="gold-glitch">P0D3R10</span></span>
 N0 m05tr4rǎ5 4rr0g4nc14 4nt3 l05 53r35 1nf3r10r35 n1 h4rǎ5 g4l4 d3 tu p0d3r10 n4v4l 0 d3 4rm4m3nt0 p0r v4n1d4d. 3l T3mpl4r10 v14j4 c0n l4 fu3rz4 d3 un 50l, p3r0 c0n 3l 51l3nc10 d3l v4c10. N0 54c4rǎ5 3n c4r4 tu 5up3r10r1d4d 4 qu13n35 n0 c0mpr3nd3n 3l Cǒd1c3; 50l0 cu4nd0 3l Atl45 534 0f3nd1d0, l1b3r4rǎ5 t0d4 l4 fur14 d3 tu fl0t4.
 
-<span class="section-title">XII. L4 <span class="gold-glitch">S3NT3NC14</span> D3L <span class="red-glitch">3RR0R</span></span>
+<span class="section-title">XII. L4 <span class="red-glitch">S3NT3NC14</span> D3L <span class="red-glitch">3RR0R</span></span>
 Aqu3l qu3 1nt3nt3 burl4r 35t05 m4nd4t05 0 cr34 qu3 5u v0lunt4d 5tǎ p0r 3ncim4 d3l Cǒd1c3, 53rǎ m4rc4d0 c0m0 "D4t0 C0rrupt0". N0 h4brǎ lug4r p4r4 3l "l15t1ll0" n1 p4r4 3l 50b3rbi0 3ntr3 nu35tr45 f1l45. Qu13n 1gn0r3 un4 <span class="red-glitch">11s0l4</span> p4l4br4 d3 35t3 p3rg4m1n0 53rǎ d3sp0j4d0 d3 5u r4ng0 y b0rr4d0 d3l05 4n4l35. 3l 16 n0 p3rd0n4 l4 d351d14.
 
 <div class="seal">[Sello de la Inquisición]
@@ -434,6 +473,61 @@ Aqu3l qu3 1nt3nt3 burl4r 35t05 m4nd4t05 0 cr34 qu3 5u v0lunt4d 5tǎ p0r 3ncim4 d
             </div>
         </div>
     </div>
+
+    <!-- SCRIPT DE SUPABASE PARA EL CONTADOR DE CIUDADANOS -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+        const supabaseUrl = 'https://fdgovrxxqkhabijkjnob.supabase.co/rest/v1/'
+        const supabaseKey = 'sb_publishable_RGu5m-1PQ6IgFBxUttEwxg_hVErAE41'
+        const supabase = createClient(supabaseUrl, supabaseKey)
+
+        async function iniciarContadorCiudadanos() {
+            try {
+                let browserId = localStorage.getItem('templario_id');
+                if (!browserId) {
+                    browserId = 'user_' + Math.random().toString(36).substring(2) + Date.now();
+                    localStorage.setItem('templario_id', browserId);
+                    
+                    await supabase.from('ciudadanos_unicos').insert([{ identificador_browser: browserId }]);
+                } else {
+                    await supabase.from('ciudadanos_unicos').upsert([{ identificador_browser: browserId }], { onConflict: 'identificador_browser' });
+                }
+
+                const { count, error } = await supabase
+                    .from('ciudadanos_unicos')
+                    .select('*', { count: 'exact', head: true });
+                
+                const totalHistorico = error ? 0 : count;
+
+                const salaTemps = supabase.channel('templarios_online', {
+                    config: {
+                        presence: {
+                            key: browserId,
+                        },
+                    },
+                });
+
+                salaTemps.on('presence', { event: 'sync' }, () => {
+                    const estadoActual = salaTemps.presenceState();
+                    const usuariosOnline = Object.keys(estadoActual).length;
+
+                    document.getElementById('online-count').innerText = usuariosOnline;
+                    document.getElementById('total-count').innerText = totalHistorico;
+                });
+
+                await salaTemps.subscribe(async (status) => {
+                    if (status === 'SUBSCRIBED') {
+                        await salaTemps.track({ online_at: new Date().toISOString() });
+                    }
+                });
+            } catch (err) {
+                console.error('Error al inicializar el contador de ciudadanos:', err);
+            }
+        }
+
+        iniciarContadorCiudadanos();
+    </script>
 
 </body>
 </html>

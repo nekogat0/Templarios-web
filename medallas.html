@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logros y Medallas - Templarios del Atlas</title>
+    <style>
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+            margin: 0;
+            transition: background 1s ease;
+        }
+
+        /* Evolución dinámicas de fondo según el progreso de medallas */
+        body.stage-1 {
+            background: radial-gradient(circle at center, #1a0505 0%, #050505 100%);
+        }
+        body.stage-2 {
+            background: radial-gradient(circle at bottom, #2b0c0c 0%, #080303 60%, #020000 100%);
+        }
+        body.stage-3 {
+            background: radial-gradient(circle at 50% 80%, #3a1010 0%, #150505 50%, #030000 100%);
+        }
+        body.stage-4 {
+            background: radial-gradient(circle at center, #4d1414 0%, #200808 40%, #080202 80%, #000000 100%);
+        }
+
+        /* Capas de elementos visuales en el fondo */
+        .space-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* Partículas rojo y dorado */
+        .particles {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: radial-gradient(circle, #ff3333 1px, transparent 1px), radial-gradient(circle, #ffd700 1px, transparent 1px);
+            background-size: 50px 50px, 80px 80px;
+            background-position: 0 0, 25px 25px;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        body.stage-1 .particles, body.stage-2 .particles, body.stage-3 .particles, body.stage-4 .particles {
+            opacity: 0.6;
+        }
+
+        /* Planeta */
+        .planet {
+            position: absolute;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle at 30% 30%, #ff4d4d, #800000 60%, #2b0000 100%);
+            border-radius: 50%;
+            box-shadow: inset -30px -30px 60px rgba(0,0,0,0.9), 0 0 40px rgba(255, 77, 77, 0.2);
+            opacity: 0;
+            transition: opacity 1.5s ease, transform 1.5s ease;
+        }
+        body.stage-2 .planet, body.stage-3 .planet, body.stage-4 .planet {
+            opacity: 1;
+            bottom: -150px;
+        }
+
+        /* Lunas */
+        .moon-1, .moon-2 {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff, #b39700 70%, #473c00 100%);
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.8), 0 0 15px rgba(255, 215, 0, 0.4);
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        .moon-1 { width: 40px; height: 40px; top: 30%; left: 20%; }
+        .moon-2 { width: 25px; height: 25px; top: 20%; right: 25%; }
+        body.stage-3 .moon-1, body.stage-3 .moon-2, body.stage-4 .moon-1, body.stage-4 .moon-2 {
+            opacity: 1;
+        }
+
+        /* Galaxia */
+        .galaxy {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%) rotate(25deg);
+            width: 500px;
+            height: 200px;
+            background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.3) 0%, rgba(255, 51, 51, 0.15) 40%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(20px);
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+        body.stage-4 .galaxy {
+            opacity: 1;
+        }
+
+        /* Efecto de interferencia CRT */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #ff3333;
+            text-decoration: none;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(255, 51, 51, 0.7);
+            border: 1px solid #ff3333;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+        .back-link:hover {
+            background-color: #ff3333;
+            color: #050505;
+            box-shadow: 0 0 15px rgba(255, 51, 51, 1);
+        }
+
+        h1, p {
+            position: relative;
+            z-index: 10;
+        }
+
+        .medals-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .medal-card {
+            background: #0f0b0b;
+            border: 2px solid #ff1a1a;
+            border-radius: 12px;
+            padding: 15px;
+            width: 160px;
+            box-shadow: 0 0 12px rgba(255, 26, 26, 0.4), 
+                        inset 0 0 8px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .medal-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 26, 26, 0.7), 
+                        inset 0 0 12px rgba(255, 215, 0, 0.5);
+        }
+
+        .medal-card::before, .medal-card::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-color: #ffd700;
+            border-style: solid;
+        }
+        .medal-card::before {
+            top: -3px; left: -3px;
+            border-width: 2px 0 0 2px;
+        }
+        .medal-card::after {
+            bottom: -3px; right: -3px;
+            border-width: 0 2px 2px 0;
+        }
+
+        .medal-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            filter: grayscale(100%) brightness(30%);
+            transition: filter 0.3s ease;
+        }
+
+        .medal-title {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #777;
+        }
+
+        .medal-requirement {
+            margin-top: 8px;
+            font-size: 0.85em;
+            color: #777;
+        }
+
+        .medal-card.unlocked img {
+            filter: grayscale(0%) brightness(100%);
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+        }
+        .medal-card.unlocked .medal-title {
+            color: #ffd700;
+            text-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+        }
+        .medal-card.unlocked .medal-requirement {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Elementos dinámicos del fondo espacial -->
+    <div class="space-bg">
+        <div class="galaxy"></div>
+        <div class="moon-1"></div>
+        <div class="moon-2"></div>
+        <div class="planet"></div>
+        <div class="particles"></div>
+    </div>
+
+    <a href="misiones.html" class="back-link">← Volver a Misiones</a>
+
+    <h1>Medallas de Misiones</h1>
+    <p id="stats-info">Misiones completadas totales: <span id="total-count">0</span></p>
+    <p>Haz clic en una medalla para reclamarla bajo la ley de los Templarios del Atlas.</p>
+
+    <div class="medals-container">
+        <!-- Medalla 4 (10 misiones) -->
+        <div class="medal-card" id="medal-4" data-missions="10" onclick="intentarDesbloquear(this, 10, 4)">
+            <img src="medallas/4.png" alt="Medalla">
+            <div class="medal-title">Medalla</div>
+            <div class="medal-requirement">10 misiones</div>
+        </div>
+
+        <!-- Medalla 3 (25 misiones) -->
+        <div class="medal-card" id="medal-3" data-missions="25" onclick="intentarDesbloquear(this, 25, 3)">
+            <img src="medallas/3.png" alt="Medalla">
+            <div class="medal-title">Medalla</div>
+            <div class="medal-requirement">25 misiones</div>
+        </div>
+
+        <!-- Medalla 2 (50 misiones) -->
+        <div class="medal-card" id="medal-2" data-missions="50" onclick="intentarDesbloquear(this, 50, 2)">
+            <img src="medallas/2.png" alt="Medalla">
+            <div class="medal-title">Medalla</div>
+            <div class="medal-requirement">50 misiones</div>
+        </div>
+
+        <!-- Medalla 1 (100 misiones) -->
+        <div class="medal-card" id="medal-1" data-missions="100" onclick="intentarDesbloquear(this, 100, 1)">
+            <img src="medallas/1.png" alt="Medalla">
+            <div class="medal-title">Medalla</div>
+            <div class="medal-requirement">100 misiones</div>
+        </div>
+    </div>
+
+    <script>
+        // Leer las misiones reales completadas acumuladas
+        let misionesActuales = parseInt(localStorage.getItem('templarios_misiones_totales') || '0');
+        document.getElementById('total-count').innerText = misionesActuales;
+
+        // Cargar medallas previamente reclamadas desde localStorage al iniciar
+        function cargarMedallasGuardadas() {
+            let medallasDesbloqueadas = JSON.parse(localStorage.getItem('templarios_medallas_desbloqueadas')) || [];
+            medallasDesbloqueadas.forEach(nivel => {
+                const card = document.getElementById(`medal-${nivel}`);
+                if (card) {
+                    card.classList.add('unlocked');
+                }
+            });
+            actualizarFondoVisual();
+        }
+
+        function intentarDesbloquear(card, requisito, nivelMedalla) {
+            if (misionesActuales >= requisito) {
+                if (!card.classList.contains('unlocked')) {
+                    card.classList.add('unlocked');
+                    
+                    // Guardar la medalla desbloqueada de forma persistente
+                    let medallasDesbloqueadas = JSON.parse(localStorage.getItem('templarios_medallas_desbloqueadas')) || [];
+                    if (!medallasDesbloqueadas.includes(nivelMedalla)) {
+                        medallasDesbloqueadas.push(nivelMedalla);
+                        localStorage.setItem('templarios_medallas_desbloqueadas', JSON.stringify(medallasDesbloqueadas));
+                    }
+                }
+                
+                actualizarFondoVisual();
+
+                let mensaje = "";
+                if (nivelMedalla === 4) {
+                    mensaje = "⚡ [TEMPLARIOS DEL ATLAS] ⚡\n\nFelicidades. Has demostrado tu valía y has sido reconocido oficialmente como Templario bajo la ley suprema.";
+                } else if (nivelMedalla === 3) {
+                    mensaje = "⚡ [TEMPLARIOS DEL ATLAS] ⚡\n\nTu senda ha sido honrada. Has sido reconocido como un alma ejemplar, un baluarte inquebrantable en estos sistemas.";
+                } else if (nivelMedalla === 2) {
+                    mensaje = "⚡ [TEMPLARIOS DEL ATLAS] ⚡\n\nEl alto mando lo proclama: Tu escuadrón y la flota entera están orgullosos de tener a un capitán tan legendario como tú.";
+                } else if (nivelMedalla === 1) {
+                    mensaje = "⚡ [TEMPLARIOS DEL ATLAS] ⚡\n\nLos Templarios se inclinan ante tu grandeza. Te agradecemos por tu ayuda eterna; eres un ser verdaderamente ejemplar entre los seres de este cosmos.";
+                }
+                
+                alert(mensaje);
+            } else {
+                alert("⚠️ Acceso denegado por el Protocolo del Atlas.\n\nTe faltan misiones para reclamar esta investidura. Tienes " + misionesActuales + " y se exigen " + requisito + ".");
+            }
+        }
+
+        function actualizarFondoVisual() {
+            const tarjetas = document.querySelectorAll('.medal-card');
+            let desbloqueadas = 0;
+            tarjetas.exports = tarjetas.forEach(t => {
+                if (t.classList.contains('unlocked')) desbloqueadas++;
+            });
+            // Recuento limpio
+            desbloqueadas = 0;
+            tarjetas.forEach(t => {
+                if (t.classList.contains('unlocked')) desbloqueadas++;
+            });
+
+            document.body.classList.remove('stage-1', 'stage-2', 'stage-3', 'stage-4');
+            if (desbloqueadas >= 4) {
+                document.body.classList.add('stage-4');
+            } else if (desbloqueadas === 3) {
+                document.body.classList.add('stage-3');
+            } else if (desbloqueadas === 2) {
+                document.body.classList.add('stage-2');
+            } else if (desbloqueadas === 1) {
+                document.body.classList.add('stage-1');
+            }
+        }
+
+        // Ejecutar al cargar la página de medallas
+        cargarMedallasGuardadas();
+    </script>
+
+</body>
+</html>

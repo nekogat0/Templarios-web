@@ -53,6 +53,10 @@
             position: relative;
             z-index: 2;
         }
+        .nav-links-group {
+            display: flex;
+            gap: 10px;
+        }
         .nav-btn {
             background-color: #090d16;
             color: #d4af37;
@@ -349,10 +353,14 @@
     <div class="stars-bg"></div>
 
     <div class="top-bar">
-        <a href="index.html" class="nav-btn">← Volver al Inicio</a>
+        <div class="nav-links-group">
+            <a href="index.html" class="nav-btn">← Volver al Inicio</a>
+            <a href="medallas.html" class="nav-btn">🏅 Ver Medallas</a>
+        </div>
         <div class="points-box">
             Puntos: <span id="points-display">0</span>
-            <button class="skip-btn" onclick="skipCooldown()">Saltar tiempo (150 pts)</button>
+            <!-- Costo actualizado a 250 puntos -->
+            <button class="skip-btn" onclick="skipCooldown()">Saltar tiempo (250 pts)</button>
         </div>
     </div>
 
@@ -522,6 +530,10 @@
                 currentPoints += gained;
                 localStorage.setItem('templarios_puntos', currentPoints);
 
+                // Registro histórico global para las medallas
+                let totalMissionsCompleted = parseInt(localStorage.getItem('templarios_misiones_totales') || '0') + 1;
+                localStorage.setItem('templarios_misiones_totales', totalMissionsCompleted);
+
                 renderMissions(savedData.missions);
                 updatePointsDisplay(true);
                 showToast(`¡Misión completada! +${gained} puntos añadidos.`);
@@ -530,7 +542,7 @@
 
         function skipCooldown() {
             let currentPoints = parseInt(localStorage.getItem('templarios_puntos') || '0');
-            const cost = 150;
+            const cost = 250; // Costo actualizado a 250 puntos
 
             if (currentPoints >= cost) {
                 currentPoints -= cost;
@@ -545,7 +557,7 @@
                 updatePointsDisplay(true);
                 showToast("⚡ Tiempo de reutilización reiniciado con éxito.");
             } else {
-                showToast("❌ No tienes suficientes puntos (Necesitas 150 pts).");
+                showToast("❌ No tienes suficientes puntos (Necesitas 250 pts).");
             }
         }
 

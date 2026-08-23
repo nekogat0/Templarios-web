@@ -7,10 +7,10 @@
     <style>
         body {
             background-color: #050505;
-            color: #ffffff;
+            color: #ffcccc;
             font-family: 'Courier New', Courier, monospace;
             text-align: center;
-            padding: 20px;
+            padding: 20px 10px;
             position: relative;
             overflow-x: hidden;
             min-height: 100vh;
@@ -18,7 +18,7 @@
             transition: background 1s ease;
         }
 
-        /* Evolución dinámicas de fondo según el progreso de medallas */
+        /* Evolución dinámica de fondo según el progreso de medallas */
         body.stage-1 {
             background: radial-gradient(circle at center, #1a0505 0%, #050505 100%);
         }
@@ -55,23 +55,74 @@
             opacity: 0.6;
         }
 
-        /* Planeta */
-        .planet {
+        /* Contenedor del planeta (fijo abajo) */
+        .planet-container {
             position: absolute;
-            bottom: -100px;
+            bottom: -160px;
             left: 50%;
             transform: translateX(-50%);
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle at 30% 30%, #ff4d4d, #800000 60%, #2b0000 100%);
-            border-radius: 50%;
-            box-shadow: inset -30px -30px 60px rgba(0,0,0,0.9), 0 0 40px rgba(255, 77, 77, 0.2);
+            width: 420px;
+            height: 420px;
             opacity: 0;
             transition: opacity 1.5s ease, transform 1.5s ease;
+            pointer-events: none;
         }
-        body.stage-2 .planet, body.stage-3 .planet, body.stage-4 .planet {
+        body.stage-2 .planet-container, body.stage-3 .planet-container, body.stage-4 .planet-container {
             opacity: 1;
-            bottom: -150px;
+        }
+
+        /* Planeta rojo principal */
+        .planet {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #ff4d4d 0%, #7a0000 65%, #1a0000 100%);
+            box-shadow: 
+                inset -55px -55px 90px rgba(0,0,0,0.95),
+                inset 25px 25px 40px rgba(255, 100, 100, 0.15),
+                0 0 50px rgba(255, 51, 51, 0.3);
+            overflow: hidden;
+        }
+
+        /* Capa de tierra / continentes (gira muy lento) */
+        .planet-terrain {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 50%;
+            background-image: 
+                radial-gradient(ellipse at center, rgba(30, 8, 4, 0.85) 0%, rgba(15, 3, 1, 0.6) 50%, transparent 80%),
+                radial-gradient(ellipse at center, rgba(45, 12, 5, 0.75) 0%, rgba(10, 2, 0, 0.5) 45%, transparent 75%),
+                radial-gradient(circle, rgba(5, 1, 0, 0.9) 0%, transparent 60%);
+            background-size: 260px 200px, 210px 250px, 180px 180px;
+            background-position: 20px 40px, 120px 80px, 70px 150px;
+            opacity: 0.85;
+            animation: panTerrain 65s linear infinite;
+        }
+
+        @keyframes panTerrain {
+            from { background-position: 20px 40px, 120px 80px, 70px 150px; }
+            to { background-position: -340px 40px, -280px 80px, -290px 150px; }
+        }
+
+        /* Nubes difusas (más rápidas) */
+        .planet-clouds {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 50%;
+            background-image: 
+                radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.2) 40%, transparent 75%),
+                radial-gradient(circle, rgba(255, 180, 200, 0.45) 0%, rgba(255, 180, 200, 0.15) 50%, transparent 80%),
+                radial-gradient(circle, rgba(255, 255, 255, 0.35) 0%, transparent 60%);
+            background-size: 180px 140px, 240px 180px, 150px 120px;
+            background-position: 0 30px, 0 100px, 0 10px;
+            opacity: 0.75;
+            animation: panClouds 35s linear infinite;
+        }
+
+        @keyframes panClouds {
+            from { background-position: 0 30px, 0 100px, 0 10px; }
+            to { background-position: -360px 30px, -480px 100px, -300px 10px; }
         }
 
         /* Lunas */
@@ -89,25 +140,42 @@
             opacity: 1;
         }
 
-        /* Galaxia */
-        .galaxy {
+        /* Elementos flotantes de fondo */
+        .atlas-bg {
             position: absolute;
-            top: 20%;
+            top: 12%;
             left: 50%;
-            transform: translateX(-50%) rotate(25deg);
-            width: 500px;
-            height: 200px;
-            background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.3) 0%, rgba(255, 51, 51, 0.15) 40%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(20px);
+            transform: translateX(-50%) scale(0.8);
+            max-width: 380px;
+            width: 65%;
             opacity: 0;
-            transition: opacity 2s ease;
+            transition: opacity 2s ease, transform 2s ease;
+            pointer-events: none;
+            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6));
         }
-        body.stage-4 .galaxy {
-            opacity: 1;
+        body.stage-4 .atlas-bg {
+            opacity: 0.5;
+            transform: translateX(-50%) scale(1);
         }
 
-        /* Efecto de interferencia CRT */
+        .ship-bg {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%) scale(0.7);
+            max-width: 280px;
+            width: 60%;
+            opacity: 0;
+            transition: opacity 1.5s ease, transform 1.5s ease;
+            pointer-events: none;
+            filter: drop-shadow(0 0 15px rgba(255, 77, 77, 0.4));
+        }
+        body.stage-3 .ship-bg, body.stage-4 .ship-bg {
+            opacity: 0.35;
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* Efecto CRT */
         body::before {
             content: " ";
             display: block;
@@ -121,13 +189,14 @@
 
         .back-link {
             display: inline-block;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #ff3333;
             text-decoration: none;
             font-weight: bold;
+            font-size: 0.9em;
             text-shadow: 0 0 8px rgba(255, 51, 51, 0.7);
             border: 1px solid #ff3333;
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 5px;
             transition: all 0.3s ease;
             position: relative;
@@ -139,29 +208,51 @@
             box-shadow: 0 0 15px rgba(255, 51, 51, 1);
         }
 
-        h1, p {
+        /* Textos principales */
+        h1 {
+            font-size: 1.6em;
+            margin: 10px 0;
             position: relative;
             z-index: 10;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 51, 51, 0.4);
+        }
+
+        p {
+            font-size: 0.95em;
+            position: relative;
+            z-index: 10;
+            margin: 5px 0 15px 0;
+            color: #ffcccc;
+            text-shadow: 0 0 5px rgba(255, 51, 51, 0.4);
+        }
+
+        #stats-info span {
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
         }
 
         .medals-container {
             display: flex;
             justify-content: center;
-            gap: 25px;
+            gap: 15px;
             flex-wrap: wrap;
-            margin-top: 30px;
+            margin-top: 20px;
             position: relative;
             z-index: 10;
         }
 
+        /* Tarjetas transparentes */
         .medal-card {
-            background: #0f0b0b;
-            border: 2px solid #ff1a1a;
-            border-radius: 12px;
-            padding: 15px;
-            width: 160px;
-            box-shadow: 0 0 12px rgba(255, 26, 26, 0.4), 
-                        inset 0 0 8px rgba(255, 215, 0, 0.3);
+            background: rgba(10, 5, 5, 0.6);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 51, 51, 0.6);
+            border-radius: 10px;
+            padding: 10px;
+            width: 130px;
+            box-shadow: 0 0 12px rgba(255, 51, 51, 0.25), 
+                        inset 0 0 8px rgba(255, 51, 51, 0.15);
             transition: all 0.3s ease;
             position: relative;
             cursor: pointer;
@@ -169,58 +260,155 @@
 
         .medal-card:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(255, 26, 26, 0.7), 
-                        inset 0 0 12px rgba(255, 215, 0, 0.5);
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 
+                        inset 0 0 12px rgba(255, 215, 0, 0.3);
         }
 
         .medal-card::before, .medal-card::after {
             content: '';
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-color: #ffd700;
             border-style: solid;
         }
         .medal-card::before {
-            top: -3px; left: -3px;
+            top: -2px; left: -2px;
             border-width: 2px 0 0 2px;
         }
         .medal-card::after {
-            bottom: -3px; right: -3px;
+            bottom: -2px; right: -2px;
             border-width: 0 2px 2px 0;
         }
 
         .medal-card img {
-            width: 100px;
-            height: 100px;
+            width: 75px;
+            height: 75px;
             object-fit: contain;
             filter: grayscale(100%) brightness(30%);
             transition: filter 0.3s ease;
         }
 
         .medal-title {
-            margin-top: 10px;
+            margin-top: 6px;
             font-weight: bold;
-            font-size: 1.1em;
-            color: #777;
+            font-size: 0.95em;
+            color: #885555;
         }
 
         .medal-requirement {
-            margin-top: 8px;
-            font-size: 0.85em;
-            color: #777;
+            margin-top: 4px;
+            font-size: 0.75em;
+            color: #885555;
         }
 
         .medal-card.unlocked img {
             filter: grayscale(0%) brightness(100%);
-            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
         }
         .medal-card.unlocked .medal-title {
             color: #ffd700;
             text-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
         }
         .medal-card.unlocked .medal-requirement {
-            color: #fff;
+            color: #ffcccc;
+        }
+
+        /* --- VENTANA MODAL PERSONALIZADA --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: rgba(15, 5, 5, 0.85);
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            padding: 25px;
+            width: 85%;
+            max-width: 400px;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(255, 51, 51, 0.3);
+            text-align: center;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-box h3 {
+            color: #ffd700;
+            font-size: 1.1em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+        }
+
+        .modal-box p {
+            color: #ffcccc;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            white-space: pre-line;
+            text-shadow: none;
+        }
+
+        .modal-btn {
+            background: transparent;
+            color: #ffd700;
+            border: 1px solid #ffd700;
+            padding: 8px 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+        }
+
+        .modal-btn:hover {
+            background: #ffd700;
+            color: #050505;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        @media (max-width: 600px) {
+            .medals-container {
+                gap: 10px;
+            }
+            .medal-card {
+                width: 115px;
+                padding: 8px;
+            }
+            .medal-card img {
+                width: 65px;
+                height: 65px;
+            }
+            .ship-bg, .atlas-bg {
+                max-width: 210px;
+            }
+            .planet-container {
+                width: 340px;
+                height: 340px;
+                bottom: -130px;
+            }
         }
     </style>
 </head>
@@ -228,18 +416,34 @@
 
     <!-- Elementos dinámicos del fondo espacial -->
     <div class="space-bg">
-        <div class="galaxy"></div>
+        <img src="medallas/atlas.png" alt="Atlas de fondo" class="atlas-bg">
+        <img src="medallas/nave.png" alt="Nave de fondo" class="ship-bg">
         <div class="moon-1"></div>
         <div class="moon-2"></div>
-        <div class="planet"></div>
+        <!-- Planeta oceánico rojo -->
+        <div class="planet-container">
+            <div class="planet">
+                <div class="planet-terrain"></div>
+                <div class="planet-clouds"></div>
+            </div>
+        </div>
         <div class="particles"></div>
+    </div>
+
+    <!-- Ventana Modal Personalizada -->
+    <div class="modal-overlay" id="customModal">
+        <div class="modal-box">
+            <h3 id="modalTitle">⚡ [TEMPLARIOS DEL ATLAS] ⚡</h3>
+            <p id="modalMessage">Mensaje aquí...</p>
+            <button class="modal-btn" onclick="cerrarModal()">ACEPTAR</button>
+        </div>
     </div>
 
     <a href="misiones.html" class="back-link">← Volver a Misiones</a>
 
     <h1>Medallas de Misiones</h1>
-    <p id="stats-info">Misiones completadas totales: <span id="total-count">0</span></p>
-    <p>Haz clic en una medalla para reclamarla bajo la ley de los Templarios del Atlas.</p>
+    <p id="stats-info">Misiones completadas: <span id="total-count">0</span></p>
+    <p>Reclama tus medallas bajo la ley de los Templarios del Atlas.</p>
 
     <div class="medals-container">
         <!-- Medalla 4 (10 misiones) -->
@@ -252,14 +456,12 @@
         <!-- Medalla 3 (25 misiones) -->
         <div class="medal-card" id="medal-3" data-missions="25" onclick="intentarDesbloquear(this, 25, 3)">
             <img src="medallas/3.png" alt="Medalla">
-            <div class="medal-title">Medalla</div>
             <div class="medal-requirement">25 misiones</div>
         </div>
 
         <!-- Medalla 2 (50 misiones) -->
         <div class="medal-card" id="medal-2" data-missions="50" onclick="intentarDesbloquear(this, 50, 2)">
             <img src="medallas/2.png" alt="Medalla">
-            <div class="medal-title">Medalla</div>
             <div class="medal-requirement">50 misiones</div>
         </div>
 
@@ -272,11 +474,9 @@
     </div>
 
     <script>
-        // Leer las misiones reales completadas acumuladas
         let misionesActuales = parseInt(localStorage.getItem('templarios_misiones_totales') || '0');
         document.getElementById('total-count').innerText = misionesActuales;
 
-        // Cargar medallas previamente reclamadas desde localStorage al iniciar
         function cargarMedallasGuardadas() {
             let medallasDesbloqueadas = JSON.parse(localStorage.getItem('templarios_medallas_desbloqueadas')) || [];
             medallasDesbloqueadas.forEach(nivel => {
@@ -288,12 +488,20 @@
             actualizarFondoVisual();
         }
 
+        function mostrarModal(titulo, mensaje) {
+            document.getElementById('modalTitle').innerText = titulo;
+            document.getElementById('modalMessage').innerText = mensaje;
+            document.getElementById('customModal').classList.add('active');
+        }
+
+        function cerrarModal() {
+            document.getElementById('customModal').classList.remove('active');
+        }
+
         function intentarDesbloquear(card, requisito, nivelMedalla) {
             if (misionesActuales >= requisito) {
                 if (!card.classList.contains('unlocked')) {
                     card.classList.add('unlocked');
-                    
-                    // Guardar la medalla desbloqueada de forma persistente
                     let medallasDesbloqueadas = JSON.parse(localStorage.getItem('templarios_medallas_desbloqueadas')) || [];
                     if (!medallasDesbloqueadas.includes(nivelMedalla)) {
                         medallasDesbloqueadas.push(nivelMedalla);
@@ -305,29 +513,25 @@
 
                 let mensaje = "";
                 if (nivelMedalla === 4) {
-                    mensaje = "⚡ [TEMPLARIOS DEL ATLAS] ⚡\n\nFelicidades. Has demostrado tu valía y has sido reconocido oficialmente como Templario bajo la ley suprema.";
+                    mensaje = "Felicidades. Has demostrado tu valía y has sido reconocido oficialmente como Templario bajo la ley suprema.";
                 } else if (nivelMedalla === 3) {
-                    mensaje = "⚡ [TEMPLARIOS DEL ATLAS] ⚡\n\nTu senda ha sido honrada. Has sido reconocido como un alma ejemplar, un baluarte inquebrantable en estos sistemas.";
+                    mensaje = "Tu senda ha sido honrada. Has sido reconocido como un alma ejemplar, un baluarte inquebrantable en estos sistemas.";
                 } else if (nivelMedalla === 2) {
-                    mensaje = "⚡ [TEMPLARIOS DEL ATLAS] ⚡\n\nEl alto mando lo proclama: Tu escuadrón y la flota entera están orgullosos de tener a un capitán tan legendario como tú.";
+                    mensaje = "El alto mando lo proclama: Tu escuadrón y la flota entera están orgullosos de tener a un capitán tan legendario como tú.";
                 } else if (nivelMedalla === 1) {
-                    mensaje = "⚡ [TEMPLARIOS DEL ATLAS] ⚡\n\nLos Templarios se inclinan ante tu grandeza. Te agradecemos por tu ayuda eterna; eres un ser verdaderamente ejemplar entre los seres de este cosmos.";
+                    mensaje = "Los Templarios se inclinan ante tu grandeza. Te agradecemos por tu ayuda eterna; eres un ser verdaderamente ejemplar entre los seres de este cosmos.";
                 }
                 
-                alert(mensaje);
+                mostrarModal("⚡ [TEMPLARIOS DEL ATLAS] ⚡", mensaje);
             } else {
-                alert("⚠️ Acceso denegado por el Protocolo del Atlas.\n\nTe faltan misiones para reclamar esta investidura. Tienes " + misionesActuales + " y se exigen " + requisito + ".");
+                let mensajeFalta = "Te faltan misiones para reclamar esta investidura.\nTienes " + misionesActuales + " y se exigen " + requisito + ".";
+                mostrarModal("⚠️ [ACCESO DENEGADO] ⚠️", mensajeFalta);
             }
         }
 
         function actualizarFondoVisual() {
             const tarjetas = document.querySelectorAll('.medal-card');
             let desbloqueadas = 0;
-            tarjetas.exports = tarjetas.forEach(t => {
-                if (t.classList.contains('unlocked')) desbloqueadas++;
-            });
-            // Recuento limpio
-            desbloqueadas = 0;
             tarjetas.forEach(t => {
                 if (t.classList.contains('unlocked')) desbloqueadas++;
             });
@@ -344,7 +548,6 @@
             }
         }
 
-        // Ejecutar al cargar la página de medallas
         cargarMedallasGuardadas();
     </script>
 

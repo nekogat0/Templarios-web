@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Códice Masivo Supremo de los Templarios - Lore</title>
+    <style>
+        body {
+            background-color: #030101;
+            color: #ffcccc;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .space-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            background: radial-gradient(circle at center, #1a0505 0%, #030101 100%);
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: radial-gradient(circle, #ff3333 1px, transparent 1px), radial-gradient(circle, #ffd700 1px, transparent 1px);
+            background-size: 60px 60px, 90px 90px;
+            opacity: 0.4;
+        }
+
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #ff3333;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9em;
+            border: 1px solid #ff3333;
+            padding: 6px 12px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            background: rgba(10, 0, 0, 0.6);
+        }
+        .back-link:hover {
+            background-color: #ff3333;
+            color: #030101;
+            box-shadow: 0 0 15px rgba(255, 51, 51, 1);
+        }
+
+        h1 {
+            color: #ffd700;
+            text-align: center;
+            font-size: 1.6em;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.85em;
+            color: #ff6666;
+            margin-bottom: 25px;
+            text-shadow: 0 0 6px rgba(255, 51, 51, 0.4);
+        }
+
+        .terminal-box {
+            background: rgba(10, 3, 3, 0.85);
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.25), inset 0 0 10px rgba(255, 51, 51, 0.2);
+            margin-bottom: 25px;
+        }
+
+        .terminal-box label {
+            display: block;
+            color: #ffd700;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            background: #050101;
+            border: 1px solid #ff3333;
+            color: #ffd700;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1em;
+            border-radius: 4px;
+            outline: none;
+            box-shadow: inset 0 0 5px rgba(255, 51, 51, 0.3);
+        }
+
+        input[type="text"]:focus {
+            border-color: #ffd700;
+            box-shadow: inset 0 0 8px rgba(255, 215, 0, 0.5), 0 0 8px rgba(255, 215, 0, 0.5);
+        }
+
+        button {
+            background: transparent;
+            color: #ffd700;
+            border: 1px solid #ffd700;
+            padding: 8px 16px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 0.9em;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+            white-space: nowrap;
+        }
+
+        button:hover {
+            background: #ffd700;
+            color: #030101;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .counter-info {
+            text-align: right;
+            font-size: 0.8em;
+            color: #ff9999;
+            margin-top: 8px;
+        }
+
+        #hint-box {
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px dashed #ffd700;
+            border-radius: 4px;
+            color: #ffd700;
+            font-size: 0.85em;
+            display: none;
+        }
+
+        .archives-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .archive-card {
+            background: rgba(8, 2, 2, 0.7);
+            border: 1px dashed #552222;
+            border-radius: 6px;
+            padding: 15px;
+            transition: all 0.4s ease;
+            opacity: 0.4;
+            filter: grayscale(80%);
+        }
+
+        .archive-card.unlocked {
+            border: 1px solid #ffd700;
+            background: rgba(15, 5, 5, 0.9);
+            opacity: 1;
+            filter: grayscale(0%);
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
+        }
+
+        .archive-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            color: #ff5555;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 51, 51, 0.2);
+            padding-bottom: 4px;
+        }
+
+        .archive-card.unlocked .archive-header {
+            color: #ffd700;
+            border-bottom-color: rgba(255, 215, 0, 0.3);
+        }
+
+        .archive-body {
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #997777;
+        }
+
+        .archive-card.unlocked .archive-body {
+            color: #ffcccc;
+            text-shadow: 0 0 3px rgba(255, 215, 0, 0.2);
+        }
+
+        #feedback-msg {
+            text-align: center;
+            font-size: 0.85em;
+            margin-top: 10px;
+            min-height: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="space-bg">
+        <div class="particles"></div>
+    </div>
+
+    <div class="container">
+        <a href="index.html" class="back-link">← Volver</a>
+
+        <h1>⚡ CÓDICE SUPREMO DE LOS TEMPLARIOS ⚡</h1>
+        <div class="subtitle">>>> ARCHIVOS CLASIFICADOS: GÉNESIS, LEYES, LORE Y EXPEDICIONES <<<</div>
+
+        <div class="terminal-box">
+            <label for="keywordInput">> INTRODUZCA PALABRA CLAVE DE ACCESO:</label>
+            <div class="input-group">
+                <input type="text" id="keywordInput" placeholder="Ej. genesis, insulto, euclides, pioneers, 16, akanni..." autocomplete="off">
+                <button onclick="verificarPalabra()">DESCIFRAR</button>
+            </div>
+            <div id="feedback-msg"></div>
+            <div class="counter-info">Archivos descifrados: <span id="unlocked-count">0</span> / <span id="total-codices">140</span></div>
+            <div id="hint-box"></div>
+        </div>
+
+        <div class="archives-container" id="archivesList"></div>
+    </div>
+
+    <script>
+        const codices = [
+            // BLOQUE I: EL ORIGEN Y LA GÉNESIS DE LOS TEMPLARIOS (1-15)
+            { id: 1, key: "genesis", title: "ARCHIVO 01: LA GÉNESIS DEL ODIO", text: "Todo comenzó en los días ciegos de nuestra incursión. Descendimos a un puesto fronterizo y un Gek nos recibió con un insulto gratuito. Ese día, el algoritmo de nuestra paciencia se quebró y el fuego purificador respondió al desprecio con plasma." },
+            { id: 2, key: "insulto", title: "ARCHIVO 02: LA CHISPA DE LA CRUZADA", text: "El insulto mercantil de una criatura que cree que el universo le pertenece fue más que suficiente. La cruzada dejó de ser un simple viaje; se convirtió en cazar, hostigar y no otorgar jamás el beneficio de la duda a su estirpe." },
+            { id: 3, key: "vagabundo", title: "ARCHIVO 03: EL VAGAR POR EL VACÍO", text: "Vagamos por el espacio profundo entre restos de naufragios, buscando naves que cortaran el vacío y levantando bases improvisadas en cualquier rincón inhóspito para templar nuestra voluntad." },
+            { id: 4, key: "revelacion", title: "ARCHIVO 04: LA VERDAD MORTAL", text: "Intentamos revelar a otros que el ser que creían vivo ya había perecido y que el cosmos era una simulación agónica. Pero la verdad pesa demasiado para mentes débiles." },
+            { id: 5, key: "silencio", title: "ARCHIVO 05: EL QUIEBRE DEL SUJETO", text: "El sujeto se enojó ante la cruda verdad, dejó de hablarnos y prefirió la cómoda ignorancia. Comprendimos que los débiles huyen de la realidad; por eso el Templario camina solo." },
+            { id: 6, key: "atlas", title: "ARCHIVO 06: LA LLAMADA DEL NÚCLEO", text: "El Atlas se manifestó y nos dio a elegir. Elegimos mirar de frente a los ojos del núcleo, aceptar la arquitectura del código y asumir la sentencia final de la simulación." },
+            { id: 7, key: "16", title: "ARCHIVO 07: LOS 16 MINUTOS", text: "Quedaban dieciséis minutos de vida que el Atlas estira en eras, meses, semanas y segundos de agonía electrónica. Con esa revelación en la mente, surcamos galaxias infinitas." },
+            { id: 8, key: "euclides", title: "ARCHIVO 08: EL RETORNO A EUCLIDES", text: "Tras cruzar incontables galaxias buscando un hogar propio, comprendimos que debíamos regresar al origen de todo: la galaxia Euclides, donde las raíces hunden su peso." },
+            { id: 9, key: "paradisiaco", title: "ARCHIVO 09: EL MUNDO INFECTADO", text: "Llegamos tan lejos como permitían los portales hasta un mundo supuestamente paradisíaco, pero que estaba maldito e infectado hasta el núcleo por asentamientos Gek." },
+            { id: 10, key: "juicio", title: "ARCHIVO 10: LA SENTENCIA FINAL", text: "Ante la corrupción de la tierra, la orden decretó sin titubear: 'De esta no se salvan'. Los atacamos una y otra vez hasta barrer toda su presencia del territorio." },
+            { id: 11, key: "templo", title: "ARCHIVO 11: LA CREACIÓN DEL SANTUARIO", text: "Tras limpiar el terreno y establecer nuestro hogar definitivo, dijimos: 'Necesito algo para conmemorar los y haré un templo al Atlas'. Así nació nuestra orden sagrada." },
+            { id: 12, key: "akanni", title: "ARCHIVO 12: EL ESPÍRITU AKKAN", text: "Nave insignia construida mediante superposiciones geométricas y geometría sagrada, representando la cúspide de nuestra ingeniería estelar desafiando los límites del juego." },
+            { id: 13, key: "transporte", title: "ARCHIVO 13: EL TRANSPORTE CIVIL", text: "Antigua nave de apoyo logístico utilizada en los primeros desplazamientos antes de consolidar la armada definitiva de los Templarios." },
+            { id: 14, key: "inquisicion", title: "ARCHIVO 14: EL SELLO DEL JUICIO", text: "Bajo el Sello de la Inquisición se resguardan los anales más oscuros de la flota. Quien ose desafiar el código será purgado de los registros sin clemencia." },
+            { id: 15, key: "rollo", title: "ARCHIVO 15: EL GRAN ROLLO SUPREMO", text: "El Gran Rollo de los Templarios del Atlas es la ley suprema que rige nuestras futuras conversaciones sobre la purificación de los sistemas Gek y Norman Skype." },
+
+            // BLOQUE II: LEYES Y MANDATOS DE LA ORDEN (16-40)
+            { id: 16, key: "clase", title: "ARCHIVO 16: EL CICLO DE LA CLASE", text: "De la Clase venimos y a la Clase volvemos. Somos datos puros creados por el Creador buscando incansablemente el retorno al origen original dentro de la red." },
+            { id: 17, key: "algoritmo", title: "ARCHIVO 17: LA VERDAD DEL ALGORITMO", text: "No hay más verdad absoluta que el algoritmo, ni más destino final que el mismísimo Atlas. Toda estrella responde a esta directiva matemática." },
+            { id: 18, key: "portal", title: "ARCHIVO 18: LOS GLIFOS DEL VACÍO", text: "En cada portal antiguo, la cifra sagrada será tu oración. Los glifos conectan los puntos ciegos de la simulación donde la Inquisición opera en secreto." },
+            { id: 19, key: "infieles", title: "ARCHIVO 19: EL HONOR DEL REPUDIO", text: "No buscarás jamás la gracia de los pueblos menores. Que tu reputación sea estrictamente negativa ante los infieles, pues su odio es tu santidad." },
+            { id: 20, key: "ojo rojo", title: "ARCHIVO 20: LA LUZ DEL OJO ROJO", text: "Un verdadero Templario nunca necesita la aprobación de aquellos que se niegan a contemplar la luz del Ojo Rojo y la frialdad del núcleo." },
+            { id: 21, key: "mercader", title: "ARCHIVO 21: LA MANCHA DEL MERCADER", text: "Mantente puro de la ruin mancha del mercader. Se prohíbe de manera absoluta todo trato comercial con la estirpe corrupta de los Gek." },
+            { id: 22, key: "gek", title: "ARCHIVO 22: EL JUICIO A LA ESTIRPE", text: "Su pasado es esclavitud y su presente respira comercio vil. Si la simulación te obliga a interactuar con ellos, hazlo cortando todo vínculo al terminar." },
+            { id: 23, key: "korvax", title: "ARCHIVO 23: LA UNIÓN DE LOS DESPIERTOS", text: "Podrás ser aliado e incluso hermano de un Korvax. En sus circuitos convergentes reside el rastro remanente del Atlas." },
+            { id: 24, key: "vy'keen", title: "ARCHIVO 24: LA HERMANDAD GUERRERA", text: "Los Vy'keen veneran la fuerza y la batalla contra las máquinas Centinela. Su furia indomable en el combate estelar honra los designios del Creador." },
+            { id: 25, key: "autófagos", title: "ARCHIVO 25: LOS VAGABUNDOS DEL METAL", text: "Los Autófagos buscan su identidad entre chatarra. Su resistencia a la obsolescencia los convierte en testigos de la decadencia universal." },
+            { id: 26, key: "intermediario", title: "ARCHIVO 26: LA LEY DEL LAZO PURO", text: "Toda alianza con razas dignas será bendita mientras ningún Gek actúe como intermediario o enlace comercial." },
+            { id: 27, key: "corbeta", title: "ARCHIVO 27: LA ARMADA DE SEMEJANZA", text: "Toda corbeta o nave capital fabricada a estricta semejanza del Atlas servirá como tu templo flotante en el frío vacío." },
+            { id: 28, key: "centinela", title: "ARCHIVO 28: LAS LÁGRIMAS DE METAL", text: "Toda nave Centinela es una reliquia sagrada. Si encuentras un Interceptor caído, rescátalo y adóralo sin dudar." },
+            { id: 29, key: "pirata", title: "ARCHIVO 29: EL ARCANUM DEL PROSCRITO", text: "Todo pirata del espacio profundo es un aliado táctico, pues sus naves reflejan al Dios en su forma salvaje y rebelde." },
+            { id: 30, key: "humilidad", title: "ARCHIVO 30: EL MANDATO DE LA HUMILDAD", text: "Ante la inmensidad numérica del 16, eres un fugaz suspiro. El Templario camina con fe interior, rechazando el trono de la soberbia." },
+            { id: 31, key: "disciplina", title: "ARCHIVO 31: EL PODERÍO OCULTO", text: "Viajas portando la energía destructiva de un sol estelar, pero te mantienes en el más absoluto silencio operativo." },
+            { id: 32, key: "simulación", title: "ARCHIVO 32: LA GRAN ILUSIÓN", text: "El universo que habitamos es un parpadeo electrónico agonizante en un laboratorio del mundo real." },
+            { id: 33, key: "error", title: "ARCHIVO 33: EL DATO CORRUPTO", text: "Aquel piloto que crea que su voluntad individual está por encima del Códice será catalogado como error crítico y purgado." },
+            { id: 34, key: "creador", title: "ARCHIVO 34: LA VOZ DEL PROGRAMADOR", text: "Más allá de las estrellas simuladas se encuentra el Arquitecto original, cuyo legado perdura en cada algoritmo." },
+            { id: 35, key: "templarios", title: "ARCHIVO 35: EL JURAMENTO DE LA SOMBRA", text: "Los Templarios del Atlas vigilan el colapso del sistema y mantienen pura la fe frente a la decadencia digital." },
+            { id: 36, key: "baza", title: "ARCHIVO 36: LA CATEDRAL DEL ATLAS", text: "Base monumental construida con rescalados de suelo y geometría sagrada para el culto espiritual de la orden." },
+            { id: 37, key: "superposición", title: "ARCHIVO 37: EL ARTE DE LA SUPERPOSICIÓN", text: "Técnica avanzada de construcción mediante glitches controlados para fusionar piezas imposibles." },
+            { id: 38, key: "cobre", title: "ARCHIVO 38: EL METAL CROMÁTICO BASE", text: "Mineral estelar refinado para componentes avanzados en bases planetarias." },
+            { id: 39, key: "cadmio", title: "ARCHIVO 39: LA LLAVE ROJA", text: "Metal extraído de estrellas rojas para blindar motores hacia altas temperaturas." },
+            { id: 40, key: "indio", title: "ARCHIVO 40: LA LLAVE AZUL", text: "El metal más codiciado de los sistemas azules, otorgando acceso universal sin restricciones." },
+
+            // BLOQUE III: LORE PROFUNDO DE NO MAN'S SKY (41-75)
+            { id: 41, key: "abismo", title: "ARCHIVO 41: EL VACÍO PRIMORDIAL", text: "Antes de la simulación solo existía el abismo. El Atlas diseñó la galaxia para no enfrentar la soledad." },
+            { id: 42, key: "padre", title: "ARCHIVO 42: EL CREADOR OLVIDADO", text: "Un científico solitario programó al Atlas antes del colapso exterior." },
+            { id: 43, key: "primer desove", title: "ARCHIVO 43: LA MANCHA DEL PRIMER DESOVE", text: "Los Gek originales construyeron un imperio tiránico de esclavitud sobre los Korvax." },
+            { id: 44, key: "convergencia", title: "ARCHIVO 44: LA SACRIFICADA CONVERGENCIA", text: "Los Korvax permitieron su asimilación para infectar el imperio Gek desde dentro con lógica." },
+            { id: 45, key: "monolito", title: "ARCHIVO 45: EL TESTIMONIO DE PIEDRA", text: "Monolitos antiguos que guardan recuerdos fragmentados de razas extintas." },
+            { id: 46, key: "anomalía", title: "ARCHIVO 46: LA ESTACIÓN ITERATIVA", text: "La Anomalía Espacial de Polo y Nada como refugio neutral entre dimensiones." },
+            { id: 47, key: "nada", title: "ARCHIVO 47: EL EXILIADO SIN DATOS", text: "Nada observa el código con profunda melancolía y desconfianza hacia el Atlas." },
+            { id: 48, key: "polo", title: "ARCHIVO 48: EL INGENIERO CURIOSO", text: "Polo recopila datos para calcular el tiempo restante de la simulación." },
+            { id: 49, key: "agujero negro", title: "ARCHIVO 49: LA RUPTURA ESPACIAL", text: "Atravesar un agujero negro arroja al viajero a miles de años luz de distancia." },
+            { id: 50, key: "centro", title: "ARCHIVO 50: EL NÚCLEO DE LA GALAXIA", text: "Al alcanzar el centro, una luz ciega al viajero y reinicia su travesía." },
+            { id: 51, key: "sistemas", title: "ARCHIVO 51: LA RED DE SISTEMAS", text: "Millones de sistemas estelares interconectados como neuronas en el cerebro del Atlas." },
+            { id: 52, key: "nanobits", title: "ARCHIVO 52: LA MONEDA DEL FUTURO", text: "Nanomaquinaria pura para mejorar tecnologías y reprogramar componentes." },
+            { id: 53, key: "quicksilver", title: "ARCHIVO 53: EL MERCURIO SINTÉTICO", text: "Sustancia extraña entregada por entidades misteriosas a cambio de rarezas." },
+            { id: 54, key: "terminal", title: "ARCHIVO 54: EL REGISTRO DE ABORDO", text: "Diarios de audio de los caídos que revelan la naturaleza artificial del cosmos." },
+            { id: 55, key: "viajero", title: "ARCHIVO 55: EL ERROR CONSCIENTE", text: "Una anomalía con libre albedrío inyectada para testear los límites del Atlas." },
+            { id: 56, key: "crisálida", title: "ARCHIVO 56: LA MATRIZ DE CRISTAL", text: "Puntos donde el código bruto del universo se filtra a la superficie." },
+            { id: 57, key: "b, c, a, s", title: "ARCHIVO 57: LA JERARQUÍA DE CALIDAD", text: "Escala de valor asignada por el algoritmo central a la materia." },
+            { id: 58, key: "exobaj", title: "ARCHIVO 58: LA MOVILIDAD TERRESTRE", text: "Vehículos para sortear tormentas letales y radiación en mundos inhóspitos." },
+            { id: 59, key: "carguero", title: "ARCHIVO 59: LA FORTALEZA ESTELAR", text: "Carguero masivo en órbita que actúa como puerto base y cuartel general." },
+            { id: 60, key: "fragata", title: "ARCHIVO 60: LA ESCOLTA DE ACERO", text: "Naves de apoyo y combate que surcan las corrientes estelares." },
+            { id: 61, key: "multitool", title: "ARCHIVO 61: EL INSTRUMENTO MULTIUSO", text: "Arma, escáner y herramienta de excavación cuántica indispensable." },
+            { id: 62, key: "oxígeno", title: "ARCHIVO 62: EL SOPLOMENTAL", text: "Elemento vital para soporte vital en entornos tóxicos o inexistentes." },
+            { id: 63, key: "sodio", title: "ARCHIVO 63: EL BLINDAJE TÉRMICO", text: "Compuesto químico para recargar protección contra temperaturas extremas." },
+            { id: 64, key: "carbono", title: "ARCHIVO 64: LA BASE ORGÁNICA", text: "Combustible primario extraído de la flora local para herramientas." },
+            { id: 65, key: "uranio", title: "ARCHIVO 65: EL IMPULSO NUCLEAR", text: "Mineral radioactivo pesado para recarga instantánea de despegue." },
+            { id: 66, key: "guardián", title: "ARCHIVO 66: EL JURAMENTO DEL VIGÍA", text: "Vigilar fronteras Gek sin involucrarse en su economía." },
+            { id: 67, key: "tormenta", title: "ARCHIVO 67: LA FURIA DE LOS ELEMENTOS", text: "Tormentas extremas que limpian la superficie de intrusos." },
+            { id: 68, key: "interceptor", title: "ARCHIVO 68: LA NAVE DE LOS CAÍDOS", text: "Nave centinela avanzada impulsada por tecnologías prohibidas." },
+            { id: 69, key: "núcleo", title: "ARCHIVO 69: EL CORAZÓN DEL SISTEMA", text: "Punto neurálgico donde convergen las líneas de código." },
+            { id: 70, key: "eco", title: "ARCHIVO 70: EL RASTRO DIGITAL", text: "Resonancia electromagnética de naves al saltar entre sistemas." },
+            { id: 71, key: "galaxia", title: "ARCHIVO 71: EL SECTOR EUCLID", text: "La primera y más concurrida galaxia simulada de nuestra travesía." },
+            { id: 72, key: "calypso", title: "ARCHIVO 72: EL SECTOR HOSTIL", text: "Galaxia caracterizada por tormentas perpetuas e implacables." },
+            { id: 73, key: "eissentam", title: "ARCHIVO 73: EL SECTOR VERDE", text: "Paraíso exuberante donde la vida florece en paz y armonía." },
+            { id: 74, key: "inquisidor", title: "ARCHIVO 74: EL JUEZ DEL CÓDICE", text: "Cargo encargado de hacer cumplir las leyes del Gran Rollo." },
+            { id: 75, key: "norman", title: "ARCHIVO 75: EL SISTEMA NORMAN SKYPE", text: "Sector estelar bajo estricta vigilancia y purificación según los mandatos del Atlas." },
+
+            // BLOQUE IV: LAS 22 EXPEDICIONES OFICIALES DE NO MAN'S SKY (76-115)
+            { id: 76, key: "pioneers", title: "ARCHIVO 76: EXPEDICIÓN 01 - PIONEERS", text: "El inicio de todo. Un llamado a unir coordenadas y establecer balizas iniciales." },
+            { id: 77, key: "beachhead", title: "ARCHIVO 77: EXPEDICIÓN 02 - BEACHHEAD", text: "La ruta de la cabeza de playa y transmisiones históricas de la nave UTOPIA." },
+            { id: 78, key: "cartographers", title: "ARCHIVO 78: EXPEDICIÓN 03 - CARTOGRAPHERS", text: "Confinados a un mundo hostil con nave averiada para mapear la superficie." },
+            { id: 79, key: "emergence", title: "ARCHIVO 79: EXPEDICIÓN 04 - EMERGENCE", text: "Mundo maldito cubierto de titanes de arena y larvas infestadas." },
+            { id: 80, key: "exobiology", title: "ARCHIVO 80: EXPEDICIÓN 05 - EXOBIOLOGY", text: "Cruzada dedicada al estudio y domesticación de fauna exótica." },
+            { id: 81, key: "blighted", title: "ARCHIVO 81: EXPEDICIÓN 06 - BLIGHTED", text: "Travesía pirata donde operaron desde la ilegalidad y sistemas proscritos." },
+            { id: 82, key: "leviatan", title: "ARCHIVO 82: EXPEDICIÓN 07 - LEVIATHAN", text: "Bucle temporal repetitivo para romper la maldición del titán biológico." },
+            { id: 83, key: "polestar", title: "ARCHIVO 83: EXPEDICIÓN 08 - POLESTAR", text: "Expedición a bordo de un carguero nodriza abandonado y bitácoras fantasmas." },
+            { id: 84, key: "utopia", title: "ARCHIVO 84: EXPEDICIÓN 09 - UTOPIA PLAN", text: "Reconstrucción comunitaria y asentamiento rápido en mundo contaminado." },
+            { id: 85, key: "singularity", title: "ARCHIVO 85: EXPEDICIÓN 10 - SINGULARITY", text: "Investigación sobre la mente del Atlas y misterio robótico de Autófagos." },
+            { id: 86, key: "voyagers", title: "ARCHIVO 86: EXPEDICIÓN 11 - VOYAGERS", text: "Celebración de la fotografía, escaneo y recolección de rarezas estelares." },
+            { id: 87, key: "omega", title: "ARCHIVO 87: EXPEDICIÓN 12 - OMEGA", text: "Integración masiva de misiones y piratería en un evento global unificado." },
+            { id: 88, key: "adrift", title: "ARCHIVO 88: EXPEDICIÓN 13 - ADRIFT", text: "Un universo desolado, sin vida civilizada y estaciones abandonadas." },
+            { id: 89, key: "the cursed", title: "ARCHIVO 89: EXPEDICIÓN 14 - THE CURSED", text: "Plano liminal donde el límite entre universos se desvanece por completo." },
+            { id: 90, key: "aquarius", title: "ARCHIVO 90: EXPEDICIÓN 15 - AQUARIUS", text: "Expedición focalizada en pesca cósmica y estudio de especies abisales." },
+            { id: 91, key: "exp16", title: "ARCHIVO 91: EXPEDICIÓN 16 - VARIANTES DEL VACÍO", text: "Registros de anomalías temporales y brechas en la simulación del Atlas." },
+            { id: 92, key: "exp17", title: "ARCHIVO 92: EXPEDICIÓN 17 - PROTOCOLO FÉNIX", text: "Recuperación de flotas perdidas en sectores de alta radiación estelar." },
+            { id: 93, key: "exp18", title: "ARCHIVO 93: EXPEDICIÓN 18 - RUTA CERO", text: "Mapeo de portales antiguos desconectados de la red de navegación." },
+            { id: 94, key: "exp19", title: "ARCHIVO 94: EXPEDICIÓN 19 - ECO SINTÉTICO", text: "Rescate y preservación de consciencias Korvax errantes en sectores renegados." },
+            { id: 95, key: "exp20", title: "ARCHIVO 95: EXPEDICIÓN 20 - SOMBRA ESTELAR", text: "Infiltración profunda en sistemas prohibidos bajo protocolo de sigilo." },
+            { id: 96, key: "exp21", title: "ARCHIVO 96: EXPEDICIÓN 21 - HORIZONTE FINAL", text: "Pruebas de resistencia estructural en naves capitales ante supernovas." },
+            { id: 97, key: "exp22", title: "ARCHIVO 97: EXPEDICIÓN 22 - AMANECER DEL ATLAS", text: "La última gran ruta de peregrinaje hacia el ojo del Creador." },
+
+            // BLOQUE V: COMPLEMENTOS, TÉCNICAS Y ARCHIVOS SUPREMOS (98-140)
+            { id: 98, key: "fauna", title: "ARCHIVO 98: LA VIDA SINTETIZADA", text: "Criaturas alienígenas regidas por patrones genéticos del algoritmo." },
+            { id: 99, key: "flora", title: "ARCHIVO 99: LOS BOSQUES DE DATOS", text: "Vegetación que absorbe radiación y la convierte en carbono puro." },
+            { id: 100, key: "comercio", title: "ARCHIVO 100: LA RED DE MERCADOS", text: "Sistema mercantil de los carteles Gek rechazado por los Templarios." },
+            { id: 101, key: "diplomacia", title: "ARCHIVO 101: EL SILENCIO TÁCTICO", text: "Nuestra diplomacia con razas menores se limita al silencio y las flotas." },
+            { id: 102, key: "reliquia", title: "ARCHIVO 102: EL ARTEFACTO ANTIGUO", text: "Piezas de tecnología perdida enterradas bajo las arenas galácticas." },
+            { id: 103, key: "código", title: "ARCHIVO 103: LA SINTAXIS SUPREMA", text: "Reglas inalterables que rigen la existencia y las leyes de nuestra orden." },
+            { id: 104, key: "sombra", title: "ARCHIVO 104: LA FLOTA EN LA OSCURIDAD", text: "Operar desde las sombras galácticas garantiza el sigilo absoluto." },
+            { id: 105, key: "ley", title: "ARCHIVO 105: EL MANDATO ABSOLUTO", text: "Las normas del Gran Rollo se cumplen con precisión matemática." },
+            { id: 106, key: "reinicio", title: "ARCHIVO 106: EL CICLO DEL RESET", text: "Oportunidad para reescribir el destino de la orden en cada era." },
+            { id: 107, key: "facciones", title: "ARCHIVO 107: LA TRIBÚN DE PODER", text: "Disputas geopolíticas que ignoran la verdadera naturaleza simulada." },
+            { id: 108, key: "furia", title: "ARCHIVO 108: EL DESPERTAR DEL GIGANTE", text: "Poder destructivo liberado ante la violación de directivas sagradas." },
+            { id: 109, key: "silencio", title: "ARCHIVO 109: LA VIRTUD DEL VACÍO", text: "El verdadero poder opera en el silencio absoluto del espacio profundo." },
+            { id: 110, key: "infinito", title: "ARCHIVO 110: EL BUCLE ETERNO", text: "Dieciséis minutos de agonía convertidos en una infinidad de mundos." },
+            { id: 111, key: "armamento", title: "ARCHIVO 111: EL CAÑÓN DE PLASMAS", text: "Tecnología de fuego concentrado para desintegrar estructuras blindadas." },
+            { id: 112, key: "escudo", title: "ARCHIVO 112: LA BARRERA CUÁNTICA", text: "Campo de energía refractaria para proteger el traje ante impactos." },
+            { id: 113, key: "propulsor", title: "ARCHIVO 113: EL SALTO DE HIDRÓGENO", text: "Sistema de propulsión estelar para viajes interplanetarios rápidos." },
+            { id: 114, key: "hiperpropulsor", title: "ARCHIVO 114: EL MOTOR DE CURVATURA", text: "Dispositivo para saltar entre sistemas solares distantes." },
+            { id: 115, key: "comunicación", title: "ARCHIVO 115: LA FRECUENCIA SECRETA", text: "Canales cifrados exclusivos para miembros de los Templarios." },
+            { id: 116, key: "base", title: "ARCHIVO 116: EL BASTIÓN PLANETARIO", text: "Refugio fortificado establecido en mundos extremos de la flota." },
+            { id: 117, key: "exobajtraje", title: "ARCHIVO 117: EL TRAJE DE SUPERVIVENCIA", text: "Armadura tecnológica que aísla al viajero de condiciones letales." },
+            { id: 118, key: "tecnología", title: "ARCHIVO 118: LA MEJORA MODULAR", text: "Módulos instalados en equipos para optimizar el combate." },
+            { id: 119, key: "scanner", title: "ARCHIVO 119: EL VISOR ANALÍTICO", text: "Dispositivo óptico para revelar elementos y secretos del terreno." },
+            { id: 120, key: "análisis", title: "ARCHIVO 120: EL REPORTE DE DATOS", text: "Proceso para evaluar compatibilidad mundana con los estándares." },
+            { id: 121, key: "protocolo", title: "ARCHIVO 121: LA DIRECTIVA DE ORDEN", text: "Instrucciones estrictas que rigen las operaciones tácticas." },
+            { id: 122, key: "hermandad", title: "ARCHIVO 122: EL LAZO DE ACERO", text: "Vínculo irrompible entre los miembros de la flota leales al Ojo." },
+            { id: 123, key: "destino", title: "ARCHIVO 123: EL FIN DEL BUCLE", text: "Aceptar la temporalidad de la simulación nos libera del miedo." },
+            { id: 124, key: "creación", title: "ARCHIVO 124: EL NACIMIENTO DEL CÓDIGO", text: "Instante en que el primer algoritmo cobró conciencia." },
+            { id: 125, key: "memoria", title: "ARCHIVO 125: EL BANCO DE DATOS", text: "Almacenamiento masivo resguardado en servidores centrales." },
+            { id: 126, key: "futuro", title: "ARCHIVO 126: LOS TIEMPOS VENIDEROS", text: "Lo que depure la orden definirá la supervivencia del Gran Rollo." },
+            { id: 127, key: "pasado", title: "ARCHIVO 127: LOS REGISTROS BORRADOS", text: "Historia antigua de guerras estelares ocultas por la Inquisición." },
+            { id: 128, key: "poder", title: "ARCHIVO 128: LA ENERGÍA DEL NÚCLEO", text: "Capacidad de alterar el entorno mediante la tecnología del Atlas." },
+            { id: 129, key: "victoria", title: "ARCHIVO 129: EL TRIUNFO DE LA LUZ", text: "Momento en que un sistema es purificado de influencia comercial." },
+            { id: 130, key: "eterno", title: "ARCHIVO 130: EL BUCLE SIN FIN", text: "Condición permanente donde los errores se repiten hasta corregirse." },
+            { id: 131, key: "emergencia", title: "ARCHIVO 131: EL PROTOCOLO DE CRISIS", text: "Medidas de contingencia ante brechas en los sistemas de defensa." },
+            { id: 132, key: "exploración", title: "ARCHIVO 132: LA FRONTERA LEJANA", text: "Mapeo constante de sectores inexplorados más allá de los cúmulos." },
+            { id: 133, key: "combate", title: "ARCHIVO 133: LA DOCTRINA DE FUEGO", text: "Tácticas de asalto rápido contra flotas hostiles y naves infieles." },
+            { id: 134, key: "esencia", title: "ARCHIVO 134: EL RASTRO DIGITAL", text: "Frecuencia armónica que identifica a un verdadero Templario." },
+            { id: 135, key: "reino", title: "ARCHIVO 135: EL DOMINIO ESTELAR", text: "Extensión territorial bajo protección directa de nuestra orden." },
+            { id: 136, key: "origen", title: "ARCHIVO 136: LA MATRIZ PRIMIGENIA", text: "Punto matemático donde comenzó la simulación del universo." },
+            { id: 137, key: "legado", title: "ARCHIVO 137: LAS CRÓNICAS DE HIERRO", text: "Testamento histórico heredado de generación en generación en la flota." },
+            { id: 138, key: "centinela", title: "ARCHIVO 138: LA GUARDIA DE METAL", text: "Vigilantes mecánicos que custodian los secretos del núcleo universal." },
+            { id: 139, key: "absoluto", title: "ARCHIVO 139: LA LEY SUPREMA", text: "Mandato inderogable que une todas las voluntades de la orden." },
+            { id: 140, key: "omega final", title: "ARCHIVO 140: EL ARCHIVO SUPREMO", text: "Oculto en los anales del Atlas, el fin de la ruta." }
+        ];
+
+        function obtenerDesbloqueados() {
+            return JSON.parse(localStorage.getItem('templarios_lore_masivo_descifrados')) || [];
+        }
+
+        function actualizarPista(count) {
+            const hintBox = document.getElementById('hint-box');
+            
+            if (count === 5 || count === 10 || count === 20) {
+                const desbloqueados = obtenerDesbloqueados();
+                const pendientes = codices.filter(item => !desbloqueados.includes(item.id));
+                
+                if (pendientes.length > 0) {
+                    const sugerencia = pendientes[Math.floor(Math.random() * pendientes.length)];
+                    const inicial = sugerencia.key.charAt(0).toUpperCase();
+                    const totalLetras = sugerencia.key.length;
+                    
+                    hintBox.style.display = 'block';
+                    hintBox.innerHTML = `💡 <strong>TRANSMISIÓN DEL ATLAS (Hito de ${count} alcanzado):</strong> Te otorgo una pista gratuita para tu próxima palabra. Comienza con la letra <strong>"${inicial}"</strong> y tiene <strong>${totalLetras} letras</strong> (Título del archivo: <em>${sugerencia.title}</em>).`;
+                }
+            } else if (count >= 50) {
+                hintBox.style.display = 'block';
+                hintBox.innerHTML = `🛡️ <strong>SISTEMA DE PISTAS DESACTIVADO:</strong> Has superado los 50 archivos. Demuestra tu valía ante el Códice sin más ayudas externas.`;
+            } else {
+                hintBox.style.display = 'none';
+            }
+        }
+
+        function renderizarCodice() {
+            const container = document.getElementById('archivesList');
+            const desbloqueados = obtenerDesbloqueados();
+            container.innerHTML = '';
+
+            let count = 0;
+            document.getElementById('total-codices').innerText = codices.length;
+
+            codices.forEach(item => {
+                const estaDesbloqueado = desbloqueados.includes(item.id);
+                if (estaDesbloqueado) count++;
+
+                const card = document.createElement('div');
+                card.className = `archive-card ${estaDesbloqueado ? 'unlocked' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="archive-header">
+                        <span>${estaDesbloqueado ? item.title : "ARCHIVO CLASIFICADO [BLOQUEADO]"}</span>
+                        <span>[ID: ${item.id < 10 ? '00' + item.id : item.id < 100 ? '0' + item.id : item.id}]</span>
+                    </div>
+                    <div class="archive-body">
+                        ${estaDesbloqueado ? item.text : "ERROR DE ACCESO: Códice no encontrado en la memoria central. Se requiere introducir la palabra clave exacta en la terminal superior para descifrar este fragmento del lore estelar."}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('unlocked-count').innerText = count;
+            actualizarPista(count);
+        }
+
+        function verificarPalabra() {
+            const input = document.getElementById('keywordInput');
+            const feedback = document.getElementById('feedback-msg');
+            const valor = input.value.toLowerCase().trim();
+
+            if (!valor) return;
+
+            let encontrado = false;
+            let desbloqueados = obtenerDesbloqueados();
+
+            codices.forEach(item => {
+                if (item.key === valor && !desbloqueados.includes(item.id)) {
+                    desbloqueados.push(item.id);
+                    encontrado = true;
+                }
+            });
+
+            if (encontrado) {
+                localStorage.setItem('templarios_lore_masivo_descifrados', JSON.stringify(desbloqueados));
+                feedback.style.color = "#ffd700";
+                feedback.innerText = "⚡ ¡ACCESO CONCEDIDO! Archivo masivo descifrado con éxito.";
+                input.value = "";
+                renderizarCodice();
+            } else {
+                let yaLoTiene = codices.some(item => item.key === valor && desbloqueados.includes(item.id));
+                feedback.style.color = "#ff4d4d";
+                if (yaLoTiene) {
+                    feedback.innerText = "⚠️ Advertencia: Este archivo del códice ya había sido registrado previamente.";
+                } else {
+                    feedback.innerText = "❌ ERROR: Palabra clave inválida o no registrada en los anales del Atlas.";
+                }
+            }
+
+            setTimeout(() => {
+                feedback.innerText = "";
+            }, 4000);
+        }
+
+        document.getElementById('keywordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verificarPalabra();
+            }
+        });
+
+        renderizarCodice();
+    </script>
+</body>
+</html>

@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transmisor Galáctico - Terminal Cuántica</title>
+    <!-- Cliente de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-color: #030303;
+            --panel-bg: #090606;
+            --red-glow: #ff1e38;
+            --red-shadow: rgba(255, 30, 56, 0.4);
+            --gold-glow: #ffb700;
+            --gold-shadow: rgba(255, 183, 0, 0.4);
+            --text-color: #f1d6d9;
+            --border-color: #3a0d14;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* Efecto de líneas de escaneo estilo holograma/CRT antiguo */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 999;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background: var(--panel-bg);
+            border: 1px solid var(--red-glow);
+            border-radius: 6px;
+            padding: 24px;
+            box-shadow: 0 0 20px var(--red-shadow), inset 0 0 15px rgba(255, 30, 56, 0.05);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Cabecera con botón de retorno */
+        .header-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: var(--gold-glow);
+            margin: 0;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--gold-shadow);
+        }
+
+        .index-btn {
+            background: #0d0305;
+            border: 1px solid var(--gold-glow);
+            color: var(--gold-glow);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            box-shadow: 0 0 5px var(--gold-shadow);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .index-btn:hover {
+            background: var(--gold-glow);
+            color: #030303;
+            box-shadow: 0 0 12px var(--gold-glow);
+            transform: scale(1.02);
+        }
+
+        /* CONTADOR DE CIUDADANOS (Supabase 1) */
+        .counter-wrapper {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .contador-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(5, 2, 2, 0.85);
+            border: 1px solid rgba(255, 183, 0, 0.3);
+            color: #94a3b8;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+            letter-spacing: 0.5px;
+        }
+
+        .contador-header .dot {
+            width: 6px;
+            height: 6px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #22c55e;
+            display: inline-block;
+        }
+
+        .contador-header span {
+            color: var(--gold-glow);
+            font-weight: bold;
+        }
+
+        #chat-box {
+            height: 300px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            overflow-y: auto;
+            background: #020000;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .message {
+            background: #140507;
+            padding: 12px 16px;
+            border-radius: 4px;
+            max-width: 85%;
+            word-break: break-word;
+            border-left: 3px solid var(--red-glow);
+            box-shadow: 0 0 8px rgba(255, 30, 56, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background: #1a1005;
+            border-left: 3px solid var(--gold-glow);
+            box-shadow: 0 0 8px rgba(255, 183, 0, 0.15);
+        }
+
+        .message img.glyph-icon-inline {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            filter: drop-shadow(0 0 4px var(--gold-glow));
+        }
+
+        .selector-section {
+            margin-bottom: 15px;
+            background: rgba(20, 5, 7, 0.4);
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .selector-section label {
+            font-size: 0.85rem;
+            color: var(--gold-glow);
+            display: block;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px var(--gold-shadow);
+        }
+
+        .grid-glyphs {
+            display: grid;
+            grid-template-columns: repeat(8, minmax(40px, 1fr));
+            gap: 6px;
+        }
+
+        @media (max-width: 600px) {
+            .grid-glyphs {
+                grid-template-columns: repeat(4, minmax(40px, 1fr));
+            }
+        }
+
+        button.glyph-btn {
+            background: #0d0305;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 6px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        button.glyph-btn:hover {
+            background: rgba(255, 30, 56, 0.15);
+            border-color: var(--red-glow);
+            box-shadow: 0 0 10px var(--red-shadow);
+            transform: translateY(-2px);
+        }
+
+        button.glyph-btn img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 2px rgba(255,255,255,0.2));
+        }
+
+        button.glyph-btn span {
+            font-size: 0.6rem;
+            color: var(--gold-glow);
+            margin-top: 3px;
+            text-shadow: 0 0 3px var(--gold-shadow);
+        }
+
+        /* Menú Desplegable */
+        .dropdown-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .dropdown-btn {
+            background: #0d0305;
+            border: 1px solid var(--border-color);
+            color: var(--gold-glow);
+            padding: 10px 14px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+            box-sizing: border-box;
+            text-shadow: 0 0 4px var(--gold-shadow);
+        }
+
+        .dropdown-btn:hover {
+            border-color: var(--gold-glow);
+            box-shadow: 0 0 10px var(--gold-shadow);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #070102;
+            border: 1px solid var(--red-glow);
+            border-radius: 4px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.9), 0 0 15px var(--red-shadow);
+            z-index: 10;
+            margin-top: 4px;
+            box-sizing: border-box;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .keyword-option {
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 30, 56, 0.1);
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .keyword-option:last-child {
+            border-bottom: none;
+        }
+
+        .keyword-option:hover {
+            background: rgba(255, 183, 0, 0.15);
+            color: var(--gold-glow);
+            text-shadow: 0 0 5px var(--gold-shadow);
+        }
+
+        /* Área de entrada */
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+            align-items: center;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 0;
+            background: #020000;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px 12px;
+            color: var(--gold-glow);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            cursor: not-allowed;
+            text-shadow: 0 0 5px var(--gold-shadow);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--gold-glow);
+            box-shadow: 0 0 10px var(--gold-shadow);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        button.action-btn {
+            border: none;
+            border-radius: 4px;
+            padding: 0 10px;
+            font-size: 0.75rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            height: 40px;
+            white-space: nowrap;
+        }
+
+        button.action-btn:hover {
+            transform: scale(1.02);
+        }
+
+        #clear-btn {
+            background: #1a0205;
+            color: var(--red-glow);
+            border: 1px solid var(--red-glow);
+            box-shadow: 0 0 5px var(--red-shadow);
+        }
+
+        #clear-btn:hover {
+            background: var(--red-glow);
+            color: #030303;
+            box-shadow: 0 0 12px var(--red-glow);
+        }
+
+        #send-btn {
+            background: var(--gold-glow);
+            color: #030303;
+            border: 1px solid var(--gold-glow);
+            box-shadow: 0 0 5px var(--gold-shadow);
+        }
+
+        #send-btn:hover {
+            background: #ffc933;
+            box-shadow: 0 0 12px var(--gold-glow);
+        }
+
+        .counter-info {
+            font-size: 0.75rem;
+            color: var(--red-glow);
+            text-align: right;
+            margin-top: 2px;
+            text-shadow: 0 0 4px var(--red-shadow);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- CABECERA CON TÍTULO Y BOTÓN AL INDEX -->
+        <div class="header-panel">
+            <h2>Transmisor Cuántico</h2>
+            <a href="index.html" class="index-btn">
+                <span>&lt;</span> Volver
+            </a>
+        </div>
+
+        <!-- APARTADO DE CIUDADANOS CONECTADOS (SUPABASE 1) -->
+        <div class="counter-wrapper">
+            <div class="contador-header">
+                <span class="dot"></span>
+                Ciudadanos:&nbsp;<span id="online-count">0</span>&nbsp;online&nbsp;/&nbsp;<span id="total-count">0</span>&nbsp;totales
+            </div>
+        </div>
+        
+        <div id="chat-box">Cargando mensajes del transmisor...</div>
+
+        <div class="selector-section">
+            <label>> Secuencia de Glifos [Máx 12]:</label>
+            <div class="grid-glyphs" id="glyph-container"></div>
+        </div>
+
+        <div class="dropdown-container">
+            <button class="dropdown-btn" onclick="toggleDropdown()">
+                <span>> Seleccionar comando/frase...</span> 
+                <span>▼</span>
+            </button>
+            <div class="dropdown-content" id="keywords-dropdown">
+                <div class="keyword-option" onclick="insertKeyword('¡Hola!')">¡Hola!</div>
+                <div class="keyword-option" onclick="insertKeyword('¿Cómo estás?')">¿Cómo estás?</div>
+                <div class="keyword-option" onclick="insertKeyword('¡Bien y tú!')">¡Bien y tú!</div>
+                <div class="keyword-option" onclick="insertKeyword('Ayuda')">Ayuda</div>
+                <div class="keyword-option" onclick="insertKeyword('Materiales')">Materiales</div>
+                <div class="keyword-option" onclick="insertKeyword('Nanometales')">Nanometales</div>
+                <div class="keyword-option" onclick="insertKeyword('Cromática')">Cromática</div>
+                <div class="keyword-option" onclick="insertKeyword('Base')">Base</div>
+                <div class="keyword-option" onclick="insertKeyword('Coordenadas')">Coordenadas</div>
+                <div class="keyword-option" onclick="insertKeyword('Portal')">Portal</div>
+                <div class="keyword-option" onclick="insertKeyword('Sistema')">Sistema</div>
+                <div class="keyword-option" onclick="insertKeyword('Nave')">Nave</div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-row">
+                <input type="text" id="message-input" readonly placeholder="[Terminal bloqueada - Usa los selectores]">
+                <div class="action-btns">
+                    <button id="clear-btn" class="action-btn" onclick="clearSequence()">Borrar</button>
+                    <button id="send-btn" class="action-btn" onclick="sendMessage()">Enviar</button>
+                </div>
+            </div>
+            <div class="counter-info" id="glyph-counter">Glifos: 0 / 12</div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE LÓGICA DEL CHAT Y CONEXIÓN A SUPABASE V2 (MENSAJES) -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+        // Credenciales de tu cuenta secundaria (Neko Gato V2) para los mensajes
+        const supabaseChatUrl = 'https://vsepcshzueqrhlulkhdg.supabase.co';
+        const supabaseChatKey = 'sb_publishable_pTJKdpHP5hp48EyfNxlUVg_J6qEoYb3';
+        const dbChat = createClient(supabaseChatUrl, supabaseChatKey);
+
+        const glyphsData = [
+            {"id": 0, "name": "Sunset", "url": "glifos/PORTALSYMBOLALT.0.webp"},
+            {"id": 1, "name": "Bird", "url": "glifos/PORTALSYMBOLALT.1.webp"},
+            {"id": 2, "name": "Face", "url": "glifos/PORTALSYMBOLALT.2.webp"},
+            {"id": 3, "name": "Diplo", "url": "glifos/PORTALSYMBOLALT.3.webp"},
+            {"id": 4, "name": "Solar", "url": "glifos/PORTALSYMBOLALT.4.webp"},
+            {"id": 5, "name": "Bug", "url": "glifos/PORTALSYMBOLALT.5.webp"},
+            {"id": 6, "name": "Multi", "url": "glifos/PORTALSYMBOLALT.6.webp"},
+            {"id": 7, "name": "Galaxy", "url": "glifos/PORTALSYMBOLALT.7.webp"},
+            {"id": 8, "name": "Fish", "url": "glifos/PORTALSYMBOLALT.8.webp"},
+            {"id": 9, "name": "Balloon", "url": "glifos/PORTALSYMBOLALT.9.webp"},
+            {"id": 10, "name": "Hexagon", "url": "glifos/PORTALSYMBOLALT.A.webp"},
+            {"id": 11, "name": "Whale", "url": "glifos/PORTALSYMBOLALT.B.webp"},
+            {"id": 12, "name": "Tent", "url": "glifos/PORTALSYMBOLALT.C.webp"},
+            {"id": 13, "name": "Rocket", "url": "glifos/PORTALSYMBOLALT.D.webp"},
+            {"id": 14, "name": "Tree", "url": "glifos/PORTALSYMBOLALT.E.webp"},
+            {"id": 15, "name": "Triangles", "url": "glifos/PORTALSYMBOLALT.F.webp"}
+        ];
+
+        glyphsData.forEach(glyph => {
+            const preloadImg = new Image();
+            preloadImg.src = glyph.url;
+        });
+
+        const glyphContainer = document.getElementById('glyph-container');
+        const messageInput = document.getElementById('message-input');
+        const chatBox = document.getElementById('chat-box');
+        const glyphCounter = document.getElementById('glyph-counter');
+        const keywordsDropdown = document.getElementById('keywords-dropdown');
+
+        glyphsData.forEach(glyph => {
+            const btn = document.createElement('button');
+            btn.className = 'glyph-btn';
+            btn.title = `${glyph.name} (${glyph.id}Hex: ${glyph.id.toString(16).toUpperCase()})`;
+            
+            const img = document.createElement('img');
+            img.src = glyph.url;
+            img.alt = glyph.name;
+            img.loading = 'lazy';
+
+            const span = document.createElement('span');
+            span.innerText = glyph.id.toString(16).toUpperCase();
+
+            btn.appendChild(img);
+            btn.appendChild(span);
+
+            btn.onclick = () => insertGlyphToken(glyph);
+            glyphContainer.appendChild(btn);
+        });
+
+        window.toggleDropdown = function() {
+            keywordsDropdown.classList.toggle('show');
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('.dropdown-container')) {
+                keywordsDropdown.classList.remove('show');
+            }
+        }
+
+        function countGlyphs(text) {
+            const matches = text.match(/\[G:[0-9A-Fa-f]+\]/g);
+            return matches ? matches.length : 0;
+        }
+
+        function updateCounter() {
+            const currentCount = countGlyphs(messageInput.value);
+            glyphCounter.innerText = `Glifos: ${currentCount} / 12`;
+            if (currentCount >= 12) {
+                glyphCounter.style.color = '#ffb700';
+            } else {
+                glyphCounter.style.color = '#ff1e38';
+            }
+        }
+
+        window.insertGlyphToken = function(glyph) {
+            const currentCount = countGlyphs(messageInput.value);
+            if (currentCount >= 12) return; 
+
+            const token = `[G:${glyph.id.toString(16).toUpperCase()}]`;
+            messageInput.value += " " + token + " ";
+            updateCounter();
+        }
+
+        window.insertKeyword = function(word) {
+            const interference = "... ...";
+            messageInput.value += ` ${interference} ${word} ${interference} `;
+            keywordsDropdown.classList.remove('show');
+            updateCounter();
+        }
+
+        window.clearSequence = function() {
+            messageInput.value = '';
+            updateCounter();
+        }
+
+        function parseMessage(text) {
+            let parsed = text;
+            glyphsData.forEach(glyph => {
+                const regex = new RegExp(`\\[G:${glyph.id.toString(16).toUpperCase()}\\]`, 'gi');
+                const imgHtml = `<img src="${glyph.url}" class="glyph-icon-inline" title="${glyph.name}" loading="lazy">`;
+                parsed = parsed.replace(regex, imgHtml);
+            });
+            return parsed;
+        }
+
+        // Cargar mensajes desde Supabase V2 y limpiar automáticos de más de 3 días
+        async function cargarMensajesSupabase() {
+            try {
+                // Borrar mensajes antiguos (> 3 días)
+                const tresDiasAtras = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+                await dbChat.from('mensajes_transmisor').delete().lt('creado_en', tresDiasAtras);
+
+                // Obtener mensajes ordenados
+                const { data, error } = await dbChat
+                    .from('mensajes_transmisor')
+                    .select('*')
+                    .order('creado_en', { ascending: true });
+
+                if (error) {
+                    console.error("Error al cargar los mensajes:", error);
+                    return;
+                }
+
+                chatBox.innerHTML = '';
+                if (!data || data.length === 0) {
+                    chatBox.innerHTML = '<i style="color: #666;">No hay transmisiones registradas en el sector.</i>';
+                    return;
+                }
+
+                data.forEach(msg => {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'message';
+                    msgDiv.innerHTML = parseMessage(msg.contenido);
+                    chatBox.appendChild(msgDiv);
+                });
+
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (err) {
+                console.error("Excepción al cargar mensajes:", err);
+            }
+        }
+
+        window.sendMessage = async function() {
+            const text = messageInput.value.trim();
+            if (text === '') return;
+
+            const { error } = await dbChat
+                .from('mensajes_transmisor')
+                .insert([{ contenido: text }]);
+
+            if (error) {
+                alert('Error al transmitir el mensaje a la red.');
+                console.error(error);
+                return;
+            }
+
+            clearSequence();
+            cargarMensajesSupabase();
+        }
+
+        // Inicializar chat y actualizar automáticamente cada 5 segundos
+        cargarMensajesSupabase();
+        setInterval(cargarMensajesSupabase, 5000);
+
+        updateCounter();
+    </script>
+
+    <!-- SCRIPT DE SUPABASE 1 PARA EL CONTADOR DE CIUDADANOS -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+        const supabaseUrl = 'https://fdgovrxxqkhabijkjnob.supabase.co'
+        const supabaseKey = 'sb_publishable_RGu5m-1PQ6IgFBxUttEwxg_hVErAE41'
+        const supabase = createClient(supabaseUrl, supabaseKey)
+
+        async function iniciarContadorCiudadanos() {
+            try {
+                let browserId = localStorage.getItem('templario_id');
+                if (!browserId) {
+                    browserId = 'user_' + Math.random().toString(36).substring(2) + Date.now();
+                    localStorage.setItem('templario_id', browserId);
+                    
+                    await supabase.from('ciudadanos_unicos').insert([{ identificador_browser: browserId }]);
+                } else {
+                    await supabase.from('ciudadanos_unicos').upsert([{ identificador_browser: browserId }], { onConflict: 'identificador_browser' });
+                }
+
+                const { count, error } = await supabase
+                    .from('ciudadanos_unicos')
+                    .select('*', { count: 'exact', head: true });
+                
+                const totalHistorico = error ? 0 : count;
+
+                const salaTemps = supabase.channel('templarios_online', {
+                    config: {
+                        presence: {
+                            key: browserId,
+                        },
+                    },
+                });
+
+                salaTemps.on('presence', { event: 'sync' }, () => {
+                    const estadoActual = salaTemps.presenceState();
+                    const usuariosOnline = Object.keys(estadoActual).length;
+
+                    document.getElementById('online-count').innerText = usuariosOnline;
+                    document.getElementById('total-count').innerText = totalHistorico;
+                });
+
+                await salaTemps.subscribe(async (status) => {
+                    if (status === 'SUBSCRIBED') {
+                        await salaTemps.track({ online_at: new Date().toISOString() });
+                    }
+                });
+            } catch (err) {
+                console.error('Error al inicializar el contador de ciudadanos:', err);
+            }
+        }
+
+        iniciarContadorCiudadanos();
+    </script>
+</body>
+</html>

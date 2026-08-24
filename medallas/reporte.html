@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossier Oficial // Templarios del Atlas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { 
+            background-color: #04060b; 
+            color: #e2e8f0; 
+            font-family: 'Courier New', monospace; 
+            padding: 20px; 
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Efecto de líneas de escaneo CRT */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 99999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* Partículas estelares de fondo */
+        .stars-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                              radial-gradient(2px 2px at 40px 70px, #d4af37, rgba(0,0,0,0)),
+                              radial-gradient(1px 1px at 90px 40px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.3;
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .container { 
+            max-width: 900px; 
+            margin: auto; 
+            background: rgba(9, 13, 22, 0.9); 
+            padding: 25px; 
+            border: 2px solid #ef4444; 
+            border-radius: 10px;
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.25);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Esquinas técnicas doradas */
+        .container::before, .container::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-color: #d4af37;
+            border-style: solid;
+            pointer-events: none;
+        }
+        .container::before {
+            top: -2px; left: -2px;
+            border-width: 2px 0 0 2px;
+        }
+        .container::after {
+            bottom: -2px; right: -2px;
+            border-width: 0 2px 2px 0;
+        }
+
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .grid-form-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        
+        label { color: #f87171; font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 3px; }
+        input, textarea { width: 100%; padding: 8px; background: #020617; border: 1px solid #7f1d1d; color: #fca5a5; box-sizing: border-box; font-family: 'Courier New', monospace; border-radius: 4px; }
+        input:focus, textarea:focus { outline: none; border-color: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+        
+        button { background: #ef4444; color: white; padding: 15px; width: 100%; border: none; cursor: pointer; font-weight: bold; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px; border-radius: 6px; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); transition: background 0.3s; }
+        button:hover { background: #dc2626; box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); }
+        
+        /* BOTÓN DE RETROCESO */
+        .btn-volver { background: #090d16; color: #d4af37; padding: 10px 18px; width: auto; display: inline-block; text-decoration: none; text-align: center; font-size: 0.85rem; border: 1px solid #d4af37; margin-bottom: 20px; cursor: pointer; font-weight: bold; border-radius: 6px; transition: all 0.3s; }
+        .btn-volver:hover { background: #d4af37; color: #04060b; box-shadow: 0 0 10px rgba(212, 175, 55, 0.6); }
+
+        /* CONTENEDOR VISOR */
+        .preview-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 30px;
+            position: relative;
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px dashed #7f1d1d;
+            border-radius: 8px;
+            padding: 20px 5px;
+            overflow: hidden;
+        }
+
+        /* DOSSIER CORPORATIVO ORIGINAL (ANCHO FIJO DE 750PX) */
+        .preview-box { 
+            background: #ffffff; 
+            color: #000000; 
+            padding: 30px; 
+            width: 750px; 
+            min-height: 900px; 
+            border: 3px double #000; 
+            font-family: sans-serif; 
+            position: relative; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            box-sizing: border-box;
+            transform-origin: top center;
+            flex-shrink: 0;
+        }
+        
+        /* SÍMBOLO DEL ATLAS EN LA ESQUINA */
+        .atlas-corner { position: absolute; top: 15px; right: 20px; text-align: right; }
+        .atlas-symbol { font-size: 1.5rem; font-weight: bold; color: #8b0000; }
+        
+        .header-doc { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; padding-right: 80px; }
+        
+        .section-title { background: #000; color: #fff; font-weight: bold; padding: 4px 8px; font-size: 0.8rem; margin: 15px 0 8px 0; font-family: 'Courier New', monospace; }
+        
+        .profile-row { display: flex; gap: 15px; margin-bottom: 10px; align-items: flex-start; }
+        .box-carnet { width: 90px; height: 110px; border: 1px solid #000; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #e0e0e0; font-size: 0.6rem; text-align: center; flex-shrink: 0; }
+        .box-carnet img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .box-evidencia-container { display: flex; gap: 15px; align-items: flex-start; margin-bottom: 10px; }
+        .box-evidencia { width: 120px; height: 120px; border: 1px solid #000; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #eee; font-size: 0.6rem; text-align: center; flex-shrink: 0; }
+        .box-evidencia img { width: 100%; height: 100%; object-fit: cover; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        th { background: #f0f0f0; border: 1px solid #000; padding: 4px; text-align: left; width: 35%; }
+        td { border: 1px solid #000; padding: 4px; }
+
+        .chart-box { border: 2px solid #000; height: 70px; position: relative; background: #f9f9f9; margin-top: 5px; width: 100%; box-sizing: border-box; }
+        .chart-svg { width: 100%; height: 100%; display: block; }
+
+        /* APARTADO DE FIRMAS Y ESTAMPAS */
+        .signature-section { display: flex; justify-content: space-between; margin-top: 25px; align-items: center; border-top: 1px dashed #000; padding-top: 15px; }
+        .signature-box { width: 40%; text-align: center; font-size: 0.75rem; }
+        .signature-line { border-bottom: 1px solid #000; height: 35px; margin-bottom: 5px; }
+        .stamp-circle { width: 60px; height: 60px; border: 2px solid #8b0000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #8b0000; font-size: 0.6rem; text-align: center; transform: rotate(-10deg); }
+    </style>
+</head>
+<body>
+
+<!-- Fondo de partículas estelares -->
+<div class="stars-bg"></div>
+
+<div class="container">
+    <!-- BOTÓN DE RETROCESO AL INDEX -->
+    <a href="index.html" class="btn-volver">&larr; VOLVER AL ÍNDICE</a>
+
+    <h2 style="color: #ef4444; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);">GENERADOR DE DOSSIER // ESCALA CORREGIDA</h2>
+    
+    <div class="grid-form">
+        <div><label>Nombre Agente:</label><input type="text" id="in-agente" value="Ricardo"></div>
+        <div><label>Rango / Autoridad:</label><input type="text" id="in-rango" value="Nexus Pacificator"></div>
+        <div><label>Fecha Ingreso Corporativo:</label><input type="text" id="in-ingreso" value="12-04-2024"></div>
+        <div><label>Nombre de la Nave:</label><input type="text" id="in-nave" value="Espíritu Akkan"></div>
+        <div><label>Fecha Creación Nave:</label><input type="text" id="in-creacion-nave" value="28-02-2026"></div>
+        <div><label>Ubicación Base/Astillero:</label><input type="text" id="in-astillero" value="Sector Gek-Prime"></div>
+    </div>
+
+    <div class="grid-form-3">
+        <div><label>Planeta Objetivo:</label><input type="text" id="in-sistema" value="Planeta Ecosión-Prime"></div>
+        <div><label>Fecha de Operación:</label><input type="text" id="in-fecha" value="19-08-2026"></div>
+        <div><label>Plan Ejecutado:</label><input type="text" id="in-plan" value="Purificación Menor y Sabotaje"></div>
+    </div>
+
+    <div class="grid-form-3">
+        <div><label>Soldados Desplegados:</label><input type="number" id="in-soldados" value="100"></div>
+        <div><label>Bajas Propias (Pérdidas):</label><input type="number" id="in-bajas-propias" value="60"></div>
+        <div><label>Neutralizados Hostiles:</label><input type="number" id="in-bajas-obj" value="100"></div>
+    </div>
+
+    <div class="grid-form">
+        <div><label>Fauna / Entorno Local:</label><input type="text" id="in-fauna" value="Agresiva / Carbono denso"></div>
+        <div><label>Leyes del Atlas Aplicadas:</label><input type="text" id="in-leyes" value="Gran Rollo Templario (Art. 4)"></div>
+        <div><label>Contramedidas Activas:</label><input type="text" id="in-contramedidas" value="Blindaje Térmico y Red de Inhibición"></div>
+        <div><label>Cumplimiento de Orden:</label><input type="text" id="in-cumplimiento" value="100% Al pie de la letra"></div>
+        <div><label>Supervisión del Atlas:</label><input type="text" id="in-atlas-obs" value="Registrado y Observado en Red"></div>
+        <div><label>Gastos / Costos Externos:</label><input type="text" id="in-gastos" value="150 Nanitos / Sin desviaciones"></div>
+    </div>
+    
+    <label style="margin-top: 10px;">Detalles Operativos:</label>
+    <textarea id="in-detalles" rows="2">Operación con alto índice de bajas propias pero objetivos hostiles neutralizados en su totalidad.</textarea>
+    
+    <div class="grid-form" style="margin-top:10px;">
+        <div><label>Foto Agente (Carnet):</label><input type="file" accept="image/*" onchange="subir(event, 'img-agente')"></div>
+        <div><label>Foto Nave (Carnet):</label><input type="file" accept="image/*" onchange="subir(event, 'img-nave')"></div>
+        <div style="grid-column: span 2;"><label>Anexo de Evidencia (Cuadrado):</label><input type="file" accept="image/*" onchange="subir(event, 'img-evidencia')"></div>
+    </div>
+
+    <button onclick="descargar()">GENERAR DOSSIER OFICIAL CORPORATIVO</button>
+
+    <!-- CONTENEDOR VISOR -->
+    <div class="preview-wrapper" id="wrapper">
+        <div class="preview-box" id="reporte">
+            <!-- SÍMBOLO DEL ATLAS EN LA ESQUINA -->
+            <div class="atlas-corner">
+                <div class="atlas-symbol">⨀</div>
+                <small style="font-size: 0.5rem; font-weight: bold;">ATLAS REQ</small>
+            </div>
+
+            <div class="header-doc">
+                <strong style="font-size: 1.1rem; letter-spacing: 1px;">TEMPLARIOS DEL ATLAS // CORPORACIÓN</strong><br>
+                <small style="font-family: 'Courier New', monospace;">INFORME DE AUDITORÍA Y FILIACIÓN TÁCTICA</small>
+            </div>
+            
+            <!-- IDENTIFICACIÓN DEL OPERATIVO -->
+            <div class="section-title">I. REGISTRO DE FILIACIÓN DEL OPERATIVO</div>
+            <div class="profile-row">
+                <div class="box-carnet"><img id="img-agente" src="" style="display:none;"><span id="txt-a">FOTO AGENTE</span></div>
+                <table>
+                    <tr><th>NOMBRE DE AGENTE</th><td id="lbl-agente">Ricardo</td></tr>
+                    <tr><th>RANGO / AUTORIDAD</th><td id="lbl-rango">Nexus Pacificator</td></tr>
+                    <tr><th>FECHA DE INGRESO</th><td id="lbl-ingreso">12-04-2024</td></tr>
+                </table>
+            </div>
+
+            <!-- IDENTIFICACIÓN DE LA NAVE -->
+            <div class="section-title">II. REGISTRO DE UNIDAD DE TRANSPORTE</div>
+            <div class="profile-row">
+                <div class="box-carnet"><img id="img-nave" src="" style="display:none;"><span id="txt-n">FOTO NAVE</span></div>
+                <table>
+                    <tr><th>NOMBRE DE LA NAVE</th><td id="lbl-nave">Espíritu Akkan</td></tr>
+                    <tr><th>FECHA DE CREACIÓN</th><td id="lbl-creacion-nave">28-02-2026</td></tr>
+                    <tr><th>ASTILLERO / UBICACIÓN BASE</th><td id="lbl-astillero">Sector Gek-Prime</td></tr>
+                </table>
+            </div>
+
+            <!-- DETALLES DE LA MISIÓN Y PLAN -->
+            <div class="section-title">III. PARÁMETROS DE LA MISIÓN Y UBICACIÓN</div>
+            <table>
+                <tr><th>PLANETA / UBICACIÓN OBJETIVO</th><td id="lbl-sistema">Planeta Ecosión-Prime</td></tr>
+                <tr><th>FECHA DE EJECUCIÓN</th><td id="lbl-fecha">19-08-2026</td></tr>
+                <tr><th>PLAN TÁCTICO EJECUTADO</th><td id="lbl-plan">Purificación Menor y Sabotaje</td></tr>
+                <tr><th>FAUNA Y ENTORNO LOCAL</th><td id="lbl-fauna">Agresiva / Carbono denso</td></tr>
+            </table>
+
+            <!-- ESTADÍSTICAS Y BAJAS CON GRÁFICO INTERACTIVO -->
+            <div class="section-title">IV. BALANCE DE BAJAS Y EFECTIVOS // TENDENCIA TÁCTICA ESCALONADA</div>
+            <table>
+                <tr><th>SOLDADOS DESPLEGADOS</th><td id="lbl-soldados">100</td></tr>
+                <tr><th>BAJAS PROPIAS (Pérdidas)</th><td id="lbl-bajas-propias-val">60</td></tr>
+                <tr><th>NEUTRALIZACIONES HOSTILES</th><td id="lbl-bajas-obj">100</td></tr>
+                <tr><th>GASTOS / COSTOS EXTERNOS</th><td id="lbl-gastos">150 Nanitos / Sin desviaciones</td></tr>
+                <tr>
+                    <th>DIAGRAMA ESCALONADO (L-TREND)</th>
+                    <td>
+                        <div style="font-size: 0.65rem; margin-bottom: 2px;">Eje Operativo (Verde: Efectivos/Hostiles | Rojo: Impacto de Bajas Propias):</div>
+                        <div class="chart-box">
+                            <svg class="chart-svg" viewBox="0 0 400 70" preserveAspectRatio="none">
+                                <line x1="10" y1="60" x2="390" y2="60" stroke="#ccc" stroke-width="1" />
+                                <line x1="10" y1="10" x2="10" y2="60" stroke="#ccc" stroke-width="1" />
+                                <path id="trend-hostiles" d="M10,55 L120,55 L120,20 L280,20 L280,10 L390,10" fill="none" stroke="#238636" stroke-width="2" />
+                                <path id="trend-bajas" d="M10,60 L110,60 L110,45 L270,45 L270,55 L390,55" fill="none" stroke="#da3633" stroke-width="2" stroke-dasharray="3,3" />
+                            </svg>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- CUMPLIMIENTO, LEYES Y AUDITORÍA DEL ATLAS -->
+            <div class="section-title">V. MARCO LEGAL, CONTRAMEDIDAS Y OBSERVACIÓN DEL ATLAS</div>
+            <table>
+                <tr><th>LEYES DEL ATLAS APLICADAS</th><td id="lbl-leyes">Gran Rollo Templario (Art. 4)</td></tr>
+                <tr><th>CONTRAMEDIDAS IMPLEMENTADAS</th><td id="lbl-contramedidas">Blindaje Térmico y Red de Inhibición</td></tr>
+                <tr><th>CUMPLIMIENTO DE ÓRDENES</th><td id="lbl-cumplimiento">100% Al pie de la letra</td></tr>
+                <tr><th>SUPERVISIÓN / OBSERVACIÓN ATLAS</th><td id="lbl-atlas-obs">Registrado y Observado en Red</td></tr>
+            </table>
+
+            <!-- ANEXO DE EVIDENCIA CUADRADO -->
+            <div class="section-title">VI. ANEXO DE EVIDENCIA VISUAL</div>
+            <div class="box-evidencia-container">
+                <div class="box-evidencia"><img id="img-evidencia" src="" style="display:none;"><span id="txt-e">EVIDENCIA</span></div>
+                <div style="flex-grow: 1;">
+                    <table style="height: 100%;">
+                        <tr><th>OBSERVACIONES DE CAMPO</th><td id="lbl-detalles" style="height: 100%; vertical-align: top;">Operación con alto índice de bajas propias pero objetivos hostiles neutralizados en su totalidad.</td></tr>
+                        <tr><th>ESTADO DE VERIFICACIÓN</th><td>APROBADO POR EL CONSEJO CENTRAL // SIN INFORMACIÓN FALSA DETECTADA</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECCIÓN DE FIRMAS Y ESTAMPAS OFICIALES -->
+            <div class="signature-section">
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <strong>Firma del Operativo Responsable</strong><br>
+                    <span id="sig-agente" style="font-size: 0.65rem;">Ricardo (Nexus Pacificator)</span>
+                </div>
+                <div class="stamp-circle">
+                    <div>APROBADO<br>ATLAS</div>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <strong>Sello de Autoridad Corporativa</strong><br>
+                    <span style="font-size: 0.65rem;">Consejo de los Templarios</span>
+                </div>
+            </div>
+
+            <p style="text-align:center; font-size: 0.65rem; margin-top:15px; font-family: 'Courier New', monospace; border-top: 1px solid #000; padding-top: 5px;">
+                DOCUMENTO CORPORATIVO OFICIAL // SECTOR CLASIFICADO // EL ATLAS NO OLVIDA // VALIDEZ JURÍDICA ABSOLUTA
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function ajustarEscalaHoja() {
+        const reporte = document.getElementById('reporte');
+        const wrapper = document.getElementById('wrapper');
+        const anchoOriginal = 750;
+        const anchoPantalla = wrapper.clientWidth - 10;
+
+        if (anchoPantalla < anchoOriginal) {
+            const escala = anchoPantalla / anchoOriginal;
+            reporte.style.transform = `scale(${escala})`;
+            
+            // Forzamos al contenedor a medir exactamente la altura real que ocupa el elemento escalado
+            // restando el espacio sobrante por la transformación CSS para que no genere scroll en blanco
+            const alturaRealOriginal = reporte.scrollHeight;
+            const alturaEscalada = alturaRealOriginal * escala;
+            
+            wrapper.style.height = (alturaEscalada + 30) + 'px';
+            reporte.style.marginBottom = `-${alturaRealOriginal * (1 - escala)}px`;
+        } else {
+            reporte.style.transform = 'scale(1)';
+            wrapper.style.height = 'auto';
+            reporte.style.marginBottom = '0px';
+        }
+    }
+
+    window.addEventListener('resize', ajustarEscalaHoja);
+    window.addEventListener('load', ajustarEscalaHoja);
+    document.addEventListener('DOMContentLoaded', ajustarEscalaHoja);
+
+    function subir(e, id) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = document.getElementById(id);
+            img.src = event.target.result;
+            img.style.display = 'block';
+            if (img.nextElementSibling) img.nextElementSibling.style.display = 'none';
+        }
+        reader.readAsDataURL(e.target.files[0]);
+    }
+
+    function actualizarGrafico() {
+        const hostiles = parseInt(document.getElementById('in-bajas-obj').value) || 0;
+        const propias = parseInt(document.getElementById('in-bajas-propias').value) || 0;
+        
+        document.getElementById('lbl-bajas-propias-val').innerText = propias;
+        document.getElementById('lbl-soldados').innerText = document.getElementById('in-soldados').value;
+
+        const pathHostiles = document.getElementById('trend-hostiles');
+        const pathBajas = document.getElementById('trend-bajas');
+
+        let alturaHostiles = Math.min(Math.max(hostiles * 1.5, 5), 45);
+        let yHostilesTop = 60 - alturaHostiles;
+        let alturaBajas = Math.min(Math.max(propias * 0.4, 2), 40);
+        let yBajasLevel = 30 + alturaBajas;
+
+        pathHostiles.setAttribute('d', `M10,55 L130,55 L130,${yHostilesTop} L270,${yHostilesTop} L270,${Math.max(yHostilesTop - 5, 10)} L390,${Math.max(yHostilesTop - 5, 10)}`);
+        pathBajas.setAttribute('d', `M10,60 L120,60 L120,${yBajasLevel} L260,${yBajasLevel} L260,${yBajasLevel + 5} L390,${yBajasLevel + 5}`);
+        
+        setTimeout(ajustarEscalaHoja, 50);
+    }
+
+    const inputs = [
+        'in-agente', 'in-rango', 'in-ingreso', 'in-nave', 'in-creacion-nave', 'in-astillero',
+        'in-sistema', 'in-fecha', 'in-plan', 'in-soldados', 'in-bajas-propias', 'in-bajas-obj',
+        'in-fauna', 'in-leyes', 'in-contramedidas', 'in-cumplimiento', 'in-atlas-obs', 'in-gastos', 'in-detalles'
+    ];
+    
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+            el.addEventListener('input', (e) => {
+                const targetLbl = document.getElementById('lbl-' + id.replace('in-', ''));
+                if(targetLbl) targetLbl.innerText = e.target.value;
+
+                if(id === 'in-agente') {
+                    document.getElementById('sig-agente').innerText = e.target.value + " (Nexus Pacificator)";
+                }
+                if(id === 'in-bajas-obj' || id === 'in-bajas-propias' || id === 'in-soldados') {
+                    actualizarGrafico();
+                }
+            });
+        }
+    });
+
+    actualizarGrafico();
+
+    function descargar() {
+        const reporte = document.getElementById('reporte');
+        reporte.style.transform = 'scale(1)';
+        reporte.style.marginBottom = '0px';
+
+        html2canvas(reporte, {scale: 2}).then(canvas => {
+            const a = document.createElement('a');
+            a.download = 'Dossier_Corporativo_Templarios.png';
+            a.href = canvas.toDataURL('image/png');
+            a.click();
+            ajustarEscalaHoja();
+        });
+    }
+</script>
+</body>
+</html>

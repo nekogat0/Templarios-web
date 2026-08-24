@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Templarios del Atlas | Tarjeta ID</title>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap');
+
+    :root {
+      --bg-dark: #010103;
+      --card-bg: rgba(6, 9, 16, 0.95);
+      --neon-red: #ff004c;
+      --neon-gold: #ffaa00;
+      --neon-green: #00ff66;
+      --glow-red: 0 0 25px rgba(255, 0, 76, 0.9), inset 0 0 15px rgba(255, 0, 76, 0.5);
+      --glow-gold: 0 0 15px rgba(255, 170, 0, 0.5);
+      --glow-green: 0 0 18px rgba(0, 255, 102, 0.7);
+      --text-main: #f2e3c6;
+      --border-hud: rgba(255, 170, 0, 0.3);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Rajdhani', sans-serif; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 25px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* MARCO EXTERIOR DE LA PANTALLA */
+    .screen-frame {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border: 2px solid var(--neon-red);
+      box-shadow: var(--glow-red);
+      pointer-events: none;
+      z-index: 998;
+    }
+
+    /* ESQUINAS REALMENTE ABIERTAS (L-SHAPED, SIN RELLENO DE CUADRADO) */
+    .screen-corner {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--neon-gold);
+      box-shadow: 0 0 10px var(--neon-gold);
+      background: transparent !important;
+    }
+    .sc-tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+    .sc-tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+    .sc-bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+    .sc-br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+    /* EFECTO CRT CON LÍNEAS EQUILIBRADAS (NI MUY FINAS NI MUY GRUESAS) */
+    body::before {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), 
+                  linear-gradient(90deg, rgba(255, 0, 76, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
+      z-index: 999;
+      background-size: 100% 4px, 4px 100%;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: rgba(255, 0, 76, 0.04);
+      opacity: 0;
+      z-index: 1000;
+      pointer-events: none;
+      animation: crtFlicker 0.12s infinite;
+    }
+
+    @keyframes crtFlicker {
+      0% { opacity: 0.03; }
+      50% { opacity: 0.08; }
+      100% { opacity: 0.03; }
+    }
+
+    /* PARTÍCULAS DE FONDO */
+    .particle {
+      position: fixed;
+      background: var(--neon-gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      animation: floatParticle linear infinite;
+      opacity: 0.4;
+    }
+
+    @keyframes floatParticle {
+      0% { transform: translateY(105vh) translateX(0); opacity: 0; }
+      20% { opacity: 0.7; }
+      80% { opacity: 0.7; }
+      100% { transform: translateY(-10vh) translateX(50px); opacity: 0; }
+    }
+
+    .runic-text {
+      font-family: 'Share Tech Mono', monospace !important;
+      color: var(--neon-gold) !important;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 8px rgba(255, 170, 0, 0.8);
+      text-transform: uppercase;
+    }
+
+    nav {
+      background: rgba(4, 6, 12, 0.92);
+      border-bottom: 1px solid var(--neon-gold);
+      box-shadow: var(--glow-gold);
+      padding: 10px 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      z-index: 2;
+    }
+
+    .btn-nav {
+      background: rgba(255, 170, 0, 0.1);
+      color: var(--neon-gold);
+      border: 1px solid var(--neon-gold);
+      padding: 8px 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      text-transform: uppercase;
+      box-shadow: var(--glow-gold);
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav:hover { background: var(--neon-gold); color: #000; }
+
+    .id-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border-hud);
+      border-radius: 8px; 
+      padding: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+      z-index: 2;
+      box-shadow: 0 0 35px rgba(255, 0, 76, 0.2);
+    }
+
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700; color: #fff;
+      text-transform: uppercase; letter-spacing: 2px;
+      font-size: 0.95rem;
+      margin-bottom: 20px; display: flex;
+      align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--border-hud);
+      padding-bottom: 12px;
+    }
+
+    .section-title span { background: var(--neon-red); width: 12px; height: 12px; border-radius: 2px; box-shadow: var(--glow-red); }
+
+    .id-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px; align-items: start;
+    }
+
+    .id-form { display: flex; flex-direction: column; gap: 12px; }
+
+    .id-form label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem; color: var(--neon-gold);
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+
+    .id-input, .id-select {
+      background: rgba(255, 0, 76, 0.05);
+      border: 1px solid var(--neon-red);
+      box-shadow: 0 0 8px rgba(255, 0, 76, 0.3);
+      padding: 8px 12px; color: #fff;
+      font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;
+      border-radius: 4px; outline: none;
+      width: 100%;
+    }
+    .id-input:focus, .id-select:focus {
+      box-shadow: 0 0 15px rgba(255, 0, 76, 0.7);
+    }
+
+    .id-select option { background: #04070d; color: #fff; }
+
+    .file-input-wrapper { position: relative; margin-top: 3px; }
+
+    .id-file-btn {
+      background: rgba(255, 170, 0, 0.1);
+      border: 1px solid var(--neon-gold);
+      color: var(--neon-gold);
+      padding: 8px; text-align: center; font-size: 0.85rem;
+      border-radius: 4px; cursor: pointer; display: block;
+      transition: background 0.2s;
+    }
+    .id-file-btn:hover { background: rgba(255, 170, 0, 0.2); }
+
+    #idFileInput { position: absolute; top: 0; left: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+
+    .id-preview-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+
+    .style-selector {
+      display: flex; gap: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 5px 12px; border-radius: 20px;
+      border: 1px solid var(--border-hud);
+    }
+
+    .style-btn {
+      background: rgba(255, 0, 76, 0.1);
+      border: 1px solid var(--neon-red);
+      color: #fff; width: 26px; height: 26px;
+      border-radius: 50%; font-family: 'Orbitron', sans-serif;
+      font-size: 11px; font-weight: bold; cursor: pointer;
+      transition: all 0.2s ease; display: flex;
+      justify-content: center; align-items: center;
+    }
+
+    .style-btn:hover { background: var(--neon-red); color: #000; transform: scale(1.1); box-shadow: var(--glow-red); }
+    .style-btn.active { background: var(--neon-gold); color: #000; border-color: var(--neon-gold); box-shadow: 0 0 8px var(--neon-gold); }
+
+    /* CONTENEDOR DE LA TARJETA PRINCIPAL */
+    .id-card-display {
+      width: 100%; max-width: 380px; aspect-ratio: 580 / 330;
+      border-radius: 6px; padding: 0;
+      display: flex; flex-direction: column; position: relative;
+      overflow: hidden; transition: all 0.3s ease;
+    }
+
+    .id-card-display.theme-0 {
+      background: radial-gradient(circle at 10% 20%, rgba(255, 0, 76, 0.25) 0%, transparent 40%),
+                  radial-gradient(circle at 90% 80%, rgba(255, 170, 0, 0.15) 0%, transparent 50%),
+                  repeating-linear-gradient(0deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02) 1px, transparent 1px, transparent 12px), #04070d;
+      border: 2px solid var(--neon-red); box-shadow: var(--glow-red);
+    }
+    .theme-0 .id-header-bar {
+      height: 11%; background: linear-gradient(90deg, #700018 0%, #ff004c 40%, #1a0808 100%);
+      border-bottom: 2px solid var(--neon-gold); display: flex; align-items: center; justify-content: space-between; padding: 0 3%; z-index: 3; position: relative;
+    }
+    .theme-0 .id-card-body {
+      display: grid; grid-template-columns: 14% 1fr 28%;
+      gap: 2%; padding: 1% 3%; flex: 1; align-items: center; position: relative; z-index: 2; height: 89%;
+    }
+
+    .id-card-display.theme-1 { background: radial-gradient(circle, #252830 0%, #0a0b0e 100%); border: 2px solid var(--neon-gold); box-shadow: var(--glow-gold); }
+    .theme-1 .id-header-bar { height: 11%; background: linear-gradient(90deg, var(--neon-red), var(--neon-gold)); border-bottom: 1px solid #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 3%; z-index: 3; position: relative; }
+    .theme-1 .id-card-body { display: grid; grid-template-columns: 1fr 28%; gap: 3%; padding: 1% 3%; flex: 1; align-items: center; height: 89%; position: relative; z-index: 2; }
+    .theme-1 .id-atlas-emblem-box { display: none; }
+
+    .id-card-display.theme-2 { background: #0d0e12; border: 2px solid #ff004c; box-shadow: var(--glow-red); }
+    .theme-2 .id-header-bar { height: 11%; background: #2b000b; border-bottom: 2px solid var(--neon-red); display: flex; align-items: center; justify-content: space-between; padding: 0 3%; z-index: 3; position: relative; }
+    .theme-2 .id-card-body { display: grid; grid-template-columns: 14% 1fr 28%; gap: 2%; padding: 1% 3%; flex: 1; align-items: center; height: 89%; position: relative; z-index: 2; }
+
+    .id-card-display.theme-3 { background: repeating-linear-gradient(45deg, #0f0505, #0f0505 10px, #200a0a 10px, #200a0a 20px); border: 2px solid var(--neon-green); box-shadow: var(--glow-green); }
+    .theme-3 .id-header-bar { height: 11%; background: rgba(0, 255, 102, 0.15); border-bottom: 1px solid var(--neon-green); display: flex; align-items: center; justify-content: space-between; padding: 0 3%; z-index: 3; position: relative; }
+    .theme-3 .id-card-body { display: grid; grid-template-columns: 1fr 28%; gap: 3%; padding: 1% 3%; flex: 1; align-items: center; height: 89%; position: relative; z-index: 2; }
+    .theme-3 .id-atlas-emblem-box { display: none; }
+
+    .id-header-title { font-family: 'Orbitron', sans-serif; font-weight: 900; color: #ffffff; font-size: clamp(0.48rem, 1.3vw, 0.68rem); letter-spacing: 1px; }
+    .id-header-glyphs { font-family: 'Share Tech Mono', monospace; color: rgba(255, 255, 255, 0.7); font-size: clamp(0.38rem, 0.95vw, 0.58rem); letter-spacing: 1px; }
+
+    .id-atlas-emblem-box { 
+      display: flex; flex-direction: column; align-items: center; justify-content: center; 
+      gap: 4px;
+      border-right: 1px dashed rgba(255, 170, 0, 0.3); padding-right: 4px; height: 100%; z-index: 2; 
+    }
+
+    .atlas-symbol-original {
+      width: 100%; max-width: 20px; aspect-ratio: 1 / 1; border: 1.5px solid var(--neon-red); box-shadow: var(--glow-red);
+      background: rgba(255, 0, 76, 0.15); display: flex; justify-content: center; align-items: center; position: relative;
+    }
+    .atlas-symbol-original::after { content: ''; width: 45%; height: 45%; border: 1px solid var(--neon-gold); background: rgba(255, 170, 0, 0.3); transform: rotate(45deg); position: absolute; }
+    .atlas-symbol-original::before { content: ''; width: 4px; height: 4px; background: var(--neon-red); border-radius: 50%; box-shadow: 0 0 6px var(--neon-red); z-index: 2; position: absolute; }
+
+    .card-shield-emblem {
+      width: 100%; max-width: 22px; aspect-ratio: 1 / 1;
+      border: 1px solid var(--neon-gold);
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 8px rgba(255, 170, 0, 0.5);
+      background: #000;
+    }
+
+    .citizen-corner-badge {
+      position: absolute; bottom: 2px; right: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.38rem;
+      letter-spacing: 0.5px; color: var(--neon-gold); background: rgba(4, 7, 13, 0.85); border: 1px solid rgba(255, 170, 0, 0.4); padding: 1px 3px; border-radius: 2px; z-index: 4;
+    }
+    .citizen-corner-badge span { color: var(--neon-red); font-family: 'Share Tech Mono', monospace; margin-left: 2px; text-shadow: 0 0 5px var(--neon-red); }
+
+    .id-info-grid { display: flex; flex-direction: column; gap: 1px; justify-content: space-between; height: 100%; z-index: 2; }
+    .id-field-block { 
+      background: rgba(255, 170, 0, 0.02); 
+      border: 1px solid rgba(255, 170, 0, 0.12); 
+      border-left: 1.5px solid var(--neon-gold); 
+      padding: 1px 3px; 
+      border-radius: 1px; 
+      line-height: 0.95; 
+      max-width: 155px; 
+    }
+    .id-field-label { font-family: 'Orbitron', sans-serif; font-size: clamp(0.2rem, 0.44vw, 0.26rem); color: var(--neon-gold); letter-spacing: 0.2px; text-transform: uppercase; display: block; }
+    .id-field-value { font-size: clamp(0.32rem, 0.68vw, 0.43rem); color: #ffffff; font-weight: 700; letter-spacing: 0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+
+    .id-photo-container {
+      width: 100%; max-height: 130px; aspect-ratio: 3 / 4; border: 1.5px solid var(--neon-red); box-shadow: var(--glow-red);
+      background: #000; position: relative; overflow: hidden; border-radius: 3px; display: flex; justify-content: center; align-items: center; margin: auto 0; z-index: 2;
+    }
+    .id-photo-container img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .id-photo-placeholder { font-family: monospace; font-size: clamp(0.32rem, 0.7vw, 0.42rem); color: rgba(255, 0, 76, 0.8); text-align: center; padding: 2px; text-shadow: 0 0 5px var(--neon-red); }
+
+    .btn-download-card {
+      background: linear-gradient(135deg, var(--neon-gold), #b37700); color: #000; border: none;
+      font-family: 'Orbitron', sans-serif; font-weight: 700; padding: 10px 20px; font-size: 0.75rem;
+      cursor: pointer; border-radius: 4px; letter-spacing: 1px; text-transform: uppercase;
+      box-shadow: 0 0 12px rgba(255, 170, 0, 0.4); width: 100%; max-width: 380px;
+      transition: filter 0.2s;
+    }
+    .btn-download-card:hover { filter: brightness(1.15); }
+
+    /* ESQUINAS INTERIORES EN L (HUD) */
+    .hud-corner { position: absolute; width: 8px; height: 8px; border: 2px solid var(--neon-gold); pointer-events: none; z-index: 12; background: transparent; }
+    .c1 { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+    .c2 { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+    .c3 { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+    .c4 { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+    .faction-shield-corner {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      z-index: 1000;
+      width: 55px;
+      height: 55px;
+      background: #090d16;
+      border: 2px solid var(--neon-gold);
+      border-radius: 50%;
+      padding: 2px;
+      box-shadow: 0 0 12px rgba(255, 170, 0, 0.4);
+    }
+    .faction-shield-corner img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MARCO EXTERIOR CON ESQUINAS EN L -->
+  <div class="screen-frame">
+    <div class="screen-corner sc-tl"></div>
+    <div class="screen-corner sc-tr"></div>
+    <div class="screen-corner sc-bl"></div>
+    <div class="screen-corner sc-br"></div>
+  </div>
+
+  <!-- PARTÍCULAS DINÁMICAS -->
+  <script>
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.top = Math.random() * 100 + 'vh';
+      const size = Math.random() * 3 + 1;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.animationDuration = (Math.random() * 10 + 5) + 's';
+      p.style.animationDelay = (Math.random() * 5) + 's';
+      document.body.appendChild(p);
+    }
+  </script>
+
+  <div class="faction-shield-corner" title="Templarios del Atlas">
+    <img src="escudo.png" alt="Escudo">
+  </div>
+
+  <nav>
+    <div class="runic-text" style="font-size: 1rem; font-weight: 900;">Templarios del Atlas</div>
+    <a href="index.html" class="btn-nav">⬅ Holo-Mapa</a>
+  </nav>
+
+  <div class="id-section">
+    <div class="section-title">
+      <span></span>
+      Registro y Generador de ID
+    </div>
+
+    <div class="id-container">
+      <div class="id-form">
+        <div class="form-group">
+          <label>Subir Foto de Perfil</label>
+          <div class="file-input-wrapper">
+            <span class="id-file-btn">Seleccionar Imagen</span>
+            <input type="file" id="idFileInput" accept="image/*">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Nombre del Ciudadano</label>
+          <input type="text" id="nameInput" class="id-input" placeholder="Ej: EXPLORADOR-77" value="EXPLORADOR-77" maxlength="22">
+        </div>
+
+        <div class="form-group">
+          <label>Plataforma</label>
+          <select id="platformInput" class="id-select">
+            <option value="PC">PC</option>
+            <option value="PLAYSTATION">PlayStation</option>
+            <option value="XBOX">Xbox</option>
+            <option value="SWITCH">Switch</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Profesión</label>
+          <select id="professionInput" class="id-select">
+            <option value="TEMPLARIO">Templario</option>
+            <option value="ARQUITECTO">Arquitecto</option>
+            <option value="EXPLORADOR">Explorador</option>
+            <option value="GUARDIÁN">Guardián</option>
+            <option value="COMERCIANTE">Comerciante</option>
+            <option value="CIENTÍFICO">Científico</option>
+            <option value="CAZARRECOMPENSAS">Cazarrecompensas</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Raza / Especie</label>
+          <input type="text" id="raceInput" class="id-input" placeholder="Ej: ANOMALY, GEK..." value="ANOMALY" maxlength="20">
+        </div>
+
+        <div class="form-group">
+          <label>Rango o Rol</label>
+          <input type="text" id="roleInput" class="id-input" placeholder="Ej: VIAJERO" value="VIAJERO GALÁCTICO" maxlength="25">
+        </div>
+
+        <div class="form-group">
+          <label>Afiliación</label>
+          <input type="text" id="groupInput" class="id-input" placeholder="Ej: NEXUS" value="NEXUS PACIFICATOR" maxlength="28">
+        </div>
+
+        <div class="form-group">
+          <label>Código ID</label>
+          <input type="text" id="codeInput" class="id-input" placeholder="Ej: NMS-4096" value="NMS-4096-7782-X" maxlength="30">
+        </div>
+      </div>
+
+      <div class="id-preview-wrapper">
+        <div class="style-selector">
+          <button class="style-btn active" onclick="setTheme(0)">0</button>
+          <button class="style-btn" onclick="setTheme(1)">1</button>
+          <button class="style-btn" onclick="setTheme(2)">2</button>
+          <button class="style-btn" onclick="setTheme(3)">3</button>
+        </div>
+
+        <div class="id-card-display theme-0" id="idCardDesign">
+          <div class="hud-corner c1"></div><div class="hud-corner c2"></div>
+          <div class="hud-corner c3"></div><div class="hud-corner c4"></div>
+
+          <div class="citizen-corner-badge">CIUDADANO<span>•V</span></div>
+
+          <div class="id-header-bar">
+            <div class="id-header-title runic-text">ATLAS IDENTITY CARD</div>
+            <div class="id-header-glyphs">ᚠᚢᚦ-ᚨᚱᚲ</div>
+          </div>
+
+          <div class="id-card-body">
+            <div class="id-atlas-emblem-box">
+              <div class="atlas-symbol-original"></div>
+              <img src="escudo.png" alt="Escudo Faction" class="card-shield-emblem">
+            </div>
+
+            <div class="id-info-grid">
+              <div class="id-field-block">
+                <span class="id-field-label">NAME / NOMBRE</span>
+                <span class="id-field-value runic-text" id="idCardName">EXPLORADOR-77</span>
+              </div>
+
+              <div class="id-field-block">
+                <span class="id-field-label">PLATFORM / PLATAFORMA</span>
+                <span class="id-field-value" id="idCardPlatform" style="color: var(--neon-gold);">PC</span>
+              </div>
+
+              <div class="id-field-block">
+                <span class="id-field-label">PROFESSION / PROFESIÓN</span>
+                <span class="id-field-value runic-text" id="idCardProfession" style="color: var(--neon-green);">TEMPLARIO</span>
+              </div>
+
+              <div class="id-field-block">
+                <span class="id-field-label">RACE / RAZA</span>
+                <span class="id-field-value runic-text" id="idCardRace" style="color: var(--neon-red); text-shadow: 0 0 6px var(--neon-red);">ANOMALY</span>
+              </div>
+
+              <div class="id-field-block">
+                <span class="id-field-label">RANK / RANGO</span>
+                <span class="id-field-value" id="idCardRole">VIAJERO GALÁCTICO</span>
+              </div>
+
+              <div class="id-field-block">
+                <span class="id-field-label">AFFILIATION / AFILIACIÓN</span>
+                <span class="id-field-value" style="color: var(--neon-gold);" id="idCardGroup">NEXUS PACIFICATOR</span>
+              </div>
+
+              <div class="id-field-block">
+                <span class="id-field-label">CODE / CÓDIGO</span>
+                <span class="id-field-value" style="font-family: monospace;" id="idCardCode">NMS-4096-7782-X</span>
+              </div>
+            </div>
+
+            <div class="id-photo-container">
+              <span class="id-photo-placeholder" id="photoPlaceholder">FOTO ID</span>
+              <img src="" alt="ID Photo" id="idPhotoPreview">
+            </div>
+          </div>
+        </div>
+
+        <button type="button" id="btnDownloadCard" class="btn-download-card">💾 DESCARGAR TARJETA (PNG)</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const inputsMap = [
+      { input: 'nameInput', target: 'idCardName' },
+      { input: 'platformInput', target: 'idCardPlatform' },
+      { input: 'professionInput', target: 'idCardProfession' },
+      { input: 'raceInput', target: 'idCardRace' },
+      { input: 'roleInput', target: 'idCardRole' },
+      { input: 'groupInput', target: 'idCardGroup' },
+      { input: 'codeInput', target: 'idCardCode' }
+    ];
+
+    inputsMap.forEach(({ input, target }) => {
+      document.getElementById(input).addEventListener('input', (e) => {
+        document.getElementById(target).innerText = e.target.value.toUpperCase();
+      });
+    });
+
+    document.getElementById('idFileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const img = document.getElementById('idPhotoPreview');
+          img.src = evt.target.result;
+          img.style.display = 'block';
+          document.getElementById('photoPlaceholder').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function setTheme(themeIndex) {
+      const card = document.getElementById('idCardDesign');
+      card.className = `id-card-display theme-${themeIndex}`;
+      document.querySelectorAll('.style-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === themeIndex);
+      });
+    }
+
+    document.getElementById('btnDownloadCard').addEventListener('click', () => {
+      const card = document.getElementById('idCardDesign');
+      html2canvas(card, { backgroundColor: null, scale: 2 }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `ID_ATLAS_${document.getElementById('nameInput').value}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    });
+  </script>
+</body>
+</html>

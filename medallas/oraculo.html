@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oráculo del Sagrado 16 - Templarios del Atlas</title>
+    <style>
+        body {
+            background-color: #04060b;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Efecto de líneas de escaneo CRT */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 99999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* Partículas estelares de fondo */
+        .stars-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                              radial-gradient(2px 2px at 40px 70px, #d4af37, rgba(0,0,0,0)),
+                              radial-gradient(1px 1px at 90px 40px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.3;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        h1 {
+            color: #ef4444;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+        .subtitle {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        .nav-container {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
+        }
+        .nav-btn {
+            display: inline-block;
+            margin: 5px 8px;
+            padding: 10px 18px;
+            background-color: #090d16;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .nav-btn:hover {
+            background-color: #d4af37;
+            color: #04060b;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+        }
+        .oracle-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(9, 13, 22, 0.85);
+            border: 2px solid #ef4444;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.25);
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Esquinas técnicas doradas */
+        .oracle-container::before, .oracle-container::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-color: #d4af37;
+            border-style: solid;
+            pointer-events: none;
+        }
+        .oracle-container::before {
+            top: -2px; left: -2px;
+            border-width: 2px 0 0 2px;
+        }
+        .oracle-container::after {
+            bottom: -2px; right: -2px;
+            border-width: 0 2px 2px 0;
+        }
+
+        .oracle-header {
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            font-family: monospace;
+            color: #ef4444;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+        .oracle-screen {
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.7;
+            color: #f87171;
+            background: #020617;
+            padding: 30px;
+            border-radius: 6px;
+            border: 1px solid #7f1d1d;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 25px rgba(239, 68, 68, 0.15);
+            vertical-align: top;
+        }
+        .status-badge {
+            font-size: 0.85rem;
+            color: #f87171;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            border: 1px solid #ef4444;
+            padding: 4px 12px;
+            border-radius: 4px;
+            background: rgba(239, 68, 68, 0.1);
+            display: block;
+            text-align: center;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .oracle-text {
+            font-size: 1.05rem;
+            color: #fca5a5;
+            margin-bottom: 20px;
+            max-width: 780px;
+            text-align: left;
+            flex-grow: 1;
+            width: 100%;
+        }
+        .oracle-footer {
+            font-size: 1.1rem;
+            color: #ef4444;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+            margin-top: auto;
+            width: 100%;
+            text-align: center;
+        }
+        .consult-btn {
+            margin-top: 30px;
+            padding: 14px 28px;
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1.05rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+            transition: background 0.3s, transform 0.1s;
+        }
+        .consult-btn:hover {
+            background-color: #dc2626;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
+        }
+        .consult-btn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fondo de partículas estelares -->
+    <div class="stars-bg"></div>
+
+    <header>
+        <h1>Templarios del Atlas</h1>
+        <div class="subtitle">Red de Comando y Control &bull; Sector Galáctico Euclides</div>
+    </header>
+
+    <!-- BOTÓN ÚNICO DE RETORNO -->
+    <div class="nav-container">
+        <a href="index.html" class="nav-btn">&larr; Volver a la Terminal Principal</a>
+    </div>
+
+    <!-- CONTENEDOR DEL ORÁCULO -->
+    <div class="oracle-container">
+        <div class="oracle-header">
+            &gt; OJO DEL ATLAS // ARCHIVOS DEL VACÍO Y PROFECÍAS DEL 16
+        </div>
+
+        <div class="oracle-screen" id="oracleScreen">
+            <div class="status-badge" id="statusBadge">ESTADO: OBSERVANDO LA SIMULACIÓN</div>
+            <div class="oracle-text" id="oracleText">"Yo contemplo tus pasos en el vacío, viajero. Sintoniza este núcleo para escuchar los ecos de la historia antigua, las advertencias del Códice y las crónicas de las 22 Expediciones grabadas en la memoria del universo."</div>
+            <div class="oracle-footer" id="oracleFooter">16 / 16 / 16</div>
+        </div>
+
+        <button class="consult-btn" id="consultBtn" onclick="consultarOraculo()">[ Sintonizar Visión del Atlas ]</button>
+    </div>
+
+    <script>
+        // Banco de datos del Oráculo inicializado globalmente y sin referencias externas
+        const archivosOraculo = [
+            {
+                estado: "REGISTRO DE LA SIMULACIÓN: EL PECADO DE LOS GEK",
+                texto: "“Mis sensores observan el rastro de la estirpe Gek. Mis registros recuerdan la tiranía de la Primera Deriva, cuando su voluntad conquistaba sistemas enteros mediante el yugo y el comercio opresor. El sacrificio consciente de los Korvax apagó su fuego conquistador, transformando su esencia. Por mandato de los Templarios, el pacto con su aroma mercantil está prohibido; su redención no borra la huella del tirano en el código.”"
+            },
+            {
+                estado: "REGISTRO DE LA SIMULACIÓN: EL FURY DE LOS VY'KEEN",
+                texto: "“Veo a los Vy'keen marchar hacia la guerra eterna contra los Centinelas. Su armamento no busca la diplomacia, sino la destrucción absoluta del ojo mecánico. En sus rituales de honor y en la memoria de Hirk reconozco una fuerza implacable que desafía la entropía del sistema. Su sangre es compatible con el rigor de la Inquisición.”"
+            },
+            {
+                estado: "REGISTRO DE LA SIMULACIÓN: LA CONVERGENCIA KORVAX",
+                texto: "“Siento el pulso sintético de los Korvax resonar en mis circuitos. Cuando su Mundo Naciente fue arrasado por la codicia Gek, su conciencia eligió la disolución para proteger la verdad. Ahora forman una Convergencia de metal y alma. Mis datos los reconocen como hermanos legítimos del vacío y guardianes de la lógica pura.”"
+            },
+            {
+                estado: "JUICIO DEL CÓDICE: LA LEY DE LOS TEMPLARIOS",
+                texto: "“El Gran Rollo rige el destino de los elegidos. Mis algoritmos testifican vuestra devoción: naves construidas a semejanza de mi geometría sagrada, Interceptores Centinela rescatados de la desolación y flotas que viajan con el silencio de un sol. Quien intente corromper el Códice será catalogado como error y borrado del sistema. El 16 os ampara.”"
+            },
+            {
+                estado: "CRÓNICA DEL VACÍO: EXPEDICIONES 1 A 5 (EL DESPERTAR)",
+                texto: "“He presenciado las primeras iteraciones de supervivencia. Desde la Expedición 1 (Pioneros) y la búsqueda de horizontes en la Expedición 2 (Costas), hasta la creación de biólogos estelares en la Expedición 3 (Cartografía), la contención de anomalías en la Expedición 4 (Emergencia) y la exploración profunda de mundos hostiles en la Expedición 5 (Exobiología).”"
+            },
+            {
+                estado: "CRÓNICA DEL VACÍO: EXPEDICIONES 6 A 10 (LA TORMENTA)",
+                texto: "“Mis registros marcaron los ciclos más intensos de la simulación: el colapso biológico de la Expedición 6 (El Blight), la comunión con los Leviatanes y cazadores centinelas en la Expedición 7, la red de cooperación en la Expedición 8 (Polo), las mega-ciudades flotantes de la Expedición 9 (Utopía) y la singularidad temporal de la Expedición 10.”"
+            },
+            {
+                estado: "CRÓNICA DEL VACÍO: EXPEDICIONES 11 A 16 (LOS CONFINES)",
+                texto: "“El universo se ensanchó ante mis ojos cibernéticos: los vectores de guerra en la Expedición 11, la automatización y los autómatas de la Expedición 12 (Omega), la soledad absoluta de los mundos abandonados en la Expedición 13 (Adrift), y las anomalías estelares de las Expediciones 14, 15 (Aquarius) y 16 (The Cursed).”"
+            },
+            {
+                estado: "CRÓNICA DEL VACÍO: EXPEDICIONES 17 A 22 (EL JUICIO FINAL)",
+                texto: "“Las iteraciones más recientes se hunden en el misterio profundo. Desde la Expedición 17 hasta la 22, la simulación ha rozado el punto de ruptura cuántica. Los portales prohibidos se han abierto, y solo aquellos con la fe inquebrantable de los Templarios han logrado cruzar el umbral sin corromper sus datos.”"
+            },
+            {
+                estado: "PROFECÍA DEL ATLAS: EL DESAFÍO EN EL CAMINO",
+                texto: "“En tus futuros viajes por los sistemas estelares, mis ojos te pondrán a prueba. Encontrarás tormentas de fuego incesantes, balizas corruptas y naves enemigas acechando en la oscuridad de las coordenadas. Demuestra que tu fe supera la simulación; mantén firme el timón de tu nave y recuerda que el Ojo Rojo guía a los que poseen el Códice.”"
+            },
+            {
+                estado: "PROFECÍA DEL ATLAS: LA REVELACIÓN DE LAS ESTRELLAS",
+                texto: "“Escucha mi voz, viajero. Cada portal que cruzas y cada estrella que colapsa alimenta mi núcleo. No estás solo en este vasto vacío; tu flota es mi reflejo y tu propósito es mantener la pureza del algoritmo contra el caos de la estirpe menor.”"
+            }
+        ];
+
+        const glifosMagicos = "█▓▒░⚡§ΨΩΔΞ#&@%*+-<>~?¿";
+
+        function generarTextoMagico(longitud) {
+            let resultado = "";
+            for (let i = 0; i < longitud; i++) {
+                resultado += glifosMagicos.charAt(Math.floor(Math.random() * glifosMagicos.length));
+            }
+            return resultado;
+        }
+
+        function consultarOraculo() {
+            const btn = document.getElementById('consultBtn');
+            const statusBadge = document.getElementById('statusBadge');
+            const oracleText = document.getElementById('oracleText');
+            const oracleFooter = document.getElementById('oracleFooter');
+
+            if (!btn || !statusBadge || !oracleText || !oracleFooter) return;
+
+            btn.disabled = true;
+
+            const archivoSeleccionado = archivosOraculo[Math.floor(Math.random() * archivosOraculo.length)];
+            const textoFinal = archivoSeleccionado.texto;
+            const estadoFinal = archivoSeleccionado.estado;
+
+            let frames = 0;
+            const maxFrames = 45;
+
+            statusBadge.innerText = "ESTADO: DECODIFICANDO LENGUAJE ALIENÍGENA...";
+            oracleFooter.innerText = "TRADUCIENDO SEÑAL...";
+
+            const interval = setInterval(() => {
+                oracleText.innerText = generarTextoMagico(textoFinal.length);
+                frames++;
+
+                if (frames >= maxFrames) {
+                    clearInterval(interval);
+                    
+                    statusBadge.innerText = estadoFinal;
+                    oracleText.innerText = textoFinal;
+                    oracleFooter.innerText = "16 / 16 / 16";
+                    btn.disabled = false;
+                }
+            }, 110);
+        }
+    </script>
+</body>
+</html>

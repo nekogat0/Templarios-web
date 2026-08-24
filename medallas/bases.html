@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro y Archivo de Bases - Templarios del Atlas</title>
+    <!-- Cliente oficial de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --scale-factor: 1rem;
+        }
+
+        body {
+            background-color: #000000;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 2vw;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* FONDO DINÁMICO DE ESCANEO Y LÍNEAS CUÁNTICAS */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(239, 68, 68, 0.03), rgba(234, 179, 8, 0.01), rgba(0, 0, 0, 0.05));
+            z-index: 999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .space-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #110202 0%, #000000 85%);
+            z-index: -2;
+        }
+
+        /* POLVO ESPACIAL CÓSMICO */
+        .cosmic-dust {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eab308, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ef4444, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #b91c1c, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #fde047, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 250px 250px;
+            animation: cosmic-drift 20s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes cosmic-drift {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-250px) rotate(5deg); }
+        }
+
+        /* MARCO DORADO Y ROJO FIJO ESTABLE */
+        .golden-frame {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 100;
+            border: 2px solid rgba(234, 179, 8, 0.35);
+            margin: clamp(8px, 1.5vw, 20px);
+            box-shadow: inset 0 0 25px rgba(234, 179, 8, 0.1), 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .golden-frame::before, .golden-frame::after {
+            content: "";
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+
+        .golden-frame::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+        .golden-frame::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+
+        .corner-bottom-left, .corner-bottom-right {
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+        .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+        .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
+        .main-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 30px auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Botón de Navegación */
+        .nav-header { margin-bottom: 20px; width: 100%; max-width: 900px; z-index: 2; }
+        .btn-regresar {
+            display: inline-block;
+            padding: clamp(6px, 1.2vw, 10px) clamp(10px, 2vw, 18px);
+            background-color: #0d0202;
+            color: #eab308;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+            position: relative;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+        .btn-regresar:hover {
+            background-color: #991b1b;
+            color: #fde047;
+            border-color: #eab308;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7), inset 0 0 10px rgba(234, 179, 8, 0.3);
+            transform: translateY(-2px) scale(1.03);
+            letter-spacing: 1px;
+        }
+
+        h2, h3 { 
+            color: #eab308; 
+            border-bottom: 1px solid #7f1d1d; 
+            padding-bottom: 8px; 
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            text-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+        }
+        
+        /* Formulario estilo Terminal */
+        form { 
+            background: rgba(5, 2, 2, 0.95);
+            border: 2px solid #b91c1c;
+            border-radius: 10px;
+            padding: clamp(15px, 3vw, 30px);
+            box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
+            margin-bottom: 40px; 
+        }
+        label { display: block; margin-top: 12px; font-size: 0.9rem; color: #ef4444; font-family: monospace; letter-spacing: 1px; }
+        input, select { 
+            width: 100%; 
+            padding: 10px; 
+            margin-top: 5px; 
+            background: rgba(2, 1, 1, 0.9); 
+            border: 1px solid #450a0a; 
+            color: #f1f5f9; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            font-family: 'Courier New', Courier, monospace;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #eab308;
+            box-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
+        }
+        button[type="submit"] { 
+            width: 100%; 
+            margin-top: 25px; 
+            padding: 12px; 
+            background: #991b1b; 
+            color: #fde047; 
+            border: 1px solid #eab308; 
+            border-radius: 6px; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            font-weight: bold; 
+            letter-spacing: 1.5px;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 0 10px rgba(153, 27, 27, 0.6);
+        }
+        button[type="submit"]:hover { 
+            background: #b91c1c; 
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.8), inset 0 0 10px rgba(234, 179, 8, 0.4);
+            transform: scale(1.01);
+        }
+        #mensaje { text-align: center; margin-top: 15px; font-weight: bold; font-family: monospace; }
+
+        /* Vista de Carpetas y Fichas */
+        .explorer-container { 
+            background: rgba(5, 2, 2, 0.95);
+            border: 2px solid #b91c1c;
+            border-radius: 10px;
+            padding: clamp(15px, 3vw, 30px);
+            box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
+        }
+        .galaxy-folder, .system-folder { 
+            background: rgba(2, 1, 1, 0.9); 
+            border: 1px solid #450a0a; 
+            border-radius: 6px; 
+            margin-bottom: 10px; 
+            overflow: hidden; 
+        }
+        .folder-header { 
+            padding: 12px 14px; 
+            background: #110202; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            font-weight: bold; 
+            font-size: 0.95rem; 
+            color: #eab308;
+            font-family: monospace;
+            border-bottom: 1px solid #330505;
+        }
+        .folder-header:hover { background: #1a0303; color: #fde047; }
+        
+        .folder-content { display: none; padding: 12px; background: rgba(5, 2, 2, 0.6); }
+        .folder-content.active { display: block; }
+
+        .base-card { 
+            background: rgba(15, 3, 3, 0.9); 
+            border-left: 4px solid #eab308; 
+            padding: 12px; 
+            border-radius: 4px; 
+            font-size: 0.9rem; 
+            margin-bottom: 8px; 
+            border: 1px solid rgba(234, 179, 8, 0.15);
+        }
+        .base-card h4 { margin: 0 0 6px 0; color: #fde047; font-size: 1rem; font-family: monospace; }
+        .base-card p { margin: 4px 0; color: #cbd5e1; }
+        .coords-badge { background: #020101; color: #eab308; padding: 4px 8px; border-radius: 3px; font-family: monospace; display: inline-block; margin-top: 6px; border: 1px solid rgba(234, 179, 8, 0.3); }
+        .nuevo-tag { background: #b91c1c; color: #fde047; font-size: 0.7rem; padding: 2px 6px; border-radius: 3px; margin-left: 8px; font-weight: bold; border: 1px solid #eab308; }
+    </style>
+</head>
+<body>
+
+    <div class="golden-frame">
+        <div class="corner-bottom-left"></div>
+        <div class="corner-bottom-right"></div>
+    </div>
+
+    <div class="space-bg"></div>
+    <div class="cosmic-dust"></div>
+
+    <!-- BOTÓN DE RETORNO RÁPIDO -->
+    <div class="nav-header">
+        <a href="sistema.html" class="btn-regresar">⬅ Volver a sistema</a>
+    </div>
+
+    <div class="main-container">
+        <!-- FORMULARIO DE REGISTRO -->
+        <form id="baseForm">
+            <h2>Registrar Base Templaria</h2>
+            
+            <!-- Galaxia -->
+            <label>Galaxia:</label>
+            <select id="galaxySelect" onchange="actualizarDependenciasGalaxia()">
+                <!-- Se llena dinámicamente -->
+            </select>
+
+            <div id="otraGalaxiaContainer" style="display: none; margin-top: 10px;">
+                <label>Nombre de la nueva galaxia:</label>
+                <input type="text" id="galaxyCustom" placeholder="Ej: Isdoraijung">
+            </div>
+
+            <!-- Sistema -->
+            <label>Nombre del Sistema:</label>
+            <select id="systemSelect" onchange="verificarSistemaCustom()">
+                <!-- Se llena dinámicamente según la galaxia elegida -->
+            </select>
+
+            <div id="otroSistemaContainer" style="display: none; margin-top: 10px;">
+                <label>Nombre del nuevo sistema:</label>
+                <input type="text" id="systemCustom" placeholder="Ej: Sistema Nuevo X">
+            </div>
+
+            <label>Nombre de la Base:</label>
+            <input type="text" id="base_name" required>
+
+            <label>Propietario:</label>
+            <input type="text" id="owner" required>
+
+            <label>Tipo de Base:</label>
+            <input type="text" id="type" required>
+
+            <label>Planeta:</label>
+            <input type="text" id="planet" required>
+
+            <label>Coordenadas (Glyphs/Portal):</label>
+            <input type="text" id="coords" required>
+
+            <button type="submit">Guardar Base</button>
+            <p id="mensaje"></p>
+        </form>
+
+        <!-- EXPLORADOR DE SISTEMAS Y BASES -->
+        <div class="explorer-container">
+            <h3>📂 Archivo General de Galaxias y Sistemas Oficiales</h3>
+            <div id="treeContainer" style="margin-top: 15px; font-family: monospace; color: #94a3b8;">Cargando estructura...</div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Configuración de Supabase
+        const SUPABASE_URL = 'https://sndisappxeebfjlfcnwj.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_5R5GmcZUunwh1RgJ3cZ0bg_XdSpQ4EL';
+
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ==========================================
+        // 2. DATOS ESTÁTICOS (Actualizados con los 157 sistemas de Euclid del Excel)
+        // ==========================================
+        const galaxiasEstaticasBase = [
+            "Euclid", 
+            "Hilbert Dimension", 
+            "Calypso", 
+            "Hesperius Dimension", 
+            "Eissentam", 
+            "Budallangr"
+        ];
+
+        const sistemasEstaticos = {
+            "Euclid": [
+                "boylosa lx", "negulus xvlll", "odiusiped", "defora", "uphlin-ryann", "beattyip", 
+                "eduanr-deporp", "oneston vlll", "coklahom", "ninectichu", "rafael", "ryintonya", 
+                "tratias-vai xlx", "elegze-pra l", "hoskyovinia", "muskirto", "hitachi-uefuk", 
+                "mobingwoo", "nonjiwua", "riveyko-oko", "susurav-asb", "eahams-ayg", "hejiung-uunu", 
+                "yorxunf", "goqudoi vll", "cintil", "kabaele-boen", "gexungy", "orches-usuk", 
+                "eswade vll", "osporia", "ilfordo-apl", "seusiar", "rihunsl", "qayugkar", 
+                "muxingl", "bozhow-yava", "juennongj", "ruzhou", "ahaohsin", "bestie-hyull", 
+                "rewsbu-esapa", "oprovern", "tesyala", "ukuhas iv", "neyringisn", "michik vlll", 
+                "roasit-qen", "losbels-evy vll", "jeellomi xlv", "sotann-luburg", "eorgonash", 
+                "kufasta", "avsuyrir xvll", "tinggu-hof", "riyamag vlll", "hisoma", "pevetli", 
+                "oyolasve", "chonquam", "woomenz", "lejope", "ookaka x", "valech", "sembok-yus", 
+                "dewsbur", "kojiyo", "zuhott", "ubaraka-sori xlll", "jallva-rozna", "rayugku lx", 
+                "ajorte", "uhasudor v", "yutegrad", "alexey ll", "edcosse-irs xl", "anleyto-poydn", 
+                "aquintop", "hovdor-desro", "lagang-egda", "hyirhowag xvll", "coggesso", "sorial", 
+                "coranoyam", "imskyvi-uulis", "atorigus", "idetsi", "talukouri", "yutossa-iset", 
+                "lzonash lv", "usoinol vl", "ogdani-bayed l", "bluchyo-rube", "yazumois lx", 
+                "ruksik", "bratov-fuji", "essedium xvlll", "affugtni", "ezusum", "aparahas", 
+                "onjisu-hats xl", "razawai", "yulison-nest xvll", "hutrata", "akhtar", "enevadu", 
+                "zugash-poc vlll", "bunkyots", "lamasamk", "batagaiat lv", "nileidim", "ritable", 
+                "gonaogour", "nimatti-riksaw", "rochatovk", "magoga v", "inkarsho", "amusic-guah ll", 
+                "zadnogri", "nujukuiper", "omnarr lx", "ukshai", "riittami", "erdoiji xl", 
+                "omfatt-ili lx", "lilash-aol", "tizani-ukn x", "arimovits", "surantil", "cukleyuw", 
+                "igasah-ayv", "beokaya-huron", "portsa", "rodneyas", "loftusa", "madach-sosy", 
+                "rotsbert", "zaozyorsk", "wusongji l", "nidopochk", "veychy lv", "yahytak", 
+                "mesannurta", "apolyb", "suyrnina", "ticyati", "gaokay xvll", "averdig-wat xlv", 
+                "kofuname", "yalaint", "lidovoa-natoud", "mechnym-lsh vlll", "alsrull", "miglich", 
+                "artagil-naho", "gadzhe", "settsu"
+            ],
+            "Hilbert Dimension": [],
+            "Calypso": [],
+            "Hesperius Dimension": [],
+            "Eissentam": [],
+            "Budallangr": []
+        };
+
+        let galaxiasCompletaGlobal = {};
+        const form = document.getElementById('baseForm');
+        const mensaje = document.getElementById('mensaje');
+        const treeContainer = document.getElementById('treeContainer');
+        const galaxySelect = document.getElementById('galaxySelect');
+        const systemSelect = document.getElementById('systemSelect');
+
+        function actualizarDependenciasGalaxia() {
+            const customGalaxiaCont = document.getElementById('otraGalaxiaContainer');
+            if (galaxySelect.value === 'otra') {
+                customGalaxiaCont.style.display = 'block';
+                document.getElementById('galaxyCustom').setAttribute('required', 'true');
+                systemSelect.innerHTML = '<option value="otro">Escribir nuevo sistema...</option>';
+                systemSelect.value = 'otro';
+                verificarSistemaCustom();
+            } else {
+                customGalaxiaCont.style.display = 'none';
+                document.getElementById('galaxyCustom').removeAttribute('required');
+                poblarSistemasDeGalaxia(galaxySelect.value);
+            }
+        }
+
+        function poblarSistemasDeGalaxia(nombreGalaxia) {
+            systemSelect.innerHTML = '';
+            const sistemasDisponibles = galaxiasCompletaGlobal[nombreGalaxia] || [];
+
+            sistemasDisponibles.forEach(sis => {
+                const opt = document.createElement('option');
+                opt.value = sis;
+                opt.textContent = sis;
+                systemSelect.appendChild(opt);
+            });
+
+            const optOtro = document.createElement('option');
+            optOtro.value = 'otro';
+            optOtro.textContent = '➕ Escribir nuevo sistema...';
+            systemSelect.appendChild(optOtro);
+
+            verificarSistemaCustom();
+        }
+
+        function verificarSistemaCustom() {
+            const customSistemaCont = document.getElementById('otroSistemaContainer');
+            if (systemSelect.value === 'otro') {
+                customSistemaCont.style.display = 'block';
+                document.getElementById('systemCustom').setAttribute('required', 'true');
+            } else {
+                customSistemaCont.style.display = 'none';
+                document.getElementById('systemCustom').removeAttribute('required');
+            }
+        }
+
+        async function sincronizarYRenderizar() {
+            treeContainer.innerHTML = 'Sincronizando con Supabase...';
+
+            const { data: bases, error } = await _supabase
+                .from('bases_templarias')
+                .select('*');
+
+            if (error) {
+                treeContainer.innerHTML = '<p style="color:#ef4444;">Error al conectar con Supabase: ' + error.message + '</p>';
+                return;
+            }
+
+            galaxiasCompletaGlobal = JSON.parse(JSON.stringify(sistemasEstaticos));
+            let listaGalaxiasDisponibles = [...galaxiasEstaticasBase];
+
+            if (bases) {
+                bases.forEach(b => {
+                    const galaxia = b.galaxy || 'Euclid';
+                    const sistema = b.system_name || 'Sistema Desconocido';
+
+                    if (!galaxiasCompletaGlobal[galaxia]) {
+                        galaxiasCompletaGlobal[galaxia] = [];
+                    }
+                    if (!listaGalaxiasDisponibles.includes(galaxia)) {
+                        listaGalaxiasDisponibles.push(galaxia);
+                    }
+
+                    if (!galaxiasCompletaGlobal[galaxia].includes(sistema)) {
+                        galaxiasCompletaGlobal[galaxia].push(sistema);
+                    }
+                });
+            }
+
+            const galaxiaSeleccionadaPrevia = galaxySelect.value || 'Euclid';
+            galaxySelect.innerHTML = '';
+            
+            listaGalaxiasDisponibles.forEach(gal => {
+                const opt = document.createElement('option');
+                opt.value = gal;
+                opt.textContent = gal;
+                galaxySelect.appendChild(opt);
+            });
+
+            const optOtraGal = document.createElement('option');
+            optOtraGal.value = 'otra';
+            optOtraGal.textContent = '➕ Otra galaxia (Escribir nombre)...';
+            galaxySelect.appendChild(optOtraGal);
+
+            if (listaGalaxiasDisponibles.includes(galaxiaSeleccionadaPrevia)) {
+                galaxySelect.value = galaxiaSeleccionadaPrevia;
+            } else {
+                galaxySelect.value = 'Euclid';
+            }
+
+            actualizarDependenciasGalaxia();
+
+            treeContainer.innerHTML = '';
+            Object.keys(galaxiasCompletaGlobal).forEach(galaxiaNombre => {
+                const galaxiaDiv = document.createElement('div');
+                galaxiaDiv.className = 'galaxy-folder';
+
+                let sistemasHtml = '';
+                const sistemasDeGalaxia = galaxiasCompletaGlobal[galaxiaNombre];
+
+                if (sistemasDeGalaxia.length === 0) {
+                    sistemasHtml = '<p style="color:#64748b; font-size:12px; padding: 5px 10px; margin:0;">No hay sistemas ni bases registradas en esta galaxia.</p>';
+                } else {
+                    sistemasDeGalaxia.forEach(sistemaNombre => {
+                        const esEstatico = sistemasEstaticos[galaxiaNombre] && sistemasEstaticos[galaxiaNombre].includes(sistemaNombre);
+                        const etiquetaNuevo = !esEstatico ? '<span class="nuevo-tag">NUEVO SISTEMA</span>' : '';
+
+                        const basesDelSistema = bases ? bases.filter(b => (b.galaxy || 'Euclid') === galaxiaNombre && b.system_name === sistemaNombre) : [];
+
+                        sistemasHtml += `
+                            <div class="system-folder">
+                                <div class="folder-header" onclick="toggleFolder(this)">
+                                    <span>🌌 ${sistemaNombre} ${etiquetaNuevo}</span>
+                                    <span>${basesDelSistema.length} base(s) ▼</span>
+                                </div>
+                                <div class="folder-content">
+                                    ${basesDelSistema.length > 0 ? basesDelSistema.map(b => `
+                                        <div class="base-card">
+                                            <h4>📄 ${b.base_name}</h4>
+                                            <p><strong>Planeta:</strong> ${b.planet}</p>
+                                            <p><strong>Tipo:</strong> ${b.type}</p>
+                                            <p><strong>Propietario:</strong> ${b.owner}</p>
+                                            <div class="coords-badge">📍 ${b.coords}</div>
+                                        </div>
+                                    `).join('') : '<p style="color:#64748b; font-size:12px; margin:0;">Sin bases registradas en este sistema.</p>'}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                galaxiaDiv.innerHTML = `
+                    <div class="folder-header" onclick="toggleFolder(this)" style="background: #0d0202;">
+                        <span>📁 Galaxia: <strong>${galaxiaNombre}</strong></span>
+                        <span>▼</span>
+                    </div>
+                    <div class="folder-content" style="padding-left: 10px;">
+                        ${sistemasHtml}
+                    </div>
+                `;
+
+                treeContainer.appendChild(galaxiaDiv);
+            });
+        }
+
+        function toggleFolder(header) {
+            const content = header.nextElementSibling;
+            content.classList.toggle('active');
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            mensaje.style.color = '#eab308';
+            mensaje.textContent = 'Guardando registro...';
+
+            let galaxiaFinal = galaxySelect.value;
+            if (galaxiaFinal === 'otra') {
+                galaxiaFinal = document.getElementById('galaxyCustom').value.trim();
+            }
+
+            let sistemaFinal = systemSelect.value;
+            if (sistemaFinal === 'otro') {
+                sistemaFinal = document.getElementById('systemCustom').value.trim();
+            }
+
+            const nuevaBase = {
+                galaxy: galaxiaFinal,
+                system_name: sistemaFinal,
+                base_name: document.getElementById('base_name').value,
+                owner: document.getElementById('owner').value,
+                type: document.getElementById('type').value,
+                planet: document.getElementById('planet').value,
+                coords: document.getElementById('coords').value
+            };
+
+            const { error } = await _supabase
+                .from('bases_templarias')
+                .insert([nuevaBase]);
+
+            if (error) {
+                console.error(error);
+                mensaje.style.color = '#ef4444';
+                mensaje.textContent = 'Error al guardar: ' + error.message;
+            } else {
+                mensaje.style.color = '#eab308';
+                mensaje.textContent = '¡Registrado con éxito!';
+                form.reset();
+                sincronizarYRenderizar();
+            }
+        });
+
+        sincronizarYRenderizar();
+    </script>
+</body>
+</html>

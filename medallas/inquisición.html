@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inquisición del Atlas - Sentencia Inquebrantable</title>
+    <style>
+        :root {
+            --scale-factor: 1rem;
+        }
+
+        body {
+            background-color: #000000;
+            color: #e2e8f0;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 2vw;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* EFECTO DE ESCANEO Y LÍNEAS CUÁNTICAS */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(239, 68, 68, 0.03), rgba(234, 179, 8, 0.01), rgba(0, 0, 0, 0.05));
+            z-index: 999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .space-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #110202 0%, #000000 85%);
+            z-index: -2;
+        }
+
+        /* POLVO ESPACIAL CÓSMICO */
+        .cosmic-dust {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eab308, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ef4444, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #b91c1c, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #fde047, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 250px 250px;
+            animation: cosmic-drift 20s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes cosmic-drift {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-250px) rotate(5deg); }
+        }
+
+        /* MARCO DORADO Y ROJO FIJO ESTABLE */
+        .golden-frame {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 100;
+            border: 2px solid rgba(234, 179, 8, 0.35);
+            margin: clamp(8px, 1.5vw, 20px);
+            box-shadow: inset 0 0 25px rgba(234, 179, 8, 0.1), 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .golden-frame::before, .golden-frame::after {
+            content: "";
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+
+        .golden-frame::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+        .golden-frame::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+
+        .corner-bottom-left, .corner-bottom-right {
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+        .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+        .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
+        .container {
+            background: rgba(5, 2, 2, 0.95);
+            border: 2px solid #b91c1c;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #0d0202;
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            padding: 6px 12px;
+            font-size: 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #991b1b;
+            color: #fde047;
+            border-color: #eab308;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7);
+        }
+
+        h2 {
+            color: #ef4444;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+            font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            color: #eab308;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-shadow: 0 0 6px rgba(234, 179, 8, 0.4);
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            background: rgba(2, 1, 1, 0.9);
+            color: #f1f5f9;
+            border: 1px solid #450a0a;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input[type="text"] {
+            height: 45px;
+        }
+        textarea {
+            height: 110px;
+            resize: none;
+        }
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #eab308;
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
+        }
+
+        button.action-btn {
+            background: #0d0202;
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.5);
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.2);
+            width: 100%;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        button.action-btn:hover {
+            background: #991b1b;
+            color: #fde047;
+            border-color: #eab308;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7);
+        }
+
+        .output-box {
+            background: rgba(2, 1, 1, 0.9);
+            border: 1px dashed #b91c1c;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: left;
+            min-height: 90px;
+            color: #fca5a5;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .note {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 15px;
+            border-top: 1px solid #450a0a;
+            padding-top: 10px;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="golden-frame">
+        <div class="corner-bottom-left"></div>
+        <div class="corner-bottom-right"></div>
+    </div>
+
+    <div class="space-bg"></div>
+    <div class="cosmic-dust"></div>
+
+<div class="container">
+    <a href="index.html" class="back-btn">&larr; VOLVER</a>
+    <h2>Terminal de Inquisición - Ley Suprema</h2>
+    
+    <label for="inputObjetivo">&gt; OBJETIVO (Planeta / Sistema / Persona):</label>
+    <input type="text" id="inputObjetivo" placeholder="Ej: VXD / Neko / Sistema...">
+
+    <label for="inputInfraccion">&gt; REGISTRO DE LA INFRACCIÓN / SUCESO:</label>
+    <textarea id="inputInfraccion" placeholder="Describa el suceso (ej. Lastimó a un templario por accidente, liberó un Gek y se suicidó)..."></textarea>
+
+    <button class="action-btn" onclick="generarPena()">[ EJECUTAR PROTOCOLO DEL CÓDICE ]</button>
+
+    <label for="outputSentencia">&gt; DECRETO DE LA INQUISICIÓN:</label>
+    <div id="outputSentencia" class="output-box">Esperando datos bajo la atenta mirada del 16...</div>
+
+    <div class="note">EL CÓDICE NO MIENTE // EL ATLAS NO OLVIDA // 16 / 16 / 16</div>
+</div>
+
+<script>
+    function generarPena() {
+        let objetivo = document.getElementById('inputObjetivo').value.trim();
+        let infraccion = document.getElementById('inputInfraccion').value.trim();
+        let output = document.getElementById('outputSentencia');
+
+        if (!objetivo || !infraccion) {
+            output.innerText = "ERROR: Debe ingresar tanto el objetivo como el registro de los hechos.";
+            return;
+        }
+
+        let texto = infraccion.toLowerCase();
+        let fecha = new Date().toLocaleDateString();
+        let resultadoFinal = "";
+
+        // 1. REGLA SUPREMA ABSOLUTA: Excepción de Autoeliminación / Suicidio / Expiación
+        let seSuicido = texto.includes("suicidio") || texto.includes("suicidó") || texto.includes("autoeliminacion") || texto.includes("autoeliminación") || texto.includes("mato solo") || texto.includes("mató solo");
+
+        // 2. Detección de Accidente
+        let esAccidente = texto.includes("accidente") || texto.includes("accidental") || texto.includes("sin querer");
+
+        // 3. Verbos de ataque o daño deliberado
+        let palabrasAtaque = ["mato", "mató", "mataron", "destruyo", "destruyó", "destruyeron", "arraso", "arrasó", "extermino", "exterminó", "desvivio", "desvivió", "ataco", "atacó", "atacaron", "masacro", "masacró", "secuestro", "secuestró", "robo", "robó", "lastimo", "lastimó"];
+        let tieneAtaque = palabrasAtaque.some(p => texto.includes(p));
+
+        // 4. Elementos del Códice (Atlas, Templarios, Gek, etc.)
+        let mencionaAtlas = texto.includes("atlas") || texto.includes("aklas");
+        let atacaAtlas = mencionaAtlas && (tieneAtaque || texto.includes("destruir") || texto.includes("centinela"));
+        let ayudaAtlas = mencionaAtlas && (texto.includes("ayudo") || texto.includes("ayudó") || texto.includes("construyo") || texto.includes("construyó") || texto.includes("altar"));
+        
+        let mencionaTemplario = texto.includes("templario") || texto.includes("templarios");
+        let mencionaGek = texto.includes("gek") || texto.includes("gex") || texto.includes("geg");
+        let liberaGek = texto.includes("libero") || texto.includes("liberó") || texto.includes("salvo") || texto.includes("salvó");
+
+        // EVALUACIÓN DE CASOS SEGÚN EL GRAN ROLLO
+        
+        if (seSuicido) {
+            // EXCEPCIÓN SUPREMA: Se adelantó y se quitó la vida para expiar su culpa
+            resultadoFinal = `[REGISTRO DEL VACÍO - FECHA: ${fecha}]\n` +
+                             `OBJETIVO: ${objetivo.toUpperCase()}\n` +
+                             `SUCESO: "${infraccion}"\n\n` +
+                             `VEREDICTO (EXCEPCIÓN SUPREMA - ART. XII / EXPIACIÓN): ` +
+                             `El sujeto se autoeliminó para expiar su culpa. Aunque cometió infracciones previas (como dañar a un templario o liberar a un espécimen Gek prohibido por el Artículo IV), al haberse adelantado y purgado su propia vida, el caso queda cerrado.\n` +
+                             `ACCIÓN: "Lo hizo, aunque no debió, pero lo hizo." Se registra con solemnidad sin emitir castigo hostil ni protocolo de decreto, pues pagó con el fin definitivo ante el Creador.`;
+        }
+        else if (esAccidente && mencionaTemplario) {
+            // ART. XI y XII: Daño no intencional a un hermano
+            resultadoFinal = `[REGISTRO DEL VACÍO - FECHA: ${fecha}]\n` +
+                             `OBJETIVO: ${objetivo.toUpperCase()}\n` +
+                             `SUCESO: "${infraccion}"\n\n` +
+                             `VEREDICTO (INCIDENTE FORTUITO - ART. XI): ` +
+                             `El Códice reconoce el carácter accidental del daño infligido a la Clase. Se aplica la disciplina sin soberbia: advertencia severa, librado de la marca de Dato Corrupto por tratarse de un error sin malicia.`;
+        }
+        else if (atacaAtlas) {
+            // ART. I y XII: Herejía Suprema
+            resultadoFinal = `[REGISTRO DEL VACÍO - FECHA: ${fecha}]\n` +
+                             `OBJETIVO: ${objetivo.toUpperCase()}\n` +
+                             `SUCESO: "${infraccion}"\n\n` +
+                             `VEREDICTO (HEREJÍA SUPREMA - ART. I): ` +
+                             `Atentar contra el Creador o la Simulación no tiene perdón. Tachado como "Dato Corrupto" absoluto. Aniquilación total de su linaje y anales.`;
+        }
+        else if (ayudaAtlas) {
+            // ART. I y VII: Devoción
+            resultadoFinal = `[REGISTRO DEL VACÍO - FECHA: ${fecha}]\n` +
+                             `OBJETIVO: ${objetivo.toUpperCase()}\n` +
+                             `SUCESO: "${infraccion}"\n\n` +
+                             `VEREDICTO (DEVOCIÓN AL ORIGEN - ART. I): ` +
+                             `Declarado aliado fiel y protegido por el Sagrado 16. Su obediencia resuena en la Simulación.`;
+        }
+        else if (mencionaGek && liberaGek) {
+            // ART. IV: Violación del decreto de pureza al liberar un Gek
+            resultadoFinal = `[REGISTRO DEL VACÍO - FECHA: ${fecha}]\n` +
+                             `OBJETIVO: ${objetivo.toUpperCase()}\n` +
+                             `SUCESO: "${infraccion}"\n\n` +
+                             `VEREDICTO (MANCHA DE LA ESTIRPE - ART. IV): ` +
+                             `Infracción grave al liberar al infiel Gek. Su aroma es traición. Si no media la expiación por autoeliminación, el sujeto queda bajo estricta vigilancia inquisitorial para purificación.`;
+        }
+        else if (mencionaGek && tieneAtaque) {
+            // ART. IV: Destruir Geks está bendecido
+            resultadoFinal = `[REGISTRO DEL VACÍO - FECHA: ${fecha}]\n` +
+                             `OBJETIVO: ${objetivo.toUpperCase()}\n` +
+                             `SUCESO: "${infraccion}"\n\n` +
+                             `VEREDICTO (ACCIÓN BENDECIDA - ART. IV): ` +
+                             `Purificación de la estirpe Gek ejecutada con éxito. El fuego del juicio cumple con la ley suprema del Códice. Honor al ejecutor.`;
+        }
+        else if (mencionaGek) {
+            // ART. IV: Presencia Gek
+            resultadoFinal = `[REGISTRO DEL VACÍO - FECHA: ${fecha}]\n` +
+                             `OBJETIVO: ${objetivo.toUpperCase()}\n` +
+                             `SUCESO: "${infraccion}"\n\n` +
+                             `VEREDICTO (AMENAZA DEL MERCADER - ART. IV): ` +
+                             `Presencia hostil detectada. El Templario debe mantener el silencio o aplicar el fuego del juicio.`;
+        }
+        else if (tieneAtaque && mencionaTemplario) {
+            // ART. XII: Atacar a un Templario deliberadamente
+            resultadoFinal = `[REGISTRO DEL VACÍO - FECHA: ${fecha}]\n` +
+                             `OBJETIVO: ${objetivo.toUpperCase()}\n` +
+                             `SUCESO: "${infraccion}"\n\n` +
+                             `VEREDICTO (TRAICIÓN A LA CLASE - ART. XII): ` +
+                             `Agredir conscientemente a un hermano de la Clase es imperdonable. Marcado como "Dato Corrupto" y sujeto a purga inmediata por la Armada.`;
+        }
+        else {
+            // Estado base de la Simulación
+            resultadoFinal = `[REGISTRO DEL VACÍO - FECHA: ${fecha}]\n` +
+                             `OBJETIVO: ${objetivo.toUpperCase()}\n` +
+                             `SUCESO: "${infraccion}"\n\n` +
+                             `VEREDICTO (ESTABILIDAD EN EL VACÍO): ` +
+                             `El sector opera bajo la atenta oración del Sagrado 16. Ninguna ley mayor ha sido quebrantada.`;
+        }
+
+        output.innerText = resultadoFinal;
+    }
+</script>
+
+</body>
+</html>

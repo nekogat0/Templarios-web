@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licencia de Conducción Estelar - Templarios del Atlas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --scale-factor: 1rem;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 2vw;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* EFECTO DE ESCANEO Y LÍNEAS CUÁNTICAS */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(239, 68, 68, 0.03), rgba(234, 179, 8, 0.01), rgba(0, 0, 0, 0.05));
+            z-index: 999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .space-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #110202 0%, #000000 85%);
+            z-index: -2;
+        }
+
+        /* POLVO ESPACIAL CÓSMICO */
+        .cosmic-dust {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eab308, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ef4444, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #b91c1c, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #fde047, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 250px 250px;
+            animation: cosmic-drift 20s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes cosmic-drift {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-250px) rotate(5deg); }
+        }
+
+        /* MARCO DORADO Y ROJO FIJO ESTABLE */
+        .golden-frame {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 100;
+            border: 2px solid rgba(234, 179, 8, 0.35);
+            margin: clamp(8px, 1.5vw, 20px);
+            box-shadow: inset 0 0 25px rgba(234, 179, 8, 0.1), 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .golden-frame::before, .golden-frame::after {
+            content: "";
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+
+        .golden-frame::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+        .golden-frame::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+
+        .corner-bottom-left, .corner-bottom-right {
+            position: absolute;
+            width: clamp(15px, 3vw, 30px);
+            height: clamp(15px, 3vw, 30px);
+            border-color: #eab308;
+            border-style: solid;
+        }
+        .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+        .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
+        .container {
+            max-width: 650px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        .back-btn {
+            background-color: #0d0202;
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background-color: #991b1b;
+            color: #fde047;
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7);
+        }
+        .form-box {
+            background: rgba(5, 2, 2, 0.95);
+            border: 2px solid #b91c1c;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #d4af37;
+            font-size: 0.9em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-shadow: 0 0 6px rgba(234, 179, 8, 0.4);
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(2, 1, 1, 0.9);
+            border: 1px solid #450a0a;
+            color: #fff;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+        .generate-btn {
+            background-color: #0d0202;
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            width: 100%;
+            font-family: inherit;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+        .generate-btn:hover {
+            background-color: #991b1b;
+            color: #fde047;
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7);
+        }
+        .download-btn {
+            background-color: #d4af37;
+            color: #04060b;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 15px;
+            font-family: inherit;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        .download-btn:hover {
+            background-color: #e6c547;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Escudo flotante en la esquina */
+        .faction-shield-corner {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 1000;
+            width: 70px;
+            height: 70px;
+            background: #090d16;
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            padding: 2px;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+        .faction-shield-corner img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Estilo visual del carnet (Negro, Rojo y Dorado) */
+        #license-display {
+            display: none;
+            background: linear-gradient(135deg, #090d16, #020617);
+            border: 3px solid #d4af37;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
+            position: relative;
+        }
+        .license-header {
+            border-bottom: 2px solid #ef4444;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .license-header h2 {
+            margin: 0;
+            color: #d4af37;
+            font-size: 1.1em;
+            letter-spacing: 1px;
+        }
+        .license-body {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .license-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.85em;
+        }
+        .license-item label {
+            color: #f87171;
+            font-size: 0.75em;
+            display: block;
+            text-transform: uppercase;
+        }
+        .license-item span {
+            color: #f1f5f9;
+            font-weight: bold;
+        }
+        .photo-box {
+            width: 110px;
+            height: 130px;
+            border: 2px solid #d4af37;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .license-extra {
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(239, 68, 68, 0.4);
+            font-size: 0.8em;
+        }
+        .license-footer {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed #334155;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="golden-frame">
+        <div class="corner-bottom-left"></div>
+        <div class="corner-bottom-right"></div>
+    </div>
+
+    <div class="space-bg"></div>
+    <div class="cosmic-dust"></div>
+
+    <!-- Escudo flotante en la esquina -->
+    <div class="faction-shield-corner" title="Templarios del Atlas">
+        <img src="escudo.png" alt="Escudo">
+    </div>
+
+    <div class="container">
+        <a href="misiones.html" class="back-btn">&larr; Volver a Misiones</a>
+        
+        <h1 style="color: #d4af37; text-transform: uppercase; letter-spacing: 1px; font-size: clamp(1.3rem, 2.5vw, 1.8rem);">Tramitación de Licencia Estelar</h1>
+        <p style="color: #94a3b8; font-size: 0.9em;">Emite tu permiso oficial bajo los estandartes de los Templarios del Atlas.</p>
+
+        <div class="form-box" id="form-section">
+            <h3 style="color: #d4af37; margin-top: 0;">Configuración del Permiso</h3>
+            <div class="form-group">
+                <label>Tipo de Licencia:</label>
+                <select id="licenseType">
+                    <option value="free">Licencia Temporal (Gratuita - Duración: 5 días)</option>
+                    <option value="definitive">Licencia Definitiva (Coste: 2,500 Puntos - Duración: 6 años)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nombre de la Nave:</label>
+                <input type="text" id="shipName" placeholder="Ej: Espíritu Akkan">
+            </div>
+            <div class="form-group">
+                <label>Clase / Tipo de Nave:</label>
+                <input type="text" id="shipClass" placeholder="Ej: Explorador / Luchador / Acorazado">
+            </div>
+            <div class="form-group">
+                <label>Matrícula / Código de Registro de Nave:</label>
+                <input type="text" id="shipCode" placeholder="Ej: NMS-4096-7782-X">
+            </div>
+            <div class="form-group">
+                <label>Plataforma de Juego:</label>
+                <select id="platform">
+                    <option value="PC">PC</option>
+                    <option value="Xbox">Xbox</option>
+                    <option value="PlayStation 5">PlayStation 5</option>
+                    <option value="PlayStation 4">PlayStation 4</option>
+                    <option value="Nintendo Switch">Nintendo Switch</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Código de Amigo / Enlace de Red:</label>
+                <input type="text" id="friendCode" placeholder="Ej: XXXX-XXXX-XXXXX">
+            </div>
+            <div class="form-group">
+                <label>Rango del Piloto:</label>
+                <input type="text" id="pilotRank" value="Viajero Galáctico / Templario">
+            </div>
+            <div class="form-group">
+                <label>Información Extra / Notas Adicionales:</label>
+                <input type="text" id="extraInfo" placeholder="Ej: Autorizado para patrullaje sectorial">
+            </div>
+            <div class="form-group">
+                <label>Foto del Personaje (Imagen):</label>
+                <input type="file" id="charPhoto" accept="image/*">
+            </div>
+            <button class="generate-btn" onclick="generateLicense()">Emitir Licencia Estelar</button>
+        </div>
+
+        <div id="license-container">
+            <div id="license-display">
+                <div class="license-header">
+                    <h2>LICENCIA DE CONDUCCIÓN ESTELAR</h2>
+                    <span id="disp-type-badge" style="color: #d4af37; font-size: 0.75em; font-weight: bold; background: rgba(212, 175, 55, 0.1); padding: 3px 6px; border: 1px solid #d4af37; border-radius: 4px;">[TEMPORAL]</span>
+                </div>
+                <div class="license-body">
+                    <div class="photo-box">
+                        <img id="disp-photo" src="" alt="Sin foto">
+                    </div>
+                    <div class="license-grid">
+                        <div class="license-item">
+                            <label>NAVE:</label>
+                            <span id="disp-ship">-</span>
+                        </div>
+                        <div class="license-item">
+                            <label>CLASE:</label>
+                            <span id="disp-class">-</span>
+                        </div>
+                        <div class="license-item">
+                            <label>MATRÍCULA:</label>
+                            <span id="disp-code">-</span>
+                        </div>
+                        <div class="license-item">
+                            <label>PLATAFORMA:</label>
+                            <span id="disp-platform">-</span>
+                        </div>
+                        <div class="license-item" style="grid-column: span 2;">
+                            <label>CÓDIGO DE AMIGO:</label>
+                            <span id="disp-friendcode" style="color: #38bdf8;">-</span>
+                        </div>
+                        <div class="license-item" style="grid-column: span 2;">
+                            <label>RANGO:</label>
+                            <span id="disp-rank">-</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="license-extra" id="disp-extra-container" style="display: none;">
+                    <label style="color: #f87171; font-size: 0.75em;">INFORMACIÓN EXTRA:</label>
+                    <span id="disp-extra" style="color: #fff; font-size: 0.85em;">-</span>
+                </div>
+                <div class="license-footer">
+                    <span>Emisión: <strong style="color: #d4af37;" id="disp-emision">-</strong></span>
+                    <span>Vencimiento: <strong id="disp-vencimiento" style="color: #ef4444;">-</strong></span>
+                </div>
+            </div>
+            <button class="download-btn" id="downloadBtn" style="display: none;" onclick="downloadLicenseImage()">📥 Descargar Licencia como Imagen</button>
+        </div>
+    </div>
+
+    <script>
+        function generateLicense() {
+            const type = document.getElementById('licenseType').value;
+            const shipName = document.getElementById('shipName').value.trim();
+            const shipClass = document.getElementById('shipClass').value.trim();
+            const shipCode = document.getElementById('shipCode').value.trim();
+            const platform = document.getElementById('platform').value;
+            const friendCode = document.getElementById('friendCode').value.trim();
+            const pilotRank = document.getElementById('pilotRank').value.trim();
+            const extraInfo = document.getElementById('extraInfo').value.trim();
+            const photoInput = document.getElementById('charPhoto');
+
+            if (!shipName || !shipClass || !shipCode) {
+                alert("Por favor, rellena al menos los datos obligatorios de la nave.");
+                return;
+            }
+
+            if (type === 'definitive') {
+                let currentPoints = parseInt(localStorage.getItem('templarios_puntos') || '0');
+                const cost = 2500;
+
+                if (currentPoints < cost) {
+                    alert(`No tienes suficientes puntos. La licencia definitiva requiere ${cost} puntos (Tienes ${currentPoints} pts).`);
+                    return;
+                }
+
+                currentPoints -= cost;
+                localStorage.setItem('templarios_puntos', currentPoints);
+                document.getElementById('disp-type-badge').innerText = "[DEFINITIVA - 6 AÑOS]";
+            } else {
+                document.getElementById('disp-type-badge').innerText = "[TEMPORAL - 5 DÍAS]";
+            }
+
+            const now = new Date();
+            const emisionStr = now.toLocaleDateString();
+            
+            let vencimientoDate = new Date();
+            if (type === 'definitive') {
+                vencimientoDate.setFullYear(now.getFullYear() + 6);
+            } else {
+                vencimientoDate.setDate(now.getDate() + 5);
+            }
+            const vencimientoStr = vencimientoDate.toLocaleDateString();
+
+            document.getElementById('disp-ship').innerText = shipName;
+            document.getElementById('disp-class').innerText = shipClass;
+            document.getElementById('disp-code').innerText = shipCode;
+            document.getElementById('disp-platform').innerText = platform;
+            document.getElementById('disp-friendcode').innerText = friendCode || 'No registrado';
+            document.getElementById('disp-rank').innerText = pilotRank;
+
+            if (extraInfo) {
+                document.getElementById('disp-extra').innerText = extraInfo;
+                document.getElementById('disp-extra-container').style.display = 'block';
+            } else {
+                document.getElementById('disp-extra-container').style.display = 'none';
+            }
+
+            document.getElementById('disp-emision').innerText = emisionStr;
+            document.getElementById('disp-vencimiento').innerText = vencimientoStr;
+
+            if (photoInput.files && photoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('disp-photo').src = e.target.result;
+                };
+                reader.readAsDataURL(photoInput.files[0]);
+            } else {
+                document.getElementById('disp-photo').src = "";
+            }
+
+            document.getElementById('form-section').style.display = 'none';
+            document.getElementById('license-display').style.display = 'block';
+            document.getElementById('downloadBtn').style.display = 'block';
+
+            if (type === 'definitive') {
+                alert("¡Licencia definitiva emitida con éxito! Se han descontado 2,500 puntos.");
+            } else {
+                alert("¡Licencia temporal emitida con éxito! Recuerda renovarla cada 5 días.");
+            }
+        }
+
+        function downloadLicenseImage() {
+            const licenseElement = document.getElementById('license-display');
+            html2canvas(licenseElement, { backgroundColor: null, scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Licencia_Conduccion_Estelar.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>

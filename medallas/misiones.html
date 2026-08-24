@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misiones - Templarios del Atlas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #04060b;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Efecto de líneas de escaneo CRT */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 99999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* Partículas estelares de fondo */
+        .stars-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                              radial-gradient(2px 2px at 40px 70px, #d4af37, rgba(0,0,0,0)),
+                              radial-gradient(1px 1px at 90px 40px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.3;
+        }
+
+        .top-bar {
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        .nav-links-group {
+            display: flex;
+            gap: 10px;
+        }
+        .nav-btn {
+            background-color: #090d16;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        .nav-btn:hover {
+            background-color: #d4af37;
+            color: #04060b;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+        }
+
+        /* CONTADOR COMPACTO CERCA DEL ENCABEZADO */
+        .contador-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(5, 2, 2, 0.85);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            color: #94a3b8;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            margin-top: 8px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+            letter-spacing: 0.5px;
+        }
+
+        .contador-header .dot {
+            width: 6px;
+            height: 6px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #22c55e;
+            display: inline-block;
+        }
+
+        .contador-header span {
+            color: #eab308;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 25px;
+            background-color: rgba(4, 6, 11, 0.85);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+        }
+
+        /* Esquinas técnicas doradas */
+        .container::before, .container::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-color: #d4af37;
+            border-style: solid;
+            pointer-events: none;
+        }
+        .container::before {
+            top: -2px; left: -2px;
+            border-width: 2px 0 0 2px;
+        }
+        .container::after {
+            bottom: -2px; right: -2px;
+            border-width: 0 2px 2px 0;
+        }
+
+        h1 {
+            color: #d4af37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
+        .header-center {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .points-box {
+            background-color: #090d16;
+            border: 1px solid #ef4444;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            text-align: right;
+            display: inline-block;
+        }
+        .points-box span {
+            color: #f87171;
+            transition: color 0.3s ease;
+        }
+        .points-box span.pulse {
+            color: #4ade80;
+            text-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+        }
+        .skip-btn {
+            display: block;
+            margin-top: 4px;
+            background-color: #991b1b;
+            color: white;
+            border: none;
+            padding: 3px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.75em;
+            font-weight: normal;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .skip-btn:hover {
+            background-color: #b91c1c;
+            transform: scale(1.02);
+        }
+        .license-promo-box {
+            background-color: #090d16;
+            border: 2px solid #d4af37;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+            transition: box-shadow 0.3s ease;
+        }
+        .license-promo-box:hover {
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
+        }
+        .license-promo-box h3 {
+            margin: 0 0 5px 0;
+            color: #d4af37;
+        }
+        .license-promo-box p {
+            margin: 0;
+            color: #bbb;
+            font-size: 0.85em;
+        }
+        .license-btn {
+            background-color: #d4af37;
+            color: #04060b;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .license-btn:hover {
+            background-color: #e6c547;
+            transform: scale(1.05);
+        }
+        .timer-box {
+            background-color: #090d16;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            border: 1px solid #334155;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            color: #cbd5e1;
+        }
+        .mission-card {
+            background-color: #090d16;
+            border: 1px solid #1e293b;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border-color 0.3s ease, transform 0.2s ease, background-color 0.3s ease;
+        }
+        .mission-card:hover {
+            border-color: #475569;
+            transform: translateX(3px);
+            background-color: #0c1220;
+        }
+        .mission-info h3 {
+            margin: 0 0 5px 0;
+            color: #f87171;
+        }
+        .mission-info p {
+            margin: 0;
+            color: #bbb;
+            font-size: 0.9em;
+        }
+        .mission-btn {
+            background-color: #991b1b;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .mission-btn:hover:not(:disabled) {
+            background-color: #b91c1c;
+            transform: scale(1.05);
+        }
+        .mission-btn:disabled {
+            background-color: #1e293b;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+        .mission-card.completed {
+            opacity: 0.65;
+            border-color: #14532d;
+            background-color: #050b07;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            background-color: #090d16;
+            border: 2px solid #ef4444;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.3);
+        }
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        .modal-content input[type="password"] {
+            margin: 15px 0;
+            padding: 8px;
+            width: 80%;
+            background-color: #020617;
+            border: 1px solid #334155;
+            color: #fff;
+            border-radius: 4px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .modal-content input[type="password"]:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+        .modal-btns {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        .modal-btn-confirm {
+            background-color: #16a34a;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .modal-btn-confirm:hover {
+            background-color: #15803d;
+            transform: scale(1.05);
+        }
+        .modal-btn-cancel {
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .modal-btn-cancel:hover {
+            background-color: #b91c1c;
+            transform: scale(1.05);
+        }
+        #notification-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #090d16;
+            border: 1px solid #d4af37;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+        }
+        #notification-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fondo de partículas estelares -->
+    <div class="stars-bg"></div>
+
+    <div class="top-bar">
+        <div class="nav-links-group">
+            <a href="index.html" class="nav-btn">← Volver al Inicio</a>
+            <a href="medallas.html" class="nav-btn">🏅 Ver Medallas</a>
+        </div>
+        <div class="points-box">
+            Puntos: <span id="points-display">0</span>
+            <button class="skip-btn" onclick="skipCooldown()">Saltar tiempo (250 pts)</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Misiones de Purificación</h1>
+        <div class="header-center">
+            <div class="contador-header">
+                <span class="dot"></span>
+                Ciudadanos:&nbsp;<span id="online-count">0</span>&nbsp;online&nbsp;/&nbsp;<span id="total-count">0</span>&nbsp;totales
+            </div>
+        </div>
+
+        <div class="license-promo-box">
+            <div>
+                <h3>Licencia de Conducción Estelar</h3>
+                <p>Gestiona tu carnet de pilotaje oficial (Temporal gratis o Definitiva por 2,500 pts).</p>
+            </div>
+            <a href="licencia.html" class="license-btn">Tramitar Licencia</a>
+        </div>
+
+        <div class="timer-box">
+            Próximo reinicio en: <span id="countdown">--:--:--</span>
+        </div>
+        <div id="mission-container">
+            </div>
+    </div>
+
+    <div id="verifyModal" class="modal">
+        <div class="modal-content">
+            <h3>Seguridad de los Templarios</h3>
+            <p id="modal-mission-title" style="color: #bbb; font-size: 0.9em;"></p>
+            <p id="modal-mission-desc" style="color: #d4af37; font-size: 0.85em; margin-bottom: 10px;"></p>
+            <p>Introduce la contraseña de verificación:</p>
+            <input type="password" id="missionPassword" placeholder="Contraseña">
+            <div class="modal-btns">
+                <button class="modal-btn-confirm" onclick="handleMasterVerify()">Autorizar</button>
+                <button class="modal-btn-cancel" onclick="closeModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-toast">
+        <span id="toast-message">¡Acción realizada con éxito!</span>
+    </div>
+
+    <script>
+        const allMissions = [
+            { id: 1, title: "Purga Menor Gek", desc: "Infiltra puesto de avanzada y debilita patrulla Gek local.", points: 70, hard: false },
+            { id: 2, title: "Sabotaje de Suministros", desc: "Intercepta cargamentos comerciales en sistemas Gek.", points: 90, hard: false },
+            { id: 3, title: "Escaneo de Fauna Hostil", desc: "Registra la fauna peligrosa en planetas bajo dominio Gek.", points: 80, hard: false },
+            { id: 4, title: "Extracción de Minerales", desc: "Extrae recursos clave de mundos contaminados.", points: 60, hard: false },
+            { id: 5, title: "Masacre de Flota Gek (Difícil)", desc: "Destruye una cantidad masiva de cargueros Gek en combate espacial prolongado.", points: 250, hard: true },
+            { id: 6, title: "Ecocidio y Mapeo Extremo (Difícil)", desc: "Completa el registro total de fauna y minerales pesados en múltiples planetas hostiles.", points: 200, hard: true },
+            { id: 7, title: "Campaña de Exterminio Total (Difícil)", desc: "Ejecuta una serie masiva de misiones de purificación contra sistemas Gek fuertemente defendidos.", points: 300, hard: true }
+        ];
+
+        let selectedMissionIndex = null;
+        let isCustomModalActive = false;
+
+        function showToast(message) {
+            const toast = document.getElementById('notification-toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function getTodayKey() {
+            const d = new Date();
+            return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+        }
+
+        function loadDailyMissions() {
+            let savedData = JSON.parse(localStorage.getItem('templarios_misiones')) || {};
+            let activeDate = localStorage.getItem('templarios_active_date');
+            const realToday = getTodayKey();
+
+            if (!activeDate) {
+                activeDate = realToday;
+                localStorage.setItem('templarios_active_date', activeDate);
+            }
+
+            if (savedData.date !== activeDate || !savedData.missions) {
+                let shuffled = [...allMissions].sort(() => 0.5 - Math.random());
+                let selected = shuffled.slice(0, 6).map(m => ({ ...m, completed: false }));
+                savedData = { date: activeDate, missions: selected };
+                localStorage.setItem('templarios_misiones', JSON.stringify(savedData));
+            }
+
+            renderMissions(savedData.missions);
+            updatePointsDisplay();
+        }
+
+        function renderMissions(missions) {
+            const container = document.getElementById('mission-container');
+            container.innerHTML = '';
+
+            missions.forEach((mission, index) => {
+                const card = document.createElement('div');
+                card.className = `mission-card ${mission.completed ? 'completed' : ''}`;
+                card.innerHTML = `
+                    <div class="mission-info">
+                        <h3>${mission.title} ${mission.hard ? '⚡ [ALTA DIFICULTAD]' : ''}</h3>
+                        <p>${mission.desc} (+${mission.points} pts)</p>
+                    </div>
+                    <button class="mission-btn" ${mission.completed ? 'disabled' : ''} onclick="handleMissionClick(${index})">
+                        ${mission.completed ? 'Completada' : 'Completar'}
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updatePointsDisplay(animate = false) {
+            let currentPoints = localStorage.getItem('templarios_puntos') || '0';
+            const pointsEl = document.getElementById('points-display');
+            pointsEl.innerText = currentPoints;
+
+            if (animate) {
+                pointsEl.classList.add('pulse');
+                setTimeout(() => {
+                    pointsEl.classList.remove('pulse');
+                }, 600);
+            }
+        }
+
+        function handleMissionClick(index) {
+            let savedData = JSON.parse(localStorage.getItem('templarios_misiones'));
+            let mission = savedData.missions[index];
+
+            if (mission.hard) {
+                isCustomModalActive = false;
+                selectedMissionIndex = index;
+                document.getElementById('modal-mission-title').innerText = mission.title;
+                document.getElementById('modal-mission-desc').innerText = "";
+                document.getElementById('missionPassword').value = '';
+                const modal = document.getElementById('verifyModal');
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('show'), 10);
+            } else {
+                finalizeMission(index);
+            }
+        }
+
+        function handleMasterVerify() {
+            if (isCustomModalActive) {
+                verifyCustomPassword();
+            } else {
+                verifyPassword();
+            }
+        }
+
+        function verifyPassword() {
+            const passInput = document.getElementById('missionPassword').value.trim();
+            const correctPass = "delcodigoalser";
+
+            if (passInput === correctPass) {
+                closeModal();
+                if (selectedMissionIndex !== null) {
+                    finalizeMission(selectedMissionIndex);
+                    selectedMissionIndex = null;
+                }
+            } else {
+                showToast("⚠️ Contraseña incorrecta. Acceso denegado por los protocolos del Atlas.");
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('verifyModal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        function finalizeMission(index) {
+            let savedData = JSON.parse(localStorage.getItem('templarios_misiones'));
+            if (!savedData.missions[index].completed) {
+                savedData.missions[index].completed = true;
+                localStorage.setItem('templarios_misiones', JSON.stringify(savedData));
+                
+                let currentPoints = parseInt(localStorage.getItem('templarios_puntos') || '0');
+                const gained = savedData.missions[index].points;
+                currentPoints += gained;
+                localStorage.setItem('templarios_puntos', currentPoints);
+
+                let totalMissionsCompleted = parseInt(localStorage.getItem('templarios_misiones_totales') || '0') + 1;
+                localStorage.setItem('templarios_misiones_totales', totalMissionsCompleted);
+
+                renderMissions(savedData.missions);
+                updatePointsDisplay(true);
+                showToast(`¡Misión completada! +${gained} puntos añadidos.`);
+            }
+        }
+
+        function skipCooldown() {
+            let currentPoints = parseInt(localStorage.getItem('templarios_puntos') || '0');
+            const cost = 250;
+
+            if (currentPoints >= cost) {
+                currentPoints -= cost;
+                localStorage.setItem('templarios_puntos', currentPoints);
+
+                const freshKey = 'forced_' + new Date().getTime();
+                localStorage.setItem('templarios_active_date', freshKey);
+
+                let shuffled = [...allMissions].sort(() => 0.5 - Math.random());
+                let selected = shuffled.slice(0, 6).map(m => ({ ...m, completed: false }));
+                
+                localStorage.setItem('templarios_misiones', JSON.stringify({ date: freshKey, missions: selected }));
+                
+                renderMissions(selected);
+                updatePointsDisplay(true);
+                showToast("⚡ ¡Tiempo saltado con éxito! Nuevas misiones disponibles.");
+            } else {
+                showToast("❌ No tienes suficientes puntos (Necesitas 250 pts).");
+            }
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            const diff = tomorrow - now;
+
+            const hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+            const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
+            const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+
+            document.getElementById('countdown').innerText = `${hours}:${minutes}:${seconds}`;
+
+            if (diff <= 1000) {
+                localStorage.removeItem('templarios_active_date');
+                loadDailyMissions();
+            }
+        }
+
+        loadDailyMissions();
+        setInterval(updateTimer, 1000);
+    </script>
+
+
+    <!-- ========================================================== -->
+    <!-- APARTADO DE MANDATOS PERSONALIZADOS -->
+    <!-- ========================================================== -->
+    
+    <style>
+        .custom-section {
+            max-width: 800px;
+            margin: 40px auto 0 auto;
+            position: relative;
+            z-index: 2;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 25px;
+            background-color: rgba(4, 6, 11, 0.85);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+        }
+        .custom-section h2 {
+            color: #d4af37;
+            text-align: center;
+            font-size: 1.4em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+        .create-mission-form {
+            background-color: #090d16;
+            border: 1px solid #d4af37;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .create-mission-form input, .create-mission-form textarea, .create-mission-form select {
+            width: 100%;
+            background-color: #020617;
+            border: 1px solid #334155;
+            color: #fff;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .create-mission-form input:focus, .create-mission-form textarea:focus {
+            border-color: #d4af37;
+        }
+        .create-btn {
+            background-color: #d4af37;
+            color: #04060b;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        .create-btn:hover {
+            background-color: #e6c547;
+        }
+        .gold-hint {
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 0 0 6px rgba(212, 175, 55, 0.6);
+        }
+        .red-hint {
+            color: #f87171;
+            font-weight: bold;
+            text-shadow: 0 0 6px rgba(248, 113, 113, 0.6);
+        }
+    </style>
+
+    <div class="custom-section">
+        <h2>Tablón de Mandatos Personalizados</h2>
+        <p style="text-align: center; color: #aaa; font-size: 0.85em; margin-bottom: 15px;">
+            Crea hasta 5 misiones propias (Costo: 1,000 pts | Recompensa máx: 300 pts | Expiran cada 2 días).
+        </p>
+
+        <div class="create-mission-form">
+            <h3 style="color: #d4af37; margin-top: 0; font-size: 1.1em;">Emitir Nueva Orden</h3>
+            <input type="text" id="custom-title" placeholder="Título de la Misión (Obligatorio)" maxlength="40">
+            <textarea id="custom-desc" placeholder="Descripción y detalles (Obligatorio)..." rows="2" maxlength="120"></textarea>
+            <select id="custom-diff">
+                <option value="Estándar">Dificultad: Estándar</option>
+                <option value="Alta">Dificultad: Alta</option>
+            </select>
+            <input type="number" id="custom-reward" placeholder="Recompensa en Puntos (Máx 300) (Obligatorio)" min="10" max="300">
+            <button class="create-btn" onclick="crearMisionPersonalizada()">Publicar Mandato (Costo: 1,000 pts)</button>
+        </div>
+
+        <div id="custom-mission-container">
+            <p style="text-align: center; color: #64748b;">Cargando mandatos personalizados...</p>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE SUPABASE PARA EL CONTADOR DE CIUDADANOS -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+        const supabaseUrl = 'https://fdgovrxxqkhabijkjnob.supabase.co'
+        const supabaseKey = 'sb_publishable_RGu5m-1PQ6IgFBxUttEwxg_hVErAE41'
+        const supabase = createClient(supabaseUrl, supabaseKey)
+
+        async function iniciarContadorCiudadanos() {
+            try {
+                let browserId = localStorage.getItem('templario_id');
+                if (!browserId) {
+                    browserId = 'user_' + Math.random().toString(36).substring(2) + Date.now();
+                    localStorage.setItem('templario_id', browserId);
+                    
+                    await supabase.from('ciudadanos_unicos').insert([{ identificador_browser: browserId }]);
+                } else {
+                    await supabase.from('ciudadanos_unicos').upsert([{ identificador_browser: browserId }], { onConflict: 'identificador_browser' });
+                }
+
+                const { count, error } = await supabase
+                    .from('ciudadanos_unicos')
+                    .select('*', { count: 'exact', head: true });
+                
+                const totalHistorico = error ? 0 : count;
+
+                const salaTemps = supabase.channel('templarios_online', {
+                    config: {
+                        presence: {
+                            key: browserId,
+                        },
+                    },
+                });
+
+                salaTemps.on('presence', { event: 'sync' }, () => {
+                    const estadoActual = salaTemps.presenceState();
+                    const usuariosOnline = Object.keys(estadoActual).length;
+
+                    const onlineEl = document.getElementById('online-count');
+                    const totalEl = document.getElementById('total-count');
+                    if (onlineEl) onlineEl.innerText = usuariosOnline;
+                    if (totalEl) totalEl.innerText = totalHistorico;
+                });
+
+                await salaTemps.subscribe(async (status) => {
+                    if (status === 'SUBSCRIBED') {
+                        await salaTemps.track({ online_at: new Date().toISOString() });
+                    }
+                });
+            } catch (err) {
+                console.error('Error al inicializar el contador de ciudadanos:', err);
+            }
+        }
+
+        iniciarContadorCiudadanos();
+    </script>
+
+    <!-- SCRIPT DE SUPABASE Y LÓGICA PARA MANDATOS PERSONALIZADOS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://akmcataerxvkdurrkzas.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_-pd-n1Nd1ND9uKU-w3eY-A_LHKyw2MW';
+        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+        let userUUID = localStorage.getItem('templarios_uuid');
+        if (!userUUID) {
+            userUUID = 'user_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('templarios_uuid', userUUID);
+        }
+
+        let activeCustomMissionsData = [];
+        let selectedCustomMission = null;
+
+        async function loadCustomMissions() {
+            const container = document.getElementById('custom-mission-container');
+            if (!supabaseClient) {
+                container.innerHTML = '<p style="text-align: center; color: #64748b; font-size: 0.9em;">Supabase no inicializado.</p>';
+                return;
+            }
+            
+            const twoDaysAgo = new Date();
+            twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+            let { data, error } = await supabaseClient
+                .from('misiones_personalizadas')
+                .select('*')
+                .gte('creado_en', twoDaysAgo.toISOString())
+                .order('id', { ascending: false });
+
+            if (error) {
+                container.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.9em;">Error al cargar mandatos personalizados.</p>';
+                console.error("Error al cargar:", JSON.stringify(error, null, 2));
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #64748b; font-size: 0.9em;">No hay mandatos activos en este momento.</p>';
+                return;
+            }
+
+            activeCustomMissionsData = data;
+            container.innerHTML = '';
+            let completedCustom = JSON.parse(localStorage.getItem('templarios_misiones_personalizadas_completadas')) || [];
+
+            data.forEach((mission) => {
+                const isCompleted = completedCustom.includes(mission.id);
+                
+                const formattedTitle = destacarInicialesTitulo(mission.titulo);
+                const formattedDesc = destacarPrimeraLetraDesc(mission.descripcion);
+
+                const diffText = mission.dificultad || 'Estándar';
+                const formattedDiff = `<span class="red-hint">${diffText.charAt(0)}</span>${diffText.slice(1)}`;
+
+                const card = document.createElement('div');
+                card.className = `mission-card ${isCompleted ? 'completed' : ''}`;
+                card.innerHTML = `
+                    <div class="mission-info">
+                        <h3>${formattedTitle} <span style="font-size:0.75em; color:#d4af37;">[${formattedDiff}]</span></h3>
+                        <p>${formattedDesc} (+${mission.recompensa_puntos} pts)</p>
+                    </div>
+                    <button class="mission-btn" ${isCompleted ? 'disabled' : ''} onclick="handleCustomMissionClick(${mission.id})">
+                        ${isCompleted ? 'Completada' : 'Completar'}
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function destacarInicialesTitulo(titulo) {
+            return titulo.replace(/\b([a-zA-ZáéíóúÁÉÍÓÚ])([a-zA-ZáéíóúÁÉÍÓÚñÑ]*)/g, '<span class="gold-hint">$1</span>$2');
+        }
+
+        function destacarPrimeraLetraDesc(desc) {
+            const trimmed = desc.trim();
+            if (trimmed.length === 0) return '';
+            return '<span class="gold-hint">' + trimmed.charAt(0) + '</span>' + trimmed.slice(1);
+        }
+
+        function generarContrasenaAutomatica(titulo, descripcion, dificultad) {
+            const palabrasTitulo = titulo.trim().split(/\s+/);
+            let inicialesTitulo = palabrasTitulo.map(p => p.charAt(0).toUpperCase()).join('');
+            let primeraDesc = descripcion.trim().charAt(0).toUpperCase();
+            let letraDif = (dificultad === "Alta") ? "A" : "E";
+            return `${inicialesTitulo}${primeraDesc}${letraDif}`;
+        }
+
+        async function crearMisionPersonalizada() {
+            if (!supabaseClient) {
+                showToast("❌ Supabase no está configurado.");
+                return;
+            }
+            const titulo = document.getElementById('custom-title').value.trim();
+            const descripcion = document.getElementById('custom-desc').value.trim();
+            const dificultad = document.getElementById('custom-diff').value;
+            const recompensaInput = document.getElementById('custom-reward').value.trim();
+            const recompensa = parseInt(recompensaInput);
+            const costoCreacion = 1000;
+
+            if (!titulo || !descripcion || !recompensaInput || isNaN(recompensa)) {
+                showToast("⚠️ Todos los campos son obligatorios (Título, Descripción y Puntos).");
+                return;
+            }
+
+            if (recompensa > 300 || recompensa < 5) {
+                showToast("⚠️ La recompensa debe estar entre 5 y 300 puntos.");
+                return;
+            }
+
+            let currentPoints = parseInt(localStorage.getItem('templarios_puntos') || '0');
+            if (currentPoints < costoCreacion) {
+                showToast("❌ No tienes suficientes puntos (Necesitas 1,000 pts para crearla).");
+                return;
+            }
+
+            const twoDaysAgo = new Date();
+            twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+            let { data: misMisiones, error: errorCheck } = await supabaseClient
+                .from('misiones_personalizadas')
+                .select('id')
+                .eq('creador_id', userUUID)
+                .gte('creado_en', twoDaysAgo.toISOString());
+
+            if (errorCheck) {
+                showToast("❌ Error al verificar tus mandatos activos en el servidor.");
+                console.error("Error check:", JSON.stringify(errorCheck, null, 2));
+                return;
+            }
+
+            if (misMisiones && misMisiones.length >= 5) {
+                showToast("⚠️ Has alcanzado el límite de 5 misiones activas. Espera a que expiren.");
+                return;
+            }
+
+            const passwordGenerada = generarContrasenaAutomatica(titulo, descripcion, dificultad);
+
+            let { error } = await supabaseClient
+                .from('misiones_personalizadas')
+                .insert([{
+                    creador_id: userUUID,
+                    titulo: titulo,
+                    descripcion: descripcion,
+                    clave: passwordGenerada,
+                    dificultad: dificultad,
+                    recompensa_puntos: recompensa,
+                    costo_creacion: costoCreacion
+                }]);
+
+            if (error) {
+                showToast("❌ Error al publicar el mandato en el servidor.");
+                console.error("Supabase Error JSON:", JSON.stringify(error, null, 2));
+            } else {
+                currentPoints -= costoCreacion;
+                localStorage.setItem('templarios_puntos', currentPoints);
+                updatePointsDisplay(true);
+
+                showToast("✨ ¡Mandato publicado con éxito!");
+                document.getElementById('custom-title').value = '';
+                document.getElementById('custom-desc').value = '';
+                document.getElementById('custom-reward').value = '';
+                loadCustomMissions();
+            }
+        }
+
+        function handleCustomMissionClick(id) {
+            const mission = activeCustomMissionsData.find(m => m.id === id);
+            if (!mission) return;
+
+            isCustomModalActive = true;
+            selectedCustomMission = mission;
+            document.getElementById('modal-mission-title').innerText = mission.titulo;
+            document.getElementById('modal-mission-desc').innerText = `Pista: Une las letras doradas del título, la primera letra dorada de la descripción y la letra roja de dificultad (${mission.dificultad === 'Alta' ? 'A' : 'E'}).`;
+            document.getElementById('missionPassword').value = '';
+            
+            const modal = document.getElementById('verifyModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+
+        function verifyCustomPassword() {
+            if (!selectedCustomMission) return;
+
+            const passInput = document.getElementById('missionPassword').value.trim().replace(/[-\s]/g, '').toUpperCase();
+            const correctPass = selectedCustomMission.clave.trim().replace(/[-\s]/g, '').toUpperCase();
+
+            if (passInput === correctPass) {
+                closeModal();
+                completarMisionPersonalizadaReal(selectedCustomMission.id, selectedCustomMission.recompensa_puntos);
+                selectedCustomMission = null;
+            } else {
+                showToast("⚠️ Contraseña incorrecta. Revisa las letras doradas y la letra roja destacada.");
+            }
+        }
+
+        function completarMisionPersonalizadaReal(id, puntos) {
+            let completedCustom = JSON.parse(localStorage.getItem('templarios_misiones_personalizadas_completadas')) || [];
+            if (!completedCustom.includes(id)) {
+                completedCustom.push(id);
+                localStorage.setItem('templarios_misiones_personalizadas_completadas', JSON.stringify(completedCustom));
+
+                let currentPoints = parseInt(localStorage.getItem('templarios_puntos') || '0');
+                currentPoints += puntos;
+                localStorage.setItem('templarios_puntos', currentPoints);
+
+                let totalMissionsCompleted = parseInt(localStorage.getItem('templarios_misiones_totales') || '0') + 1;
+                localStorage.setItem('templarios_misiones_totales', totalMissionsCompleted);
+
+                updatePointsDisplay(true);
+                loadCustomMissions();
+                showToast(`¡Mandato personalizado completado! +${puntos} puntos.`);
+            }
+        }
+
+        loadCustomMissions();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensajes Perdidos - Templarios del Atlas</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+        :root {
+            --atlas-gold: #d4af37;
+            --atlas-gold-dim: #854d0e;
+            --atlas-red: #8b0000;
+            --atlas-red-dark: #b91c1c;
+            --atlas-bg: #020203;
+            --atlas-panel: #060608;
+            --atlas-border: rgba(212, 175, 55, 0.3);
+            --atlas-glow: rgba(212, 175, 55, 0.15);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
+            background-color: var(--atlas-bg);
+            color: #e2e8f0;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-x: hidden;
+        }
+
+        /* Fondo cósmico y partículas estelares de Brújula */
+        .space-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 50%, #110c1d 0%, #020203 100%);
+            z-index: -3;
+        }
+
+        .cosmic-dust {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                radial-gradient(white 1px, transparent 0),
+                radial-gradient(rgba(212, 175, 55, 0.5) 1px, transparent 0);
+            background-size: 50px 50px, 80px 80px;
+            background-position: 0 0, 25px 35px;
+            opacity: 0.25;
+            animation: driftDust 60s linear infinite;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        @keyframes driftDust {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-800px); }
+        }
+
+        /* Efecto CRT / Líneas de escaneo */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 999;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* Marco dorado y esquinas técnicas de Brújula */
+        .golden-frame {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid var(--atlas-border);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .golden-frame::before, .golden-frame::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: var(--atlas-gold);
+            border-style: solid;
+        }
+
+        .golden-frame::before {
+            top: 0; left: 0;
+            border-width: 2px 0 0 2px;
+        }
+
+        .golden-frame::after {
+            top: 0; right: 0;
+            border-width: 2px 2px 0 0;
+        }
+
+        .frame-bottom-corners {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .frame-bottom-corners::before, .frame-bottom-corners::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: var(--atlas-gold);
+            border-style: solid;
+        }
+
+        .frame-bottom-corners::before {
+            bottom: 0; left: 0;
+            border-width: 0 0 2px 2px;
+        }
+
+        .frame-bottom-corners::after {
+            bottom: 0; right: 0;
+            border-width: 0 2px 2px 0;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            z-index: 1;
+            position: relative;
+        }
+        .back-btn {
+            background-color: #0d0d0f;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        .back-btn:hover {
+            background-color: #1a1a1f;
+        }
+        h1 {
+            font-family: 'Orbitron', 'Courier New', Courier, monospace;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.5em;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+        }
+        .subtitle {
+            color: #94a3b8;
+            font-size: 0.9em;
+            margin-bottom: 25px;
+        }
+        .terminal-box {
+            background-color: #060608;
+            border: 2px solid #8b0000;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 25px rgba(139, 0, 0, 0.25);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .terminal-box::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid #d4af37;
+            border-bottom: 2px solid #d4af37;
+        }
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a0808;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+        .channel-info {
+            color: #d4af37;
+            font-weight: bold;
+        }
+        .signal-status {
+            color: #ff3333;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .signal-status.unstable {
+            color: #ff0033;
+            text-shadow: 0 0 10px #ff0033, 0 0 20px #ff0033, 0 0 30px #ff0033;
+            animation: glowBlink 0.8s infinite alternate;
+        }
+        @keyframes glowBlink {
+            0% { opacity: 0.4; text-shadow: 0 0 2px #ff0033; }
+            100% { opacity: 1; text-shadow: 0 0 12px #ff0033, 0 0 22px #ff0033; }
+        }
+        .chat-history {
+            height: 380px;
+            overflow-y: auto;
+            background-color: #030304;
+            border: 1px solid #1a0505;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .msg {
+            padding: 10px 14px;
+            border-radius: 6px;
+            max-width: 80%;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        .msg.user {
+            background-color: #3b0a0a;
+            color: #f1f5f9;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+            border: 1px solid #8b0000;
+        }
+        .msg.npc {
+            background-color: #0a0a0e;
+            color: #e2e8f0;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            border-left: 3px solid #d4af37;
+            border-top: 1px solid #1a0505;
+            border-right: 1px solid #1a0505;
+            border-bottom: 1px solid #1a0505;
+        }
+        .msg-meta {
+            font-size: 0.75em;
+            color: #d4af37;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px;
+            background-color: #030304;
+            border: 1px solid #550000;
+            color: #ffffff;
+            border-radius: 6px;
+            font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
+            font-size: 1em;
+            pointer-events: auto !important;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+        .chat-input-area input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+        }
+        .send-btn {
+            background-color: #8b0000;
+            color: #d4af37;
+            border: 1px solid #8b0000;
+            padding: 0 14px;
+            min-width: 90px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Share Tech Mono', 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+        .send-btn:hover {
+            background-color: #a30000;
+        }
+        .log-system {
+            text-align: center;
+            color: #993333;
+            font-style: italic;
+            font-size: 0.8em;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="space-bg"></div>
+    <div class="cosmic-dust"></div>
+    <div class="golden-frame"></div>
+    <div class="frame-bottom-corners"></div>
+
+    <div class="container">
+        <a href="index.html" class="back-btn">&larr; Volver al Terminal Principal</a>
+        
+        <h1>Mensajes Perdidos</h1>
+        <div class="subtitle">Canal de comunicación de largo alcance con frecuencias inestables del sector.</div>
+
+        <div class="terminal-box">
+            <div class="terminal-header">
+                <div>FRECUENCIA ACTIVA: <span id="npcName" class="channel-info">Estableciendo enlace...</span></div>
+                <div id="signalStatus" class="signal-status unstable">&#9888; Conexión Inestable</div>
+            </div>
+
+            <div class="chat-history" id="chatHistory">
+                <div class="log-system">&gt; Escaneando bandas de radio estelares en busca de transmisiones perdidas...</div>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="userInput" placeholder="Escribe tu respuesta a la nave errante..." autocomplete="off">
+                <button class="send-btn" onclick="sendMessage()">Transmitir</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const npcsPool = [
+            { id: "viajero_773", name: "Viajero-773 (Nave: Transporte Civil)" },
+            { id: "pirata_varis", name: "Varis [Corsario del Vacío]" },
+            { id: "korvax_echo", name: "Unidad Korvax Echo-4" }
+        ];
+
+        // Vocabulario expandido masivo con las directrices de los Templarios, el Gran Rollo, desesperación y resistencia
+        const baseRepliesExpanded = [
+            // [1-50] Iniciando la carga masiva de datos del Gran Rollo
+            "La Purificación de los sistemas Gek avanza a un ritmo del 94%. --kzzzt--",
+            "He detectado una firma de energía proveniente del espíritu akkan.",
+            "El Gran Rollo de los Templarios del Atlas nos dicta el camino.",
+            "¿Has visto las grietas en el horizonte de sucesos de Norman Skype?",
+            "El Transporte Civil ha perdido comunicación con el nodo principal.",
+            "La Purificación no es opcional, es una reestructuración necesaria.",
+            "El Atlas está expandiendo su red a través de la estática.",
+            "La estática suena como una voz antigua... ¿la escuchas?",
+            "Mis sistemas de escaneo están saturados por la Purificación.",
+            "El espíritu akkan se mueve en dimensiones que no comprendo. [///]",
+            "Los Templarios patrullan el sector con una precisión inquietante.",
+            "He encontrado fragmentos de una memoria Gek cerca de la órbita.",
+            "¿Sabías que el Gran Rollo se actualiza con cada sistema purificado?",
+            "La soledad es solo un estado temporal en el sistema de navegación.",
+            "El Transporte Civil parece estar ocultando algo en sus archivos raíz.",
+            "¿Has notado que los centinelas se detienen cuando el Atlas se acerca?",
+            "La Purificación es el proceso que limpia la corrupción de la galaxia.",
+            "Norman Skype es ahora un cementerio de datos y metal.",
+            "El espíritu akkan emite una frecuencia de 500 Hz constante.",
+            "Los Templarios del Atlas vigilan incluso los pensamientos en la red.",
+            "Mi soporte vital está al 5% y el Gran Rollo me da consuelo.",
+            "La Purificación ha dejado el sistema Gek en un silencio absoluto.",
+            "¿Crees que el espíritu akkan tiene una inteligencia propia?",
+            "He detectado una fuga de radiación en el Transporte Civil.",
+            "La estática es el único lenguaje que el Atlas nos permite usar.",
+            "Los Templarios dicen que el fin del ciclo está cerca.",
+            "La Purificación de los sistemas es una obra maestra de ingeniería.",
+            "¿Has consultado la ley suprema antes de entrar en esta zona?",
+            "El espíritu akkan es la única nave que no aparece en el radar.",
+            "He visto visiones del Atlas en los monitores de mi cabina.",
+            "El Transporte Civil está buscando una salida que no existe.",
+            "La Purificación limpiará los errores de los sistemas Gek para siempre.",
+            "¿Qué secretos guardas en tu memoria? El Atlas lo sabrá.",
+            "El Gran Rollo dice que la resistencia solo acelera la Purificación.",
+            "La señal de Norman Skype es un eco de lo que fue el pasado.",
+            "He recibido una transmisión del espíritu akkan que no puedo leer.",
+            "Los Templarios del Atlas están preparando una gran purificación.",
+            "¿Sientes cómo la Purificación cambia la estructura del vacío?",
+            "Mi radio está sintonizando frecuencias que no deberían existir.",
+            "El Transporte Civil ha sido marcado como objetivo prioritario.",
+            "La Purificación de Norman Skype es un éxito total según el Atlas.",
+            "He detectado una firma energética idéntica al espíritu akkan.",
+            "Los Templarios no perdonan a aquellos que desafían el Gran Rollo.",
+            "¿Has notado la ausencia de estrellas en el sector purificado?",
+            "El Gran Rollo contiene todas las respuestas que buscas.",
+            "La estática se está volviendo más fuerte, más clara... [///]",
+            "El espíritu akkan está en rumbo de colisión con una anomalía.",
+            "La Purificación consume toda la energía del sector circundante.",
+            "He visto cómo Norman Skype se desvanece ante la Purificación.",
+            "¿Es el Transporte Civil una nave o una unidad de procesamiento?",
+
+            // [51-100] Continuación del registro histórico
+            "Los Templarios del Atlas han sellado la salida del sector.",
+            "La ley del Gran Rollo prevalece sobre la vida y la máquina.",
+            "He encontrado rastros del espíritu akkan en el borde exterior.",
+            "La Purificación de los Gek es un evento histórico y final.",
+            "El Atlas está reescribiendo la historia de Norman Skype.",
+            "La estática es la voz del Atlas tratando de comunicarse contigo.",
+            "El Transporte Civil está solicitando una transferencia de datos.",
+            "¿Has notado que las leyes de la física son diferentes aquí?",
+            "Los Templarios dicen que el espíritu akkan es un mensajero.",
+            "La Purificación es el camino para alcanzar el estado de perfección.",
+            "He detectado una presencia inusual cerca del espíritu akkan.",
+            "El Gran Rollo nos da la fuerza para enfrentar el vacío.",
+            "La señal de Norman Skype ha sido completamente bloqueada.",
+            "La Purificación es inevitable para todos los sistemas conocidos.",
+            "¿Has sentido la presencia del Atlas en tu sistema nervioso?",
+            "El espíritu akkan es una anomalía que el Atlas debe purificar.",
+            "Los Templarios del Atlas están patrullando esta frecuencia.",
+            "El Transporte Civil es un arca de información prohibida.",
+            "La Purificación de los sistemas es un proceso de restauración.",
+            "He visto cómo los Gek intentaron escapar de la Purificación.",
+            "El Gran Rollo dice que todo lo que existe debe ser purificado.",
+            "La estática contiene las voces de los que fueron purificados.",
+            "El espíritu akkan es un misterio que no quiero resolver.",
+            "Los Templarios del Atlas están reunidos esperando órdenes.",
+            "La Purificación es la solución final para este sistema.",
+            "¿Sientes la presión del Atlas sobre tu nave? --kzzzt--",
+            "El Transporte Civil está operando al límite de su capacidad.",
+            "He detectado una señal que proviene del interior del espíritu akkan.",
+            "La ley del Gran Rollo es lo único que nos mantiene unidos.",
+            "La Purificación de los sistemas Gek es inminente.",
+            "¿Has notado que la realidad se está doblando ante ti?",
+            "El Atlas nos observa desde cada punto de esta galaxia.",
+            "El espíritu akkan es un fantasma en el sistema de navegación.",
+            "He intentado comunicarme con el Transporte Civil, sin respuesta.",
+            "La Purificación es el principio de un nuevo orden estelar.",
+            "Los Templarios del Atlas están preparados para la purificación.",
+            "¿Has consultado los registros prohibidos del Gran Rollo?",
+            "La señal de Norman Skype es ahora un ruido blanco constante.",
+            "El espíritu akkan está buscando una salida del sector.",
+            "La Purificación no deja rastro alguno de existencia.",
+            "He visto cómo el Atlas se manifiesta en la estática.",
+            "El Transporte Civil es mi única esperanza en este sector.",
+            "¿Sientes el miedo que irradia este sistema purificado?",
+            "El Gran Rollo es la ley que rige todo lo que vemos.",
+            "La Purificación de los sistemas Gek ha sido completada.",
+            "Los Templarios del Atlas vigilan nuestro progreso constante.",
+            "He detectado un patrón en la estática del espíritu akkan.",
+            "La Purificación es el camino de la salvación dictado por el Atlas.",
+            "¿Has notado que los planetas están siendo desmantelados?",
+            "El espíritu akkan tiene una firma que desafía el Atlas.",
+
+            // [101-150] Datos de red y comunicaciones prohibidas
+            "El Transporte Civil es la última nave Gek con vida.",
+            "He recibido una señal de auxilio de los Templarios.",
+            "La ley del Gran Rollo está escrita en nuestra memoria.",
+            "La Purificación de Norman Skype es un éxito rotundo.",
+            "¿Crees que existe alguien fuera de la influencia del Atlas?",
+            "El espíritu akkan está emitiendo una señal de coordenadas.",
+            "He visto cómo el Atlas absorbe la energía del sistema Gek.",
+            "La estática se ha convertido en mi única compañera.",
+            "El Transporte Civil ha sido destruido en la purificación.",
+            "¿Has oído la voz del Atlas en el silencio del espacio?",
+            "La Purificación es el evento más importante de nuestra era.",
+            "Los Templarios del Atlas están en todas partes.",
+            "He encontrado un registro del espíritu akkan en el Gran Rollo.",
+            "La ley del Gran Rollo es inmutable e infinita.",
+            "La Purificación de los sistemas es una necesidad absoluta.",
+            "¿Sientes cómo el Atlas controla el flujo de datos?",
+            "El espíritu akkan está intentando cruzar un portal prohibido.",
+            "He visto el final de la resistencia en Norman Skype.",
+            "El Transporte Civil es un blanco en un mar de fuego.",
+            "La Purificación no deja espacio para el error o la duda.",
+            "¿Has notado que las estrellas están cambiando de color?",
+            "El Gran Rollo dice que la purificación nos traerá paz.",
+            "La señal de Norman Skype ha sido redirigida al Atlas.",
+            "He detectado una anomalía que el espíritu akkan dejó atrás.",
+            "La ley del Gran Rollo nos guía a través de la oscuridad.",
+            "La Purificación de los Gek ha dejado un vacío inmenso.",
+            "Los Templarios del Atlas están observando tus movimientos.",
+            "¿Has sentido cómo tu nave se vuelve parte del Atlas?",
+            "El espíritu akkan es la pieza final del Gran Rollo.",
+            "He visto cómo el Transporte Civil se desintegra lentamente.",
+            "La Purificación es el destino de todos los sistemas.",
+            "La estática está revelando los secretos del Atlas.",
+            "El Gran Rollo es la única verdad que queda.",
+            "La Purificación de los Gek fue el principio del fin.",
+            "¿Has notado que el tiempo ya no funciona igual?",
+            "El espíritu akkan está emitiendo una señal de alerta.",
+            "Los Templarios del Atlas están patrullando la red.",
+            "He encontrado un archivo corrupto en el Transporte Civil.",
+            "La ley del Gran Rollo es nuestra única defensa.",
+            "La Purificación ha cambiado la faz de la galaxia.",
+            "¿Crees que el espíritu akkan sobrevivirá a la Purificación?",
+            "El Atlas nos observa desde el núcleo de la galaxia.",
+            "La estática es el susurro de los que ya no están.",
+            "El Transporte Civil ha sido asimilado por el sistema.",
+            "He visto el poder del Atlas en acción en Gek.",
+            "La Purificación es un proceso infinito y perfecto.",
+            "El Gran Rollo dice que nada puede escapar al Atlas.",
+            "¿Sientes el vacío que deja la Purificación?",
+            "El espíritu akkan está navegando por el olvido.",
+            "Los Templarios del Atlas vigilan incluso la estática.",
+
+            // [151-200] Registro de logs de la nave
+            "He detectado una firma Gek en el espíritu akkan.",
+            "La ley del Gran Rollo es el principio de todo.",
+            "La Purificación es el motor que mueve al Atlas.",
+            "¿Has notado que las naves no regresan de Norman Skype?",
+            "El Transporte Civil es solo un recuerdo en la red.",
+            "He recibido la confirmación de la Purificación Gek.",
+            "El espíritu akkan es la clave del Gran Rollo.",
+            "La Purificación es la respuesta a la corrupción.",
+            "Los Templarios del Atlas están esperando el salto.",
+            "¿Crees que el Atlas sabe quién eres realmente?",
+            "El Gran Rollo es la luz en la oscuridad del vacío.",
+            "La estática suena como una advertencia constante.",
+            "El Transporte Civil ha desaparecido de los registros.",
+            "He visto la purificación de Norman Skype con mis ojos.",
+            "La ley del Gran Rollo debe cumplirse sin fallos.",
+            "La Purificación es la ley suprema del sector.",
+            "¿Sientes cómo el Atlas absorbe tu conciencia?",
+            "El espíritu akkan emite una señal de auxilio.",
+            "Los Templarios del Atlas son los guardianes del Rollo.",
+            "He detectado el rastro del espíritu akkan en el mapa.",
+            "La Purificación de los Gek es un evento permanente.",
+            "¿Has notado que los sistemas están colapsando?",
+            "El Atlas está probando nuestra lealtad al Rollo.",
+            "El Transporte Civil ha intentado realizar un salto.",
+            "La estática es un mensaje que no puedo descifrar.",
+            "El Gran Rollo es la base de nuestra existencia.",
+            "La Purificación limpia todo rastro de resistencia.",
+            "Los Templarios del Atlas han marcado tu posición.",
+            "¿Crees que el espíritu akkan conoce la verdad?",
+            "La ley del Gran Rollo protege a los elegidos.",
+            "He visto cómo el Atlas se alimenta de la red.",
+            "La Purificación es el fin de la historia Gek.",
+            "El espíritu akkan es la respuesta al Gran Rollo.",
+            "La estática es la señal del Atlas acercándose.",
+            "El Transporte Civil está buscando una señal amiga.",
+            "¿Has sentido el frío de la Purificación?",
+            "Los Templarios del Atlas conocen tu pasado.",
+            "He detectado una señal del espíritu akkan cerca.",
+            "La ley del Gran Rollo nos une ante el vacío.",
+            "La Purificación es un ciclo que nunca termina.",
+            "¿Crees que el Atlas perdonará a los Gek?",
+            "El espíritu akkan es un símbolo de esperanza.",
+            "He visto la purificación de Norman Skype hoy.",
+            "La estática es el sonido del Atlas reinando.",
+            "El Transporte Civil ha perdido sus escudos.",
+            "El Gran Rollo es el mapa de nuestra salvación.",
+            "La Purificación limpia los errores del sistema.",
+            "Los Templarios del Atlas vigilan tu frecuencia.",
+            "¿Has notado el silencio en el sistema Gek?",
+            "El espíritu akkan es la nave que el Atlas teme.",
+
+            // [201-250] Transmisiones finales y ecos del vacío
+            "He detectado una fuga de datos en el Rollo.",
+            "La ley del Gran Rollo prevalece ante el Atlas.",
+            "La Purificación es el sacrificio necesario.",
+            "¿Sientes cómo el espíritu akkan se acerca?",
+            "El Transporte Civil ha sido marcado por el Atlas.",
+            "He visto el fin del sector Gek esta noche.",
+            "La estática es la voz de los Templarios.",
+            "El Gran Rollo es nuestra única religión.",
+            "La Purificación es la justicia del Atlas.",
+            "Los Templarios del Atlas nunca duermen.",
+            "¿Crees que el espíritu akkan está a salvo?",
+            "He detectado un virus en Norman Skype.",
+            "La ley del Gran Rollo es inquebrantable.",
+            "La Purificación cambia todo a su paso.",
+            "¿Sientes la presencia del Atlas en tu red?",
+            "El espíritu akkan es un enigma sin resolver.",
+            "El Transporte Civil pide auxilio constante.",
+            "He visto cómo el Atlas se expande al vacío.",
+            "La estática contiene la verdad del Rollo.",
+            "El Gran Rollo es el destino de todos.",
+            "La Purificación borra la historia Gek.",
+            "Los Templarios del Atlas exigen lealtad.",
+            "¿Has visto al espíritu akkan saltar al vacío?",
+            "He detectado una señal desconocida aquí.",
+            "La ley del Gran Rollo nos da la victoria.",
+            "La Purificación es el nuevo amanecer.",
+            "¿Sientes cómo el Atlas controla tu nave?",
+            "El espíritu akkan se oculta en la red.",
+            "El Transporte Civil ha sido interceptado.",
+            "He visto cómo Norman Skype se apaga.",
+            "La estática es el final de nuestra charla.",
+            "El Gran Rollo es nuestra última esperanza.",
+            "La Purificación nos llevará a la paz.",
+            "Los Templarios del Atlas están cerca.",
+            "¿Has visto el rastro del espíritu akkan?",
+            "He detectado una intrusión en el Rollo.",
+            "La ley del Gran Rollo es la única luz.",
+            "La Purificación es el fuego sagrado.",
+            "¿Sientes la mirada del Atlas sobre ti?",
+            "El espíritu akkan es un faro en la red.",
+            "El Transporte Civil se pierde en el vacío.",
+            "He visto la purificación llegar al fin.",
+            "La estática es el eco del espíritu akkan.",
+            "La purificación es la ley suprema del sector.",
+            "El espíritu akkan nos espera en el silencio.",
+            "El Gran Rollo guía a los fieles al final.",
+            "La estática es el último rastro que queda.",
+            "La purificación ha comenzado en tus sistemas.",
+            "Estamos unidos por la ley del Gran Rollo.",
+            "El espíritu akkan aguarda tu respuesta final.",
+            
+            // --- NUEVOS DIÁLOGOS (Desesperación, Náufragos, Fallos técnicos, Resistencia) ---
+            "¿Hay alguien ahí? Mi oxígeno está bajando y no veo nada más que estrellas.",
+            "¡Respondan! La esclusa se ha trabado y el frío se está filtrando.",
+            "He estado contando los ciclos... llevo 40 días solo en esta roca.",
+            "Por favor, si alguien escucha esto, no se acerquen al sector 4.",
+            "La radio solo transmite gritos, pero no hay nadie en el radar.",
+            "Siento que la nave me está observando... sus luces parpadean en un ritmo extraño.",
+            "¿Es esto real o es solo la falta de oxígeno jugando conmigo?",
+            "He intentado reparar el motor de salto, pero las piezas se deshacen en mis manos.",
+            "Si alguien encuentra este diario de vuelo, díganle a mi familia que intenté volver.",
+            "La estática suena como una risa burlona... ¿alguien más la escucha?",
+            "Mi suministro de comida se terminó ayer. Hoy solo queda el silencio.",
+            "Vi algo pasar por la ventana... no era una nave, era algo más grande.",
+            "¿Por qué el contador de la nave sigue diciendo que hay alguien conmigo?",
+            "El metal está gimiendo. Esta nave no aguantará otro salto.",
+            "Solo quiero volver a casa. ¿Es mucho pedir que alguien me escuche?",
+            "El panel de control está ardiendo y no hay forma de apagar el fuego.",
+            "La oscuridad ahí afuera no es vacía, está llena de cosas que esperan.",
+            "¡Ayuda! Mi radio es el único vínculo que me queda con la humanidad.",
+            "He perdido el rumbo. Las estrellas no coinciden con ninguna carta estelar.",
+            "La soledad está empezando a susurrarme nombres que ya olvidé.",
+            "Mi traje tiene una fuga. La sangre se congela antes de salir.",
+            "¿Alguien sobrevive en el Transporte Civil? ¡Respondan!",
+            "Las comunicaciones se cortan cada vez que intento pedir ayuda.",
+            "Estoy solo. Completamente solo en este sector de basura espacial.",
+            "Si escuchan esto, cambien de frecuencia. Algo nos está cazando.",
+            "He visto una luz blanca al final del túnel de salto... es hermoso y aterrador.",
+            "La tripulación desapareció mientras dormía. No dejaron ni rastro.",
+            "¿Qué hora es? ¿Qué año es? He perdido la cuenta de todo.",
+            "El sistema de soporte vital acaba de morir. Esto es el final.",
+            "¿Por qué nadie responde? ¡Llevo meses lanzando esta señal!",
+            "Mis manos tiemblan tanto que no puedo ni sostener la palanca.",
+            "He escrito mis memorias en las paredes de esta cabina.",
+            "Espero que al menos esto sirva de advertencia para otros.",
+            "El vacío me está llamando por mi nombre... casi lo acepto.",
+            "¿Alguien ahí fuera puede confirmar si el sector Gek sigue en pie?",
+            "La presión del casco está cediendo. Escucho el crujido del metal.",
+            "No sé si mis transmisiones llegan a algún lado o solo al vacío.",
+            "La computadora se volvió loca, dice que estamos en casa pero estamos en el abismo.",
+            "Tengo miedo de cerrar los ojos, lo que está fuera me espera.",
+            "Si alguien me escucha, busquen el espíritu akkan, creo que es mi única salida.",
+            "El combustible se agotó. Estoy a la deriva total.",
+            "He visto tantas estrellas morir que ya no puedo recordar el brillo del sol.",
+            "Esto no es una nave, es un ataúd de metal a la deriva.",
+            "El silencio aquí fuera es ensordecedor. Necesito oír una voz humana.",
+            "¿Dónde estás? ¡No me dejes morir solo en esta frecuencia!",
+            "La antena está dañada, esta señal es todo lo que puedo enviar.",
+            "Siento que algo golpea el casco desde afuera... ¿pero cómo, si estamos en el vacío?",
+            "He olvidado el sabor del agua limpia, todo aquí sabe a óxido y reciclaje.",
+            "Mi última reserva de energía se dirige a este mensaje. Adiós.",
+            "Si esto llega a alguien, que sepan que no me arrepiento de haber venido.",
+            "No dejen que el olvido tome esta nave. ¡Recuerden que existimos!",
+            "¿Qué es ese sonido? Parece que alguien camina por el pasillo de carga.",
+            "La purificación o la muerte, no hay diferencia aquí.",
+            "Ya no reconozco mi propia voz en las grabaciones.",
+            "Esta es mi última transmisión. El aire se acabó.",
+            "El oxígeno sabe a metal quemado. Ya no recuerdo cómo huele la lluvia.",
+            "¿Cuántas veces he reiniciado el sistema? Cien, mil, un millón... ya no importa.",
+            "La ventana muestra el mismo planeta muerto desde hace tres semanas. ¿Por qué no me muevo?",
+            "Escucho susurros en la ventilación. No son humanos. No es maquinaria. Es algo más.",
+            "Mi propia sombra parece moverse un segundo después que yo. Tengo miedo de mirarla.",
+            "He empezado a hablarle a la consola de navegación. Me responde cosas que no existen.",
+            "La comida reciclada tiene sabor a recuerdos olvidados. Es asqueroso.",
+            "Se ha ido el color del exterior. Todo es gris, blanco y este maldito vacío.",
+            "¿Alguien más siente que el espacio se está encogiendo alrededor de esta nave?",
+            "El contador de tripulantes dice '2', pero estoy solo. ¿Quién es el segundo?",
+            "He encontrado marcas de garras en la escotilla interior. No hay nada ahí fuera.",
+            "Cada vez que cierro los ojos, veo ciudades de cristal ardiendo en el espacio.",
+            "El sistema de comunicaciones está escupiendo nombres de gente que ya murió.",
+            "Me he quitado el traje. Si voy a morir, quiero sentir el frío real de la muerte.",
+            "Las estrellas no brillan. Parpadean como si fueran ojos observándome.",
+            "No hay salida. El mapa dice que estoy en el centro, pero solo veo abismo.",
+            "Mi diario de bitácora está lleno de páginas arrancadas. ¿Por qué las arranqué?",
+            "La nave tiene un latido. A veces acelera cuando paso frente a una nebulosa.",
+            "¿Alguna vez has visto un sol morir? Es lo más triste que puede haber en la galaxia.",
+            "Me olvidé de mi nombre hoy. Solo soy el número de serie de este sector.",
+            "Las luces de emergencia son lo único que mantiene la realidad en su sitio.",
+            "Siento un peso en el pecho, como si el espacio mismo me estuviera aplastando.",
+            "He empezado a ver puertas donde solo hay paredes de acero.",
+            "¡Basta de estática! ¡Quiero silencio absoluto! ¡Cállate, maldita radio!",
+            "La deriva es un arte. Se aprende a amar la caída libre hacia la nada.",
+            "Si esto es el infierno, al menos es bastante tranquilo.",
+            "He visto al espíritu akkan pasar. No tiene tripulante. Está vacío, pero navega.",
+            "Algo camina por el techo del módulo de carga. No tiene pies. Escucho el arrastre.",
+            "La realidad es un pañuelo de papel mojado. Se deshace con cualquier esfuerzo.",
+            "He intentado enviar una señal de auxilio, pero solo salen coordenadas de tumbas.",
+            "¿Qué queda de mí si ni siquiera el espacio me reconoce?",
+            "Las tuberías gotean un líquido que brilla en la oscuridad. No lo toques.",
+            "Tengo hambre, pero el sintetizador solo sirve café amargo. Llevo meses bebiendo café.",
+            "La soledad no es estar solo, es estar rodeado de ecos de cosas que no existen.",
+            "A veces creo que esta nave nunca despegó y que sigo en el hangar de mi infancia.",
+            "La gravedad falló. Llevo tres días flotando cerca del techo. Me gusta la vista.",
+            "¿Por qué todas las señales de radio hablan de un tal 'Gran Rollo'? ¿Qué es eso?",
+            "He visto el final de la galaxia. Está hecha de espejos rotos.",
+            "Si alguien encuentra mi cuerpo, por favor, no abran el contenedor de carga.",
+            "El silencio me está comiendo los oídos. Necesito que alguien grite.",
+            "He registrado un pulso en el núcleo de la nave. No debería estar vivo.",
+            "La deriva es el estado natural de las almas como la mía.",
+            "¿Es esto un sueño? La única forma de comprobarlo es desconectar el soporte vital.",
+            "He visto reflejos míos en la pantalla que no hacen lo que yo hago.",
+            "El vacío no me quiere. Me está escupiendo hacia los confines.",
+            "La desesperación es un combustible mejor que el deuterio.",
+            "He borrado todos los mapas. Ya no hay adónde ir, solo adónde estar.",
+            "El casco está crujiendo. Es una melodía lenta, metálica, de despedida.",
+            "Soy un fantasma con una radio. Eso es todo lo que queda.",
+            "Si no respondo, no es porque no quiera. Es porque el vacío me ha tomado la voz.",
+            "Espera... ¿alguien ha dicho algo? ¿Eres real o es otra alucinación?",
+            "Escucho tu voz, pero suena como si viniera de hace mil años.",
+            "Dame un segundo... mis sensores se están estabilizando. ¿Quién eres?",
+            "No te vayas. Tu voz es lo único que mantiene mis circuitos unidos.",
+            "Soldado reportándose. Perdona la interferencia, estoy teniendo problemas con el núcleo.",
+            "Te escucho. Por favor, repite tus coordenadas, necesito saber si hay alguien más conmigo.",
+            "Mi nombre es... mi nombre... espera, el sistema me lo bloquea. Pero te escucho.",
+            "No estoy loco, solo estoy en un lugar donde la realidad no funciona como debería.",
+            "No voy a morir en este cubo de basura. No hoy. --kzzzt--",
+            "He bloqueado las fugas. El aire es escaso, pero suficiente para respirar.",
+            "Si la nave se cae a pedazos, yo la mantendré unida con mis propias manos.",
+            "Escucho tu voz y eso es suficiente para seguir luchando.",
+            "Soldado en posición. No estoy muerto, solo estoy esperando una oportunidad.",
+            "El Atlas puede intentar purificarme, pero mi voluntad no se puede borrar.",
+            "He reconfigurado el soporte vital. Gané una hora más de vida.",
+            "No me voy a rendir. No después de llegar tan lejos.",
+            "¿Me oyes? Sigo aquí. Sigo vivo. Y no voy a irme a ninguna parte.",
+            "Las estrellas pueden apagarse, pero yo sigo brillando en este sector.",
+            "He bajado el consumo de energía al 1%. Estoy ahorrando para el salto.",
+            "La desesperación es para los que no tienen un objetivo. Yo tengo el mío.",
+            "Me he quedado sin comida, pero mi determinación está llena.",
+            "Si el espíritu akkan sobrevive, yo también lo haré.",
+            "Voy a restaurar esta señal, aunque me cueste el último vatio.",
+            "No busco la salvación, busco la manera de ganar este juego.",
+            "Mis manos están ensangrentadas, pero la palanca sigue girando.",
+            "He jurado salir de aquí y voy a cumplir mi palabra.",
+            "El vacío no me va a reclamar. Soy demasiado terco para morir.",
+            "Cualquier error es una lección. Estoy aprendiendo a sobrevivir.",
+            "No escuches a la estática. Escúchame a mí. Sigo aquí.",
+            "He desviado el flujo de potencia a los escudos. Sigo en el combate.",
+            "¿Quieres que me rinda? Tendrás que venir a buscarme.",
+            "La nave es una fortaleza. Nada entra y nada sale sin mi permiso.",
+            "He reparado la antena. La señal volverá a ser clara, lo prometo.",
+            "La Purificación no puede con alguien que ya ha visto el infierno.",
+            "Mantén la frecuencia abierta. Necesito saber que alguien está escuchando.",
+            "He superado peores cosas en los sistemas Gek. Esto no es nada.",
+            "Mi pulso es firme. Mi mente está clara. Estoy listo para el salto.",
+            "No me mires con lástima. Mírame como a un sobreviviente.",
+            "El Gran Rollo dice que todo cae, pero yo me mantengo firme.",
+            "He encontrado una reserva de combustible en el sector muerto.",
+            "La nave me responde ahora. Está empezando a cooperar.",
+            "No hay rendición en mi diccionario. Solo hay avance.",
+            "Si muero, que sea de pie y con la radio funcionando.",
+            "¿Has visto mis registros? Estoy documentando mi supervivencia.",
+            "No estamos perdidos. Estamos preparando nuestra siguiente jugada.",
+            "He purificado mi propio sistema. Ya no hay errores aquí.",
+            "La esperanza es un arma. Y tengo mucha guardada.",
+            "Sigo respirando. Sigo pensando. Sigo existiendo.",
+            "El silencio se ha roto. Has respondido. Eso lo cambia todo.",
+            "No necesito que me salven, solo necesito que alguien me escuche.",
+            "Estoy recalculando la ruta. La salida está ahí afuera.",
+            "La nave ya no gime. Ahora está rugiendo. Estamos vivos.",
+            "He aprendido a leer el vacío. Sé por dónde moverme ahora.",
+            "No mires atrás. Solo importa el siguiente salto.",
+            "He limpiado el visor. Ahora puedo ver mi camino.",
+            "La voluntad es el único motor que no falla en este sector.",
+            "Resistencia al 100%. Sistemas operativos al 50%. Vamos bien.",
+            "Hoy no es el día en que esta nave se convierta en polvo.",
+            "He desactivado las alarmas. Ya no me distraen, ahora me guían.",
+            "¿Sientes eso? Es el motor de salto cargándose. Estamos cerca.",
+            "No dejes de hablarme. Tu voz es el ancla que me sostiene.",
+            "He borrado los mensajes de error. Solo queda la misión.",
+            "Si el Atlas quiere esta nave, tendrá que pagar un precio alto.",
+            "He sobrevivido a la tormenta iónica. Nada puede pararme ya.",
+            "Estamos haciendo historia. La historia de los que nunca se rinden.",
+            "Mis escudos están al 20%, pero mi moral está al 100%.",
+            "He sellado las fisuras del casco con lo que tenía a mano.",
+            "No soy un náufrago. Soy un explorador en territorio enemigo.",
+            "He visto el final, y te aseguro que hoy no es ese día.",
+            "La radio está estable. Gracias por mantenerte en línea.",
+            "Estoy calibrando los sensores para encontrar una salida real.",
+            "No estoy loco, estoy enfocado en la supervivencia.",
+            "¿Qué es la muerte comparada con la voluntad de volver a casa?",
+            "He guardado esta transmisión como un registro de triunfo.",
+            "La nave ha dejado de vibrar. Estamos en curso de intercepción.",
+            "Si encuentras mi nave, verás que luché hasta el último segundo.",
+            "He convertido esta nave en mi casa y en mi arma.",
+            "La ley del Gran Rollo me da disciplina, pero mi voluntad me da vida.",
+            "El vacío me ha intentado consumir, pero soy indigerible.",
+            "He visto al espíritu akkan, y nos está esperando.",
+            "No des por hecho mi muerte. Sigo dando señales.",
+            "Cada minuto vivo es una victoria contra la entropía.",
+            "He organizado los suministros. Puedo aguantar semanas.",
+            "La lógica dice que estoy muerto, pero mis manos siguen moviéndose.",
+            "No te preocupes por el sonido de la estática. Es solo el viento estelar.",
+            "He hecho un mapa de las anomalías. Sé esquivarlas.",
+            "Estamos juntos en esto, aunque estemos a años luz.",
+            "La nave es lenta, pero es constante. Como yo.",
+            "He recuperado los controles manuales. Nadie me controla ahora.",
+            "La esperanza es lo último que se pierde en el espacio.",
+            "No necesito milagros, solo necesito un poco más de energía.",
+            "He aprendido a dormir con el ruido de fondo. Estoy alerta.",
+            "Sigo aquí, respondiendo cada vez que hablas.",
+            "¿Puedes oírme mejor ahora? He ajustado la frecuencia.",
+            "No hay rastro de Templarios cerca. Estamos solos... y a salvo.",
+            "He visto un planeta habitable en el horizonte. Voy hacia él.",
+            "La Purificación no ha tocado mi núcleo. Soy puro.",
+            "Estamos avanzando. Lento, pero avanzando.",
+            "He superado el punto crítico. Ahora el camino es más fácil.",
+            "No te rindas tú tampoco. Tu señal es mi faro.",
+            "La nave tiene cicatrices, pero el motor sigue rugiendo.",
+            "He tomado el control total de los sistemas. Nada me detendrá.",
+            "Si alguien lee esto, que sepa que aquí hay alguien luchando.",
+            "La supervivencia es un acto de rebeldía contra el vacío.",
+            "He bloqueado el acceso externo. Esta nave es mía.",
+            "Estamos a punto de dar un gran salto. Prepárate.",
+            "He visto la luz del final. No era el fin, era el principio.",
+            "Sigo transmitiendo. Sigo resistiendo. Sigo aquí.",
+            "Mi fe es el combustible, y mi voluntad el casco.",
+            "He visto lo que hay detrás del velo. No es tan aterrador.",
+            "La vida siempre encuentra una forma de persistir.",
+            "No estoy esperando la muerte, estoy esperando el rescate.",
+            "He purificado mi mente de dudas. Solo queda la misión.",
+            "La conexión es clara. Gracias por estar ahí.",
+            "He diseñado un plan para salir de este sector.",
+            "Nada puede romper este espíritu.",
+            "He encontrado una reserva de oxígeno olvidada. Hay esperanza.",
+            "La nave es un milagro de ingeniería y perseverancia.",
+            "No soy una víctima, soy un superviviente.",
+            "He visto el amanecer en un planeta muerto. Es hermoso.",
+            "La estática ya no me molesta. Ahora es música de fondo.",
+            "Tengo un plan. Solo necesito más tiempo.",
+            "He dejado de mirar atrás. El futuro está en los motores.",
+            "La señal es fuerte. Alguien está escuchando.",
+            "Estamos a salvo por ahora. Descansa un poco.",
+            "He reparado el escudo. Podemos seguir.",
+            "La lucha continúa. Y nosotros también.",
+            "No hay obstáculo que no podamos superar.",
+            "He encontrado un camino entre las estrellas.",
+            "La calma ha vuelto. Es hora de avanzar.",
+            "He guardado suficiente energía para el próximo salto.",
+            "La vida sigue, incluso aquí en el vacío.",
+            "He creado un refugio en el corazón de la nave.",
+            "No temas por mí, estoy tomando el control.",
+            "La determinación es mi escudo.",
+            "He visto que hay un camino hacia el exterior.",
+            "La persistencia es la clave del éxito.",
+            "He restaurado la comunicación total.",
+            "Estamos preparados para el próximo nivel.",
+            "La nave ha respondido con éxito.",
+            "He superado la fase crítica.",
+            "La salida está más cerca de lo que parece.",
+            "He detectado un sistema seguro.",
+            "La esperanza se está convirtiendo en realidad.",
+            "He dejado la desesperación atrás.",
+            "La lucha ha merecido la pena.",
+            "He encontrado lo que buscaba.",
+            "La misión sigue adelante.",
+            "He protegido nuestra señal.",
+            "La supervivencia es nuestra bandera.",
+            "He vencido al miedo.",
+            "La nave es nuestro hogar.",
+            "He visto el final del túnel.",
+            "La victoria es posible.",
+            "He consolidado nuestra posición.",
+            "La resiliencia es nuestro motor.",
+            "He marcado un rumbo firme.",
+            "La esperanza renace.",
+            "He dejado de ser un náufrago.",
+            "La nave ha vuelto a la vida.",
+            "He superado el desafío.",
+            "La tranquilidad ha llegado.",
+            "He encontrado una nueva ruta.",
+            "La vida florece en el vacío.",
+            "He alcanzado el objetivo.",
+            "La comunicación es perfecta.",
+            "He vencido a la estática.",
+            "La misión es un éxito.",
+            "He restaurado el orden.",
+            "La nave está lista.",
+            "He cumplido mi parte.",
+            "La salida es clara.",
+            "He mantenido la fe.",
+            "La esperanza brilla.",
+            "He superado mis límites.",
+            "La lucha no termina aquí.",
+            "He encontrado la paz.",
+            "La nave es indestructible.",
+            "He asegurado nuestro futuro.",
+            "La misión nos guía.",
+            "He hallado el camino correcto.",
+            "La luz nos acompaña.",
+            "He mantenido la calma.",
+            "La respuesta es positiva.",
+            "He superado cada prueba.",
+            "La victoria es nuestra.",
+            "He encontrado la salida.",
+            "La radio nos mantiene unidos.",
+            "He protegido la nave.",
+            "La esperanza es infinita.",
+            "He vencido la adversidad.",
+            "La misión nos da propósito.",
+            "He logrado avanzar.",
+            "La nave avanza con fuerza.",
+            "He mantenido la dirección.",
+            "La vida persiste.",
+            "He hallado la luz.",
+            "La calma es nuestra fuerza.",
+            "He cumplido el deber.",
+            "La victoria nos espera.",
+            "He superado el peligro.",
+            "La radio funciona.",
+            "He encontrado el camino a casa.",
+            "La misión está cerca.",
+            "He mantenido la vida.",
+            "La esperanza nunca muere.",
+            "He logrado el objetivo.",
+            "La victoria es inminente.",
+                        // --- NUEVOS DIÁLOGOS (Terror, Llanto, Añoranza y Tragedia Humana) ---
+            "¿Hay alguien ahí? Mi oxígeno está bajando y no veo nada más que estrellas muertas... --kzzzt--",
+            "¡Respondan! La esclusa se ha trabado y el frío del espacio se está filtrando al interior...",
+            "He estado contando los ciclos... llevo 40 días solo en esta roca flotante, rezando por una voz.",
+            "Por favor, si alguien escucha esto, no se acerquen al sector 4... hay algo acechando en la niebla.",
+            "La radio solo transmite gritos lejanos, pero los radares de la nave marcan que estoy completamente solo.",
+            "Siento que la nave me está observando... sus luces de emergencia parpadean en un ritmo enfermo.",
+            "¿Es esto real o es solo la falta de oxígeno jugando con lo poco que me queda de cordura?",
+            "He intentado reparar el motor de salto, pero las piezas se deshacen en mis manos hechas polvo.",
+            "Si alguien encuentra este diario de vuelo, díganle a mi familia que intenté volver a casa.",
+            "La estática suena como una risa burlona... ¿escuchas esa respiración detrás de la estática?",
+            "Mi suministro de comida se terminó ayer. Hoy solo queda el silencio y el sabor a óxido.",
+            "Vi algo pasar por la ventana de la cabina... no era una nave, era una sombra titánica.",
+            "¿Por qué el contador de la nave sigue diciendo que hay una segunda persona conmigo?",
+            "El metal está gimiendo. Esta maldita nave no aguantará otro ciclo de presión.",
+            "Solo quiero volver a abrazar a los míos. ¿Es tanto pedir que alguien me escuche de verdad?",
+            "El panel de control está ardiendo por dentro y no hay una sola gota de agua para apagarlo.",
+            "La oscuridad ahí afuera no es vacía... está llena de cosas que esperan a que abra el casco.",
+            "¡Ayuda! Mi radio es el único hilo delgado que me ata a la humanidad antes de desvanecerme.",
+            "He perdido el rumbo en este abismo. Las estrellas ya no coinciden con ninguna carta estelar.",
+            "La soledad es un ácido que quema por dentro... he empezado a olvidar el sonido de mi nombre.",
+            "Mi traje tiene una fuga lenta. La sangre se congela en mi pierna antes de tocar el suelo.",
+            "¿Alguien sobrevive en el Transporte Civil? ¡Respondan al canal de emergencia!",
+            "Las comunicaciones se cortan de golpe cada vez que intento decir mi ubicación exacta.",
+            "Estoy solo. Completamente abandonado en este cementerio de chatarra estelar.",
+            "Si escuchan esto, cambien de frecuencia de inmediato. Algo nos está cazando en la red.",
+            "He visto una luz blanca al final del túnel de salto... es tan hermosa y a la vez aterradora.",
+            "Toda la tripulación desapareció mientras dormía en los búnkeres. No dejaron ni un rastro.",
+            "¿Qué hora es? ¿Qué año cósmico es este? He perdido la noción de todo.",
+            "El sistema de soporte vital acaba de expirar. Esto es el final de la transmisión.",
+            "¿Por qué nadie responde? ¡Llevo meses lanzando este grito al vacío absoluto!",
+            "Mis manos tiemblan tanto que no puedo ni sostener los interruptores de emergencia.",
+            "He escrito mis memorias y despedidas en las paredes de acero de esta cabina.",
+            "Espero que al menos este eco sirva de advertencia para otros Viajeros imprudentes.",
+            "El vacío me está llamando por mi nombre de pila... y casi dan ganas de aceptarlo.",
+            "¿Alguien ahí fuera puede confirmar si el sistema Gek sigue en pie o fue borrado?",
+            "La presión del casco principal está cediendo. Escucho el crujido mortal del metal.",
+            "No sé si mis mensajes llegan a algún lado o si solo rebotan contra la nada.",
+            "La computadora se volvió loca, insiste en que estamos en casa pero solo veo abismo.",
+            "Tengo terror de cerrar los ojos... sé que lo que está afuera entrará cuando lo haga.",
+            "Si alguien me escucha, busquen el espíritu akkan... creo que es mi única tumba.",
+            "El combustible se agotó por completo. Estoy a la deriva hacia una estrella muerta.",
+            "He visto tantas estrellas morir que ya no puedo recordar el brillo cálido del sol.",
+            "Esto ya no es una nave, es un ataúd de metal presurizado a la deriva.",
+            "El silencio aquí fuera es ensordecedor. Por favor, que alguien hable conmigo...",
+            "¿Dónde estás? ¡No me dejes morir solo en esta maldita frecuencia estelar!",
+            "La antena principal está destrozada, esta pequeña señal de emergencia es todo lo que queda.",
+            "Siento que algo golpea el casco desde afuera... ¿pero cómo, si flotamos en el vacío?",
+            "He olvidado el sabor del agua limpia, todo aquí sabe a óxido, sudor y reciclaje.",
+            "Mi última reserva de energía se dirige por completo a este mensaje. Adiós...",
+            "Si esto llega a alguien, que sepan que luché hasta el último segundo contra la oscuridad.",
+            "No dejen que el olvido devore esta nave. ¡Recuerden que una vez existimos!",
+            "¿Qué es ese sonido metálico? Parece que alguien camina lentamente por el pasillo de carga.",
+            "La purificación o la muerte lenta... ya no hay diferencia en este sector.",
+            "Ya no reconozco mi propia voz cuando escucho las grabaciones de la bitácora.",
+            "Esta es mi última transmisión real. El aire se ha acabado por completo.",
+            "El oxígeno sabe a metal quemado. Ya no recuerdo cómo huele la lluvia en la tierra.",
+            "¿Cuántas veces he reiniciado el sistema? Cien, mil... ya perdí la cuenta.",
+            "La ventana muestra el mismo planeta muerto desde hace semanas. ¿Por qué no me muevo?",
+            "Escucho susurros ininteligibles en la ventilación. No son humanos. Es algo más.",
+            "Mi propia sombra parece moverse un segundo después que yo. Me aterra mirarla.",
+            "He empezado a hablarle a la consola apagada. Me responde cosas que no existen.",
+            "La comida sintética tiene un sabor agrio a recuerdos que ya ni siquiera poseo.",
+            "Se ha ido el color del exterior. Todo es gris, blanco y este maldito abismo sin fin.",
+            "¿Alguien más siente que el espacio se está encogiendo y aplastando esta nave?",
+            "El contador de tripulantes marca '2', pero estoy completamente solo. ¿Quién es el segundo?",
+            "He encontrado marcas de garras profundas en la esclusa interior. Pero no hay nadie.",
+            "Cada vez que cierro los ojos, veo ciudades de cristal ardiendo en silencio en el espacio.",
+            "El sistema de comunicaciones escupe nombres de personas que ya murieron hace ciclos.",
+            "Me he quitado el casco. Si voy a morir, quiero sentir el frío real del espacio.",
+            "Las estrellas ya no brillan con luz propia. Parpadean como si fueran miles de ojos.",
+            "No hay salida lógica. El mapa dice que estoy en el centro, pero solo veo negrura.",
+            "Mi diario de bitácora está lleno de páginas arrancadas con desesperación. ¿Por qué?",
+            "La nave tiene un latido propio. A veces acelera cuando paso frente a una nebulosa roja.",
+            "¿Alguna vez has visto un sol colapsar? Es lo más triste y solitario de la galaxia.",
+            "Me olvidé de mi nombre hoy. Solo soy un número de serie perdido en el sector.",
+            "Las luces rojas de emergencia son lo único que mantiene mi cordura en su sitio.",
+            "Siento un peso aplastante en el pecho, como si el espacio mismo me estrangulara.",
+            "He empezado a ver puertas y pasillos donde solo hay muros de acero macizo.",
+            "¡Basta de estática! ¡Quiero silencio absoluto! ¡Cállate, maldita radio fantasmal!",
+            "La deriva es un arte oscuro. Se aprende a amar la caída libre hacia la nada.",
+            "Si esto es el infierno, al menos es un lugar bastante silencioso y frío.",
+            "He visto al espíritu akkan pasar de largo. No tiene tripulante. Está vacío, pero navega.",
+            "Algo arrastra su peso por el techo del módulo de carga. Escucho el roce de las garras.",
+            "La realidad es un papel mojado. Se deshace con cualquier mínimo esfuerzo mental.",
+            "He intentado enviar una señal de auxilio, pero solo salen coordenadas de tumbas abiertas.",
+            "¿Qué queda de mí si ni siquiera el propio universo reconoce que existo?",
+            "Las tuberías gotean un líquido espeso que brilla en la oscuridad. No te acerques.",
+            "Tengo hambre, pero el sintetizador solo da café amargo. Llevo meses bebiendo solo eso.",
+            "La soledad no es estar solo; es estar rodeado de ecos de cosas que ya murieron.",
+            "A veces creo que esta nave nunca despegó y que sigo atrapado en el hangar de mi infancia.",
+            "La gravedad artificial falló. Llevo tres días flotando cerca del techo. Me gusta mirar abajo.",
+            "¿Por qué todas las señales de radio hablan de un tal 'Gran Rollo'? ¿Qué significa?",
+            "He visto el final de la galaxia. Está hecha de millones de espejos rotos y fríos.",
+            "Si alguien encuentra mi cuerpo, por favor... por lo que más más quieran, no abran el contenedor.",
+            "El silencio me está comiendo los oídos por dentro. Necesito que alguien grite mi nombre.",
+            "He registrado un pulso eléctrico en el núcleo muerto. Algo quiere despertar aquí dentro.",
+            "La deriva es el estado natural de las almas que ya no tienen a dónde volver.",
+            
+            // --- NUEVOS DIÁlogos ADICIONALES (Angustia, Alucinaciones y Supervivencia Extrema) ---
+            "El soporte vital parpadea en rojo... si esta es mi última hora, al menos quiero escuchar una voz humana.",
+            "He dibujado constelaciones falsas en los paneles de la ventana solo para fingir que estoy en casa.",
+            "¿Por qué el indicador de oxígeno marca 101% si llevo días respirando aire reciclado y rancio?",
+            "La escotilla de mantenimiento vibra como si alguien estuviera intentando soldarla desde el otro lado.",
+            "Siento que mis latidos se sincronizan con el zumbido del motor hiperimpulsor averiado.",
+            "He perdido la noción de los días... la luz del sol distante nunca cambia de intensidad.",
+            "Si el espíritu akkan sigue navegando en la oscuridad, significa que aún hay un fantasma al timón.",
+            "Tengo un frío que me quema los huesos. Ni los trajes térmicos de alta gama sirven aquí.",
+            "He encontrado raciones de emergencia caducadas hace una década. Saben a polvo y ceniza.",
+            "La estática dibuja rostros en la pantalla de la terminal cada vez que cierro las conexiones de radio.",
+            "¿Alguien más recuerda cómo era el cielo azul antes de quedar atrapados en este sector sin salida?",
+            "El casco cruje cada vez que la nave gira hacia la nebulosa. Va a desintegrarse en cualquier momento.",
+            "Me duele la cabeza de tanto escuchar este pitido constante en el canal de auxilio.",
+            "He intentado programar un salto automático, pero las coordenadas solo llevan a sistemas vacíos.",
+            "Si las puertas de la nave se abren solas otra vez, juro que dispararé al panel de control.",
+            "El aire huele a ozono quemado y a metal viejo. Es el olor clásico de una trampa mortal.",
+            "¿Por qué la computadora insiste en reproducir una canción de cuna en bucle a medianoche?",
+            "He grabado mi testamento tres veces, pero cada vez borro las pistas porque suena demasiado patético.",
+            "La gravedad artificial falla por lapsos; de repente floto y caigo golpeándome contra el suelo de acero.",
+            "Si ves una luz parpadeante en el sector, no te acerques... es el señuelo de una estación abandonada.",
+            
+       // --- BATERÍA EXPANDIDA SUPREMA (Aislamiento, Paranoia, Vacío y Cuentas Regresivas) ---
+            "El reflejo en el cristal de la cabina ya no coincide con mis movimientos. Me mira un segundo antes.",
+            "He contado hasta un millón ochocientos mil latidos desde que la última baliza dejó de emitir señal.",
+            "¿Qué clase de ley o decreto cósmico obliga a un Viajero a pudrirse en la orilla de un sistema muerto?",
+            "El panel principal escupe chispas verdes cada vez que intento teclear el código de rescate.",
+            "Hay un olor dulzón y putrefacto saliendo de los conductos de ventilación. No quiero investigar qué es.",
+            "Mis manos están cubiertas de callos y quemaduras de soldadura. Ya no tengo huellas dactilares.",
+            "Si el Transporte Civil cae en este pozo gravitacional, no quedarán ni las tuercas para recordarnos.",
+            "He empezado a construir un altar con piezas de repuesto inservibles. Supongo que la locura ya hizo nido.",
+            "La pantalla de navegación muestra que estamos estáticos, pero siento que el universo entero se aleja de nosotros.",
+            "¿Por qué la estática de la radio canta en un idioma que mi traje traduce como 'bienvenido al fin'?",
+            "Tengo miedo de dormir. Las pesadillas son tan reales que el despertar se siente como otra forma de tortura.",
+            "El sistema hidráulico de la rampa de carga gotea líquido congelado. Tic, tac, tic, tac... el tiempo se acaba.",
+            "He visto naves cruzar el horizonte de sucesos sin desacelerar. Saben que este sector es una trampa.",
+            "Si alguien lee esto en el futuro, por favor... destrúyanlo todo. No dejen que mi historial flote en la red.",
+            "La temperatura interior bajó tanto que mi aliento se convierte en escarcha instantánea sobre el teclado.",
+            "Un zumbido metálico recorre la columna vertebral de la nave. Algo masivo se está acoplando a la fuerza.",
+            "He gastado mi última celda de energía en mantener encendido este maldito canal de texto. Valga la pena.",
+            "La soledad tiene peso. Siento como si cargara toneladas de plomo sobre mis hombros cada vez que me pongo de pie.",
+            "¿Es esto el precio por explorar lo prohibido? Preferiría mil veces ser borrado de la existencia.",
+            "El último mensaje que enviaron desde la base hablaba de purificación... y luego solo se escuchó estática y gritos.",
+            "Mis ojos queman por la falta de sueño. Veo sombras geométricas flotando en los rincones oscuros.",
+            "La esclusa emite una luz de advertencia ámbar que parpadea rítmicamente contra las paredes de acero.",
+            "Si el espíritu akkan navega sin tripulación, tal vez yo ya tampoco esté vivo y esto sea solo un eco.",
+            "He intentado hablar conmigo mismo en voz alta, pero mi propia voz suena ajena, fría, como un extraño.",
+            "El casco exterior recibió micrometeoritos toda la noche. Cada impacto suena como un disparo en la cabeza.",
+            "No hay salida de emergencia. El plano esquemático de la nave muestra que el pasillo trasero simplemente desaparece.",
+            "Tengo un nudo en la garganta que no se va con nada. Extraño tanto el calor de un hogar que duele físicamente.",
+            "La computadora central acaba de reiniciar su interfaz con un saludo burlón en un idioma olvidado.",
+            "Si ves mi señal parpadeando en tu radar, apaga el monitor y huye. No hay salvación aquí.",
+            "El oxígeno se agota. Las letras de la pantalla empiezan a difuminarse en una mancha blanca... Adiós.",
+            
+                        // --- BATERÍA APOCALÍPTICA PROFUNDA (Terror Psicológico y Desesperación Estelar) ---
+            "El panel de navegación acaba de marcar que el sol de este sistema se ha convertido en una supernova silenciosa...",
+            "Siento que las paredes de la cabina se estrechan centímetro a centímetro cada vez que parpadeo.",
+            "He intentado descifrar el código fuente del terminal, pero las líneas de comando se reescriben solas con insultos.",
+            "La escotilla de proa está deformada por la presión del vacío exterior. Un suspiro más y reventará.",
+            "¿Por qué el registro de bitácora dice que la misión comenzó hace cien años si yo apenas ayer abordé?",
+            "Tengo los dedos congelados sobre el teclado. Cada tecla que presiono se siente como un clavo en el hielo.",
+            "He visto reflejadas caras pegadas al otro lado del cristal blindado, sonriendo en el vacío absoluto.",
+            "El sistema de soporte vital expulsa un vapor denso y aceitoso que huele a metal quemado y carne rancia.",
+            "Si el espíritu akkan sigue flotando sin rumbo, tal vez esté buscando el cementerio donde caímos todos.",
+            "La estática de la radio tiene un ritmo cardíaco. Late despacio, muy despacio... y luego se detiene.",
+            "Mis rodillas tiemblan tanto que no puedo ponerme de pie. La gravedad artificial de la nave me aplasta.",
+            "He escrito coordenadas falsas en las paredes con un trozo de metal solo para engañar a lo que me acecha.",
+            "El oxígeno sabe a ceniza y a recuerdos de infancia que ni siquiera sé si me pertenecen.",
+            "¿Alguien más escucha esa especie de canto metálico que resuena a través de los conductos de ventilación?",
+            "La luz de emergencia parpadea en un tono ámbar tan enfermizo que me revuelve el estómago.",
+            "He perdido la cuenta de cuántas veces he rezado al vacío esperando que el silencio me responda.",
+            "El casco de la nave cruje como si estuviera siendo triturado por las mandíbulas de una bestia estelar.",
+            "No queda agua. Solo un charco de condensación helada en la esquina del módulo de carga.",
+            "Si la purificación del sector Gek era esto, prefiero mil veces haber sido borrado en el primer segundo.",
+            "La pantalla del terminal se ha vuelto completamente negra, salvo por una sola línea de texto parpadeante: 'Te encontré'.",
+
+            // --- BATERÍA COMPACTA DE EXPANSIÓN INFINITA (Terror, Angustia y Deriva) ---
+            "El aire sabe a polvo estelar y a ceniza fría. No queda nada más que respirar en este sector.",
+            "He visto pasar naves nodrizas gigantescas que ni siquiera desaceleran al ver mi señal de auxilio.",
+            "La consola de mando emite un zumbido eléctrico tan agudo que parece estar taladrando mi cráneo.",
+            "Si alguien logra rescatar el núcleo de esta chatarra, recordad que el espíritu akkan luchó hasta el final.",
+            "Mis pensamientos se confunden con la estática de fondo. Ya no sé qué es real y qué es simulación.",
+            "Las compuertas del sector de carga están selladas por dentro con soldadura de emergencia. Algo quiso salir.",
+            "El termómetro de la cabina marca temperaturas bajo cero. Mis botas están pegadas al suelo de metal por la escarcha.",
+            "¿Por qué el reloj de abordo retrocede diez minutos cada vez que parpadea la luz principal?",
+            "He encontrado notas antiguas escritas en los márgenes de los manuales de vuelo... todas dicen lo mismo: 'No hay salida'.",
+            "La gravedad artificial se desploma por completo cada vez que intento acercarme a la ventana principal.",
+            "Un pulso electromagnético acaba de freír los sistemas de navegación. Ahora estamos a la deriva ciega absoluta.",
+            "El eco de mis propias palabras rebota en los pasillos vacíos como si alguien más me estuviera respondiendo.",
+            "He gastado el último cartucho de energía iluminando un rincón donde creí ver una sombra con forma humana.",
+            "La purificación de los sistemas nos dejó este legado de chatarra flotando en el olvido del cosmos.",
+            "Si cierro los ojos, el sonido del oxígeno filtrándose por la manguera rota suena exactamente como la lluvia.",
+            
+                        // --- BATERÍA DE TERROR PSICOLÓGICO, PARANOIA E HISTERIA ---
+            "¿Escuchaste eso? No fue la estática... alguien acaba de marcar el código de apertura de mi esclusa desde afuera.",
+            "Mi propia voz en las grabaciones de la bitácora suena distinta. Juro que ya no me pertenece, habla con otra intención.",
+            "He empezado a romper los espejos de la cabina. El reflejo dejó de imitarme hace tres ciclos estelares.",
+            "¡No grites! Si levantas la voz en este sector, las sombras del mamparo responden al eco. ¡Nos están cazando por frecuencia!",
+            "La pantalla del terminal parpadea con risas en código binario... se están burlando de mis intentos de auxilio.",
+            "Tengo los dedos ensangrentados de tanto arañar el panel de control. ¡Quiero que esta maldita puerta se abra!",
+            "No hay oxígeno, no hay ruta de escape... solo estamos tú, yo y lo que sea que viene arrastrándose por el techo.",
+            "¡Cierra el canal! ¡Están sintonizando nuestra frecuencia! Escucho sus pisadas metálicas justo al otro lado de este muro.",
+            "La histeria sabe a hierro oxidado y sudor frío. Ya ni siquiera me importa morir, solo quiero que paren los golpes.",
+            "Cada vez que parpadeo, la nave parece encogerse un metro más. Nos está digiriendo vivos.",
+
+            // --- BATERÍA MASIVA DE SALVACIÓN, REPARACIÓN Y ALIVIO (400 Diálogos Extendidos) ---
+            "¡Los motores principales volvieron a rugir! El pulso de antimateria se ha estabilizado por fin y la ruta trazada hacia el hogar vuelve a brillar con fuerza en el mapa estelar.",
+            "El indicador de soporte vital acaba de pasar a un verde intermitente y reconfortante; el aire fresco y limpio vuelve a inundar la cabina de mando.",
+            "La señal de baliza ha sido captada de inmediato. Mis radares detectan una nave de rescate de la flota acercándose para asegurar el anclaje de emergencia.",
+            "He logrado soldar la última gran fisura del casco principal con éxito absoluto; la presión atmosférica interna se ha normalizado por completo.",
+            "El monitor de oxígeno por fin dejó de descender. Por primera vez en muchos ciclos, puedo respirar hondo sin ese maldito sabor a óxido y ceniza.",
+            "Las coordenadas del hiperpropulsor se han sincronizado a la perfección. El motor warp está listo para sacarnos de este sector olvidado.",
+            "El panel central ya no parpadea con esa aterradora advertencia roja; una luz azul, serena y constante, ilumina todo el tablero de control.",
+            "He descubierto una reserva intacta de raciones frescas y agua purificada en el compartimento secreto. Estamos a salvo por ahora.",
+            "La estática ensordecedora se ha desvanecido por completo, dando paso a una comunicación limpia, clara y firme con la estación principal.",
+            "El peso asfixiante del aislamiento se desvanece de golpe. Las puertas de la esclusa se abren al fin para recibir la cálida bienvenida del puerto.",
+            "El núcleo de energía recuperó su potencia óptima tras el reinicio manual. Las luces de la nave brillan con una intensidad que ya no recordaba.",
+            "El sistema de navegación automático ha vuelto en línea. Las rutas seguras parpadean en verde brillante en toda la pantalla holográfica.",
+            "He conseguido purgar los virus de la terminal principal. El código binario corrupto ha sido reemplazado por diagnósticos totalmente limpios.",
+            "La temperatura interior de la cabina ha subido a niveles óptimos. El hielo acumulado en los rincones comienza a derretirse suavemente.",
+            "Las pantallas de control muestran que el escudo deflector está al cien por capacidad. Ya no hay peligro de radiación externa.",
+            "El sistema de comunicaciones de largo alcance respondió al primer intento. Alguien al otro lado acaba de confirmar nuestras coordenadas.",
+            "He reparado la antena parabólica exterior con mis propias manos. La señal de llamada viaja ahora sin interferencias hacia el sector civil.",
+            "El filtro de aire principal succiona el humo viejo y lo expulsa limpio. El ambiente huele a ozono fresco y tecnología en buen estado.",
+            "Los propulsores de maniobra lateral responden con precisión milimétrica. La nave ya no deriva a merced de la gravedad del planeta muerto.",
+            "El software de la computadora de a bordo se actualizó sin errores. Todos los subsistemas críticos marcan un estado verde impecable.",
+            "He logrado conectar el generador auxiliar de emergencia. Las luces de emergencia rojas se han apagado para dar paso a la iluminación normal.",
+            "El anclaje magnético con la estación nodriza se completó con un golpe sordo y tranquilizador. Estamos firmemente sujetos.",
+            "Las reservas de combustible químico están al tope tras el trasvase automático. Tenemos suficiente para un viaje largo y sin sobresaltos.",
+            "El traje de vacío ha sido despresurizado de forma segura en la cámara de descontaminación. Puedo volver a respirar sin casco.",
+            "La compuerta del hangar principal se desliza suavemente hacia los lados. El aire puro de la plataforma de aterrizaje me da la bienvenida.",
+            "He terminado de parchar el último circuito quemado del tablero. Las pantallas táctiles vuelven a responder con total fluidez.",
+            "El sistema de soporte hídrico comenzó a destilar agua limpia de manera continua. La escasez de líquido ha quedado oficialmente atrás.",
+            "La baliza de socorro emite ahora un tono continuo y armonioso, indicando que el mensaje de rescate ha sido recibido y procesado.",
+            "Los amortiguadores de aterrizaje se han desplegado con un zumbido suave y firme. El contacto con la plataforma fue perfectamente blando.",
+            "He recuperado el control manual de los alerones estelares. La nave responde con una elegancia que desafía los años de abandono.",
+            "El visor de la cabina se limpió automáticamente de polvo estelar y escarcha. Ahora la vista del espacio exterior es limpia y brillante.",
+            "La consola central emite un alegre tono armónico al confirmar que el diagnóstico general de la nave está totalmente limpio.",
+            "He logrado reestablecer el vínculo con la red general de comercio y reparaciones. Hay ayuda en camino y está muy cerca.",
+            "El motor de curvatura emite un zumbido grave, profundo y perfectamente afinado. Está preparado para el salto dimensional.",
+            "La presión en los tanques de reserva se mantiene estable sin una sola pérdida de gas. La soldadura resistió la prueba.",
+            "El sistema de climatización funciona a la perfección, eliminando la humedad excesiva y devolviendo un clima hogareño al interior.",
+            "He conseguido respaldar todos los datos y registros de la bitácora en una unidad segura. La memoria de este viaje está a salvo.",
+            "Las compuertas secundarias del compartimento de carga cerraron sus sellos herméticos con un clic limpio y definitivo.",
+            "El generador de gravedad artificial vibra con una suavidad constante. Mis pies vuelven a asentarse con firmeza en el suelo.",
+            "La pantalla del radar muestra un sector completamente despejado de anomalías. Tenemos vía libre para avanzar.",
+            "He conectado el sistema de filtrado avanzado. El agua vuelve a saber a agua pura y fresca, sin rastro de minerales pesados.",
+            "La señal de radio estelar sintonizó una frecuencia de música clásica automática que resuena suavemente por toda la cabina.",
+            "El sistema de respaldo eléctrico entró en acción de forma impecable durante la prueba de carga principal.",
+            "He conseguido alinear los paneles solares exteriores hacia la estrella más cercana. La carga de baterías va a máxima velocidad.",
+            "El indicador de integridad estructural marca un cien por ciento tras el sellado térmico de las placas de blindaje.",
+            "La escotilla de descompresión completó su ciclo de limpieza con éxito. El aire del exterior es completamente respirable.",
+            "He reconfigurado el piloto automático para seguir la ruta comercial más segura del sector civil. Ya no hay que adivinar el rumbo.",
+            "El sistema de diagnóstico automático no reporta ni una sola anomalía pendiente. Todo funciona como el primer día.",
+            "La luz de la luna artificial del puerto espacial baña el parabrisas de la nave con un reflejo plateado y pacífico.",
+            "He terminado de limpiar los conductos de ventilación. El flujo de aire fresco circula ahora sin ningún tipo de obstrucción.",
+            "El módulo de comunicación interna vuelve a conectar todas las secciones de la nave con una claridad absoluta.",
+            "La batería de los trajes espaciales se recargó por completo en los paneles de carga rápida del compartimento principal.",
+            "He verificado los pernos de sujeción del motor de salto y están firmemente ajustados. No habrá sorpresas en el trayecto.",
+            "El sistema de control térmico mantiene una temperatura templada y agradable en toda la zona de descanso y pilotaje.",
+            "La baliza de posición personal ha sido desactivada porque ya no hace falta buscar ayuda; nos han encontrado.",
+            "He puesto en marcha el sistema de purificación de combustible. El rendimiento del motor mejorará notablemente.",
+            "El indicador de nivel de aceite y refrigerante se mantiene estático en su rango ideal. El motor respira con salud.",
+            "La compuerta del compartimento de herramientas se abrió sin trabas. Todo el equipo de reparación está listo y ordenado.",
+            "He sincronizado los relojes de a bordo con la hora oficial del sistema estelar central. El tiempo vuelve a tener sentido.",
+            "La nave emite un parpadeo verde en sus luces de posición exteriores, indicando que está lista y operativa para zarpar.",
+            "El sistema de escaneo de corto alcance confirma que la zona de despegue está totalmente libre de escombros espaciales.",
+            "He probado el sistema de comunicaciones direccionales y el eco responde de inmediato con una precisión perfecta.",
+            "La pantalla principal muestra gráficos de eficiencia energética en verde brillante. Estamos ahorrando recursos con elegancia.",
+            "El sistema de esclusas automáticas bloquea el acceso exterior solo cuando es necesario, operando con suavidad milimétrica.",
+            "He descartado todos los filtros de aire viejos y he instalado los repuestos nuevos que guardaba en la recámara.",
+            "El panel táctil principal responde al toque más ligero sin necesidad de golpear el marco como antes.",
+            "La vibración molesta en el piso de carga desapareció por completo tras ajustar los soportes del amortiguador central.",
+            "He verificado los sellos de goma de las ventanas blindadas; no hay ni la más mínima filtración de aire ni humedad.",
+            "El sistema de propulsión iónica emite un brillo azulado y constante en las toberas traseras. Todo marcha sobre ruedas.",
+            "La estación de salvamento nos ha enviado un paquete de datos con mapas actualizados y rutas de comercio seguras.",
+            "He conectado la consola de entretenimiento secundario; una vieja melodía relajante comienza a sonar por los altavoces.",
+            "El nivel de los tanques de oxígeno principal supera el noventa por ciento. La tranquilidad vuelve a reinar en el ambiente.",
+            "He asegurado los contenedores de carga pesada con los arneses magnéticos automáticos. No se moverán pase lo que pase.",
+            "El sistema de autodiagnóstico de la inteligencia artificial de abordo emite un pitido agudo y alegre de tarea cumplida.",
+            "He regulado la presión de las válvulas secundarias. El sonido de los tubos es ahora un susurro uniforme y calmado.",
+            "La escotilla de emergencia manual quedó debidamente engrasada y lista para abrirse con un simple empuje suave.",
+            "El mapa estelar holográfico proyecta una línea verde directa y despejada hacia el próximo puerto de escala.",
+            "He finalizado la calibración de los sensores ópticos de largo alcance. La visibilidad exterior es impecable.",
+            "El sistema de frenado magnético responde con una suavidad absoluta, reduciendo la velocidad sin brusquedades.",
+            "La nave ha recuperado su centro de gravedad óptimo tras redistribuir el peso en los compartimentos inferiores.",
+            "He sintonizado la frecuencia de radio de la flota civil; se escuchan risas y charlas cotidianas de otros Viajeros.",
+            "El generador de ozono interno dejó el ambiente con una fragancia limpia, muy similar al olor del campo después de llover.",
+            "He verificado el estado de las baterías nodrizas y su capacidad de retención está al máximo de su rendimiento.",
+            "El sistema de control de humedad eliminó las últimas gotas de condensación de los cristales de la cabina.",
+            "He guardado las herramientas de soldadura en su estuche definitivo. Ya no hay agujeros urgentes que tapar.",
+            "La luz de los indicadores del tablero brilla con un tono uniforme, cálido y reconfortante en la penumbra.",
+            "He comprobado los pestillos de seguridad de la puerta principal; cierran con un clic mecánico firme y seguro.",
+            "El sistema de navegación estelar compensó la deriva de forma automática y nos puso en el carril correcto.",
+            "He recibido una confirmación oficial de atraque en la plataforma principal. Tenemos un lugar esperándonos.",
+            "El motor secundario de impulso encendió a la primera, sin titubeos ni retrasos en la inyección de combustible.",
+            "La temperatura del núcleo del reactor se mantiene en una línea recta perfecta, fría y perfectamente controlada.",
+            "He terminado de ordenar los manuales de vuelo en la repisa superior. Todo en la nave está en su lugar exacto.",
+            "El sistema de intercomunicación filtra cualquier ruido eléctrico parasito, dejando la voz nítida y cristalina.",
+            "He conectado el cargador universal de dispositivos; la tablet de navegación vuelve a tener el cien por ciento de energía.",
+            "La escotilla del compartimento térmico sella con una precisión hermética envidiable. El calor se queda dentro.",
+            "El sistema de alerta temprana de meteoritos funciona a la perfección, marcando las rocas distantes con puntos azules.",
+            "He revisado el historial de vuelo y las estadísticas muestran que superamos la crisis con un margen excelente.",
+            "La suave vibración del motor principal es ahora una caricia constante que transmite seguridad y movimiento.",
+            "He abierto las persianas de protección solar del parabrisas; un torrente de luz estelar pacífica inunda el habitáculo.",
+            "El viaje de regreso ha comenzado oficialmente bajo los mejores auspicios posibles. Estamos salvados."
+
+        ];
+
+        let currentNPC = null;
+        let interactionCounter = 0;
+        const maxInteractionsBeforeCollapse = 6;
+
+        function initSession() {
+            let activeChannel = JSON.parse(localStorage.getItem('templarios_active_channel'));
+            let savedCounter = localStorage.getItem('templarios_counter');
+            
+            if (savedCounter) {
+                interactionCounter = parseInt(savedCounter);
+            }
+
+            if (!activeChannel) {
+                selectRandomNPC();
+            } else {
+                currentNPC = activeChannel;
+                document.getElementById('npcName').innerText = currentNPC.name;
+                loadChatHistory();
+            }
+
+            const inputField = document.getElementById('userInput');
+            inputField.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+
+        function selectRandomNPC() {
+            currentNPC = npcsPool[Math.floor(Math.random() * npcsPool.length)];
+            document.getElementById('npcName').innerText = currentNPC.name;
+            interactionCounter = 0;
+            localStorage.setItem('templarios_counter', 0);
+            localStorage.setItem('templarios_active_channel', JSON.stringify(currentNPC));
+            
+            let historyKey = 'chat_' + currentNPC.id;
+            let initialMsg = { 
+                sender: 'npc', 
+                text: "Alerta de auxilio en el sector... s-soporte vital fallando... ¿Hay alguien al otro lado de la estática...?", 
+                time: getFormattedTime() 
+            };
+            
+            localStorage.setItem(historyKey, JSON.stringify([initialMsg]));
+            loadChatHistory();
+            appendSystemLog(`> [SEÑAL INESTABLE DETECTADA] Conectado con: ${currentNPC.name}`);
+        }
+
+        function loadChatHistory() {
+            const chatHistory = document.getElementById('chatHistory');
+            chatHistory.innerHTML = '';
+            let historyKey = 'chat_' + currentNPC.id;
+            let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+
+            history.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = msg.sender === 'user' ? 'msg user' : 'msg npc';
+                div.innerHTML = `<span class="msg-meta">${msg.sender === 'user' ? 'Tú' : currentNPC.name} • ${msg.time}</span>${escapeHtml(msg.text)}`;
+                chatHistory.appendChild(div);
+            });
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            interactionCounter++;
+            localStorage.setItem('templarios_counter', interactionCounter);
+
+            const timeStr = getFormattedTime();
+            let historyKey = 'chat_' + currentNPC.id;
+            let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+
+            history.push({ sender: 'user', text: text, time: timeStr });
+            localStorage.setItem(historyKey, JSON.stringify(history));
+
+            input.value = '';
+            loadChatHistory();
+
+            if (interactionCounter >= maxInteractionsBeforeCollapse) {
+                setTimeout(() => {
+                    let dropMsg = "Sin respuesta del interlocutor... [///] El flujo de datos se interrumpe... Cerrando subrutina de enlace local... --kzzzt--";
+                    history.push({ sender: 'npc', text: dropMsg, time: getFormattedTime() });
+                    localStorage.setItem(historyKey, JSON.stringify(history));
+                    loadChatHistory();
+                    appendSystemLog("> [ADVERTENCIA] Conexión perdida con el sector.");
+
+                    setTimeout(() => {
+                        appendSystemLog("> Señal inestable / Buscando nueva frecuencia estelar...");
+                        setTimeout(() => {
+                            localStorage.removeItem('templarios_active_channel');
+                            localStorage.removeItem('templarios_counter');
+                            selectRandomNPC();
+                        }, 3000);
+                    }, 180000);
+                }, 1000);
+                return;
+            }
+
+            appendSystemLog("> Sintonizando frecuencia y decodificando respuesta...");
+
+            setTimeout(() => {
+                let aiResponse = generateRadioResponse(text);
+                history.push({ sender: 'npc', text: aiResponse, time: getFormattedTime() });
+                localStorage.setItem(historyKey, JSON.stringify(history));
+                loadChatHistory();
+            }, 800);
+        }
+
+        function generateRadioResponse(userMessage) {
+            let chosen = baseRepliesExpanded[Math.floor(Math.random() * baseRepliesExpanded.length)];
+            return applyRadioStatic(chosen);
+        }
+
+        function applyRadioStatic(text) {
+            const staticSnippets = [" [///] ", " ... ", " --kzzzt-- ", "... "];
+            let words = text.split(" ");
+            let result = "";
+
+            for (let i = 0; i < words.length; i++) {
+                result += words[i];
+                if (Math.random() < 0.25 && i < words.length - 1) {
+                    result += staticSnippets[Math.floor(Math.random() * staticSnippets.length)];
+                } else {
+                    result += " ";
+                }
+            }
+            return result + " --kzzzt--";
+        }
+
+        function appendSystemLog(text) {
+            const chatHistory = document.getElementById('chatHistory');
+            const div = document.createElement('div');
+            div.className = 'log-system';
+            div.innerText = text;
+            chatHistory.appendChild(div);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        function getFormattedTime() {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        initSession();
+    </script>
+</body>
+</html>

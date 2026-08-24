@@ -105,7 +105,7 @@
             to { background-position: -340px 40px, -280px 80px, -290px 150px; }
         }
 
-        /* Nubes difusas (más rápidas) */
+        /* Nubes difusas */
         .planet-clouds {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -125,7 +125,7 @@
             to { background-position: -360px 30px, -480px 100px, -300px 10px; }
         }
 
-        /* Lunas y Planetas Lejanos (Expansión visual para PC) */
+        /* Lunas y Planetas Lejanos */
         .moon-1, .moon-2, .moon-3, .moon-4, .distant-planet-1, .distant-planet-2 {
             position: absolute;
             border-radius: 50%;
@@ -133,11 +133,8 @@
             transition: opacity 1.5s ease;
         }
         
-        /* Lunas originales */
         .moon-1 { width: 40px; height: 40px; top: 30%; left: 20%; background: radial-gradient(circle at 30% 30%, #fff, #b39700 70%, #473c00 100%); box-shadow: inset -5px -5px 10px rgba(0,0,0,0.8), 0 0 15px rgba(255, 215, 0, 0.4); }
         .moon-2 { width: 25px; height: 25px; top: 20%; right: 25%; background: radial-gradient(circle at 30% 30%, #fff, #b39700 70%, #473c00 100%); box-shadow: inset -5px -5px 10px rgba(0,0,0,0.8), 0 0 15px rgba(255, 215, 0, 0.4); }
-        
-        /* Nuevas lunas y planetas lejanos distribuidos para rellenar los laterales en PC */
         .moon-3 { width: 30px; height: 30px; top: 60%; left: 10%; background: radial-gradient(circle at 30% 30%, #e2e8f0, #64748b 70%, #1e293b 100%); box-shadow: inset -4px -4px 8px rgba(0,0,0,0.8), 0 0 10px rgba(100, 116, 139, 0.4); }
         .moon-4 { width: 20px; height: 20px; top: 45%; right: 12%; background: radial-gradient(circle at 30% 30%, #fed7aa, #c2410c 70%, #431407 100%); box-shadow: inset -3px -3px 6px rgba(0,0,0,0.8), 0 0 8px rgba(194, 65, 12, 0.4); }
         
@@ -149,39 +146,87 @@
             opacity: 1;
         }
 
-        /* Elementos flotantes de fondo */
+        /* --- ELEMENTOS VISUALES DESPARRAMADOS (ADAPTADOS PARA PC Y MÓVIL) --- */
         .atlas-bg {
             position: absolute;
-            top: 12%;
-            left: 50%;
+            top: 15%; left: 50%;
             transform: translateX(-50%) scale(0.8);
-            max-width: 380px;
-            width: 65%;
+            max-width: 380px; width: 45%;
             opacity: 0;
             transition: opacity 2s ease, transform 2s ease;
             pointer-events: none;
             filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6));
         }
-        body.stage-4 .atlas-bg {
-            opacity: 0.5;
-            transform: translateX(-50%) scale(1);
-        }
+        body.stage-4 .atlas-bg { opacity: 0.45; transform: translateX(-50%) scale(1); }
 
         .ship-bg {
             position: absolute;
-            top: 35%;
-            left: 50%;
+            top: 40%; left: 50%;
             transform: translateX(-50%) scale(0.7);
-            max-width: 280px;
-            width: 60%;
+            max-width: 280px; width: 35%;
             opacity: 0;
             transition: opacity 1.5s ease, transform 1.5s ease;
             pointer-events: none;
             filter: drop-shadow(0 0 15px rgba(255, 77, 77, 0.4));
         }
-        body.stage-3 .ship-bg, body.stage-4 .ship-bg {
+        body.stage-3 .ship-bg, body.stage-4 .ship-bg { opacity: 0.3; transform: translateX(-50%) scale(1); }
+
+        /* Enjambre (Etapa 1): Esquina superior izquierda */
+        .enjambre-bg {
+            position: absolute;
+            top: 12%; left: 6%;
+            max-width: 200px; width: 22%;
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
+            filter: drop-shadow(0 0 12px rgba(255, 100, 100, 0.3));
+        }
+        body.stage-1 .enjambre-bg, body.stage-2 .enjambre-bg, body.stage-3 .enjambre-bg, body.stage-4 .enjambre-bg {
             opacity: 0.35;
-            transform: translateX(-50%) scale(1);
+        }
+
+        /* Nave 2 (Etapa 2): Esquina superior derecha */
+        .nave2-bg {
+            position: absolute;
+            top: 15%; right: 7%;
+            max-width: 220px; width: 24%;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            pointer-events: none;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+        }
+        body.stage-2 .nave2-bg, body.stage-3 .nave2-bg, body.stage-4 .nave2-bg {
+            opacity: 0.4;
+        }
+
+        /* Anomalía (Etapa 3): Centro-izquierda / lateral medio */
+        .anomalia-bg {
+            position: absolute;
+            top: 50%; left: 8%;
+            transform: translateY(-50%);
+            max-width: 240px; width: 25%;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            pointer-events: none;
+            filter: drop-shadow(0 0 20px rgba(100, 200, 255, 0.4));
+        }
+        body.stage-3 .anomalia-bg, body.stage-4 .anomalia-bg {
+            opacity: 0.35;
+        }
+
+        /* Extraño (Etapa 4): Centro-derecha / lateral medio */
+        .extraño-bg {
+            position: absolute;
+            top: 52%; right: 8%;
+            transform: translateY(-50%);
+            max-width: 220px; width: 23%;
+            opacity: 0;
+            transition: opacity 2s ease;
+            pointer-events: none;
+            filter: drop-shadow(0 0 20px rgba(255, 50, 150, 0.45));
+        }
+        body.stage-4 .extraño-bg {
+            opacity: 0.4;
         }
 
         /* Efecto CRT */
@@ -217,7 +262,6 @@
             box-shadow: 0 0 15px rgba(255, 51, 51, 1);
         }
 
-        /* Textos principales */
         h1 {
             font-size: 1.6em;
             margin: 10px 0;
@@ -252,7 +296,6 @@
             z-index: 10;
         }
 
-        /* Tarjetas transparentes */
         .medal-card {
             background: rgba(10, 5, 5, 0.6);
             backdrop-filter: blur(4px);
@@ -282,14 +325,8 @@
             border-color: #ffd700;
             border-style: solid;
         }
-        .medal-card::before {
-            top: -2px; left: -2px;
-            border-width: 2px 0 0 2px;
-        }
-        .medal-card::after {
-            bottom: -2px; right: -2px;
-            border-width: 0 2px 2px 0;
-        }
+        .medal-card::before { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+        .medal-card::after { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
 
         .medal-card img {
             width: 75px;
@@ -358,9 +395,7 @@
             transition: transform 0.3s ease;
         }
 
-        .modal-overlay.active .modal-box {
-            transform: scale(1);
-        }
+        .modal-overlay.active .modal-box { transform: scale(1); }
 
         .modal-box h3 {
             color: #ffd700;
@@ -398,30 +433,25 @@
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
         }
 
-        @media (max-width: 600px) {
-            .medals-container {
-                gap: 10px;
-            }
-            .medal-card {
-                width: 115px;
-                padding: 8px;
-            }
-            .medal-card img {
-                width: 65px;
-                height: 65px;
-            }
-            .ship-bg, .atlas-bg {
-                max-width: 210px;
-            }
+        /* --- MEDIA QUERY PARA MÓVILES (Mantiene posiciones compactas) --- */
+        @media (max-width: 768px) {
+            .medals-container { gap: 10px; }
+            .medal-card { width: 115px; padding: 8px; }
+            .medal-card img { width: 65px; height: 65px; }
+            
+            /* Reacomodar en móvil para que no se amontonen feo */
+            .enjambre-bg { top: 10%; left: 5%; max-width: 120px; }
+            .nave2-bg { top: 15%; right: 5%; max-width: 130px; }
+            .anomalia-bg { top: 35%; left: 4%; max-width: 130px; }
+            .extraño-bg { top: 60%; right: 4%; max-width: 120px; }
+            .ship-bg, .atlas-bg { max-width: 180px; }
+            
             .planet-container {
                 width: 340px;
                 height: 340px;
                 bottom: -130px;
             }
-            /* Ocultar algunos elementos extra en móviles para evitar saturación visual en pantallas chicas */
-            .moon-3, .moon-4, .distant-planet-1, .distant-planet-2 {
-                display: none;
-            }
+            .moon-3, .moon-4, .distant-planet-1, .distant-planet-2 { display: none; }
         }
     </style>
 </head>
@@ -429,15 +459,24 @@
 
     <!-- Elementos dinámicos del fondo espacial -->
     <div class="space-bg">
+        <!-- Elementos distribuidos por toda la pantalla -->
+        <img src="medallas/enjambre.png" alt="Enjambre" class="enjambre-bg">
+        <img src="medallas/nave2.png" alt="Nave Secundaria" class="nave2-bg">
+        <img src="medallas/anomalia.png" alt="Anomalía Espacial" class="anomalia-bg">
+        <img src="medallas/extraño.png" alt="Objeto Extraño" class="extraño-bg">
+        
+        <!-- Recursos centrales -->
         <img src="medallas/atlas.png" alt="Atlas de fondo" class="atlas-bg">
         <img src="medallas/nave.png" alt="Nave de fondo" class="ship-bg">
-        <!-- Lunas y planetas distantes para rellenar pantallas de PC -->
+        
+        <!-- Lunas y planetas distantes -->
         <div class="moon-1"></div>
         <div class="moon-2"></div>
         <div class="moon-3"></div>
         <div class="moon-4"></div>
         <div class="distant-planet-1"></div>
         <div class="distant-planet-2"></div>
+        
         <!-- Planeta oceánico rojo -->
         <div class="planet-container">
             <div class="planet">

@@ -12,11 +12,11 @@
 
     :root {
       --bg-dark: #010103;
-      --card-bg: rgba(6, 9, 16, 0.95);
+      --card-bg: #04070d;
       --neon-red: #ff004c;
       --neon-gold: #ffaa00;
       --neon-green: #00ff66;
-      --glow-red: 0 0 25px rgba(255, 0, 76, 0.9), inset 0 0 15px rgba(255, 0, 76, 0.5);
+      --glow-red: 0 0 20px rgba(255, 0, 76, 0.6), inset 0 0 10px rgba(255, 0, 76, 0.3);
       --glow-gold: 0 0 15px rgba(255, 170, 0, 0.5);
       --glow-green: 0 0 18px rgba(0, 255, 102, 0.7);
       --text-main: #f2e3c6;
@@ -36,24 +36,18 @@
       overflow-x: hidden;
     }
 
-    /* MARCO EXTERIOR DE LA PANTALLA */
     .screen-frame {
       position: fixed;
-      top: 10px;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
+      top: 10px; left: 10px; right: 10px; bottom: 10px;
       border: 2px solid var(--neon-red);
       box-shadow: var(--glow-red);
       pointer-events: none;
       z-index: 998;
     }
 
-    /* ESQUINAS REALMENTE ABIERTAS (L-SHAPED, SIN RELLENO DE CUADRADO) */
     .screen-corner {
       position: absolute;
-      width: 18px;
-      height: 18px;
+      width: 18px; height: 18px;
       border: 2px solid var(--neon-gold);
       box-shadow: 0 0 10px var(--neon-gold);
       background: transparent !important;
@@ -63,53 +57,14 @@
     .sc-bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
     .sc-br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
 
-    /* EFECTO CRT CON LÍNEAS EQUILIBRADAS (NI MUY FINAS NI MUY GRUESAS) */
     body::before {
-      content: " ";
-      display: block;
-      position: fixed;
+      content: " "; display: block; position: fixed;
       top: 0; left: 0; bottom: 0; right: 0;
       background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), 
                   linear-gradient(90deg, rgba(255, 0, 76, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
       z-index: 999;
       background-size: 100% 4px, 4px 100%;
       pointer-events: none;
-    }
-
-    body::after {
-      content: " ";
-      display: block;
-      position: fixed;
-      top: 0; left: 0; bottom: 0; right: 0;
-      background: rgba(255, 0, 76, 0.04);
-      opacity: 0;
-      z-index: 1000;
-      pointer-events: none;
-      animation: crtFlicker 0.12s infinite;
-    }
-
-    @keyframes crtFlicker {
-      0% { opacity: 0.03; }
-      50% { opacity: 0.08; }
-      100% { opacity: 0.03; }
-    }
-
-    /* PARTÍCULAS DE FONDO */
-    .particle {
-      position: fixed;
-      background: var(--neon-gold);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: -1;
-      animation: floatParticle linear infinite;
-      opacity: 0.4;
-    }
-
-    @keyframes floatParticle {
-      0% { transform: translateY(105vh) translateX(0); opacity: 0; }
-      20% { opacity: 0.7; }
-      80% { opacity: 0.7; }
-      100% { transform: translateY(-10vh) translateX(50px); opacity: 0; }
     }
 
     .runic-text {
@@ -125,220 +80,234 @@
       border-bottom: 1px solid var(--neon-gold);
       box-shadow: var(--glow-gold);
       padding: 10px 4%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      border-radius: 6px;
-      z-index: 2;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; border-radius: 6px; z-index: 2;
     }
+
+    .nav-links { display: flex; gap: 10px; }
 
     .btn-nav {
       background: rgba(255, 170, 0, 0.1);
       color: var(--neon-gold);
       border: 1px solid var(--neon-gold);
       padding: 8px 14px;
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 700;
-      font-size: 0.75rem;
-      border-radius: 4px;
-      cursor: pointer;
-      text-decoration: none;
-      text-transform: uppercase;
-      box-shadow: var(--glow-gold);
-      transition: all 0.2s ease;
+      font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 0.75rem;
+      border-radius: 4px; cursor: pointer; text-decoration: none; text-transform: uppercase;
+      box-shadow: var(--glow-gold); transition: all 0.2s ease;
     }
-
     .btn-nav:hover { background: var(--neon-gold); color: #000; }
 
     .id-section {
-      background: var(--card-bg);
+      background: rgba(6, 9, 16, 0.95);
       border: 1px solid var(--border-hud);
-      border-radius: 8px; 
-      padding: 20px;
-      max-width: 1000px;
-      margin: 0 auto;
-      width: 100%;
-      z-index: 2;
-      box-shadow: 0 0 35px rgba(255, 0, 76, 0.2);
+      border-radius: 8px; padding: 20px;
+      max-width: 1000px; margin: 0 auto; width: 100%;
+      z-index: 2; box-shadow: 0 0 35px rgba(255, 0, 76, 0.2);
     }
 
     .section-title {
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 700; color: #fff;
-      text-transform: uppercase; letter-spacing: 2px;
-      font-size: 0.95rem;
-      margin-bottom: 20px; display: flex;
-      align-items: center; gap: 8px;
-      border-bottom: 1px solid var(--border-hud);
-      padding-bottom: 12px;
+      font-family: 'Orbitron', sans-serif; font-weight: 700; color: #fff;
+      text-transform: uppercase; letter-spacing: 2px; font-size: 0.95rem;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--border-hud); padding-bottom: 12px;
     }
-
     .section-title span { background: var(--neon-red); width: 12px; height: 12px; border-radius: 2px; box-shadow: var(--glow-red); }
 
     .id-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 25px; align-items: start;
     }
 
     .id-form { display: flex; flex-direction: column; gap: 12px; }
-
     .id-form label {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.75rem; color: var(--neon-gold);
+      font-family: 'Orbitron', sans-serif; font-size: 0.75rem; color: var(--neon-gold);
       letter-spacing: 1px; text-transform: uppercase;
     }
 
     .id-input, .id-select {
       background: rgba(255, 0, 76, 0.05);
-      border: 1px solid var(--neon-red);
-      box-shadow: 0 0 8px rgba(255, 0, 76, 0.3);
-      padding: 8px 12px; color: #fff;
-      font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;
-      border-radius: 4px; outline: none;
-      width: 100%;
+      border: 1px solid var(--neon-red); box-shadow: 0 0 8px rgba(255, 0, 76, 0.3);
+      padding: 8px 12px; color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;
+      border-radius: 4px; outline: none; width: 100%;
     }
-    .id-input:focus, .id-select:focus {
-      box-shadow: 0 0 15px rgba(255, 0, 76, 0.7);
-    }
-
     .id-select option { background: #04070d; color: #fff; }
 
     .file-input-wrapper { position: relative; margin-top: 3px; }
-
     .id-file-btn {
-      background: rgba(255, 170, 0, 0.1);
-      border: 1px solid var(--neon-gold);
-      color: var(--neon-gold);
-      padding: 8px; text-align: center; font-size: 0.85rem;
+      background: rgba(255, 170, 0, 0.1); border: 1px solid var(--neon-gold);
+      color: var(--neon-gold); padding: 8px; text-align: center; font-size: 0.85rem;
       border-radius: 4px; cursor: pointer; display: block;
-      transition: background 0.2s;
     }
-    .id-file-btn:hover { background: rgba(255, 170, 0, 0.2); }
-
-    #idFileInput { position: absolute; top: 0; left: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+    .file-input-real { position: absolute; top: 0; left: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
 
     .id-preview-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
 
     .style-selector {
-      display: flex; gap: 8px;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 5px 12px; border-radius: 20px;
-      border: 1px solid var(--border-hud);
+      display: flex; gap: 8px; background: rgba(0, 0, 0, 0.7);
+      padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border-hud);
     }
-
     .style-btn {
-      background: rgba(255, 0, 76, 0.1);
-      border: 1px solid var(--neon-red);
-      color: #fff; width: 26px; height: 26px;
-      border-radius: 50%; font-family: 'Orbitron', sans-serif;
-      font-size: 11px; font-weight: bold; cursor: pointer;
-      transition: all 0.2s ease; display: flex;
-      justify-content: center; align-items: center;
+      background: rgba(255, 0, 76, 0.1); border: 1px solid var(--neon-red);
+      color: #fff; width: 26px; height: 26px; border-radius: 50%;
+      font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: bold; cursor: pointer;
+      display: flex; justify-content: center; align-items: center;
     }
-
-    .style-btn:hover { background: var(--neon-red); color: #000; transform: scale(1.1); box-shadow: var(--glow-red); }
     .style-btn.active { background: var(--neon-gold); color: #000; border-color: var(--neon-gold); box-shadow: 0 0 8px var(--neon-gold); }
 
-    /* CONTENEDOR DE LA TARJETA PRINCIPAL */
     .id-card-display {
-      width: 100%; max-width: 380px; aspect-ratio: 580 / 330;
-      border-radius: 6px; padding: 0;
-      display: flex; flex-direction: column; position: relative;
-      overflow: hidden; transition: all 0.3s ease;
+      width: 100%; max-width: 440px; aspect-ratio: 580 / 330;
+      border-radius: 6px; padding: 0; display: flex; flex-direction: column;
+      position: relative; overflow: hidden; background-color: #04070d;
     }
 
+    /* THEME 0 */
     .id-card-display.theme-0 {
-      background: radial-gradient(circle at 10% 20%, rgba(255, 0, 76, 0.25) 0%, transparent 40%),
-                  radial-gradient(circle at 90% 80%, rgba(255, 170, 0, 0.15) 0%, transparent 50%),
-                  repeating-linear-gradient(0deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02) 1px, transparent 1px, transparent 12px), #04070d;
+      background-color: #04070d;
       border: 2px solid var(--neon-red); box-shadow: var(--glow-red);
     }
     .theme-0 .id-header-bar {
-      height: 11%; background: linear-gradient(90deg, #700018 0%, #ff004c 40%, #1a0808 100%);
-      border-bottom: 2px solid var(--neon-gold); display: flex; align-items: center; justify-content: space-between; padding: 0 3%; z-index: 3; position: relative;
+      height: 11%; background: linear-gradient(90deg, #40000e 0%, #ff004c 40%, #1a0808 100%);
+      border-bottom: 2px solid var(--neon-gold); display: flex; align-items: center; justify-content: space-between; padding: 0 3%; z-index: 3;
     }
     .theme-0 .id-card-body {
-      display: grid; grid-template-columns: 14% 1fr 28%;
-      gap: 2%; padding: 1% 3%; flex: 1; align-items: center; position: relative; z-index: 2; height: 89%;
+      display: grid; grid-template-columns: 24% 1fr 27%; gap: 1.5%; padding: 4px 8px; flex: 1; align-items: center; height: 89%; z-index: 2; background-color: #04070d;
     }
 
-    .id-card-display.theme-1 { background: radial-gradient(circle, #252830 0%, #0a0b0e 100%); border: 2px solid var(--neon-gold); box-shadow: var(--glow-gold); }
-    .theme-1 .id-header-bar { height: 11%; background: linear-gradient(90deg, var(--neon-red), var(--neon-gold)); border-bottom: 1px solid #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 3%; z-index: 3; position: relative; }
-    .theme-1 .id-card-body { display: grid; grid-template-columns: 1fr 28%; gap: 3%; padding: 1% 3%; flex: 1; align-items: center; height: 89%; position: relative; z-index: 2; }
+    /* THEME 1 */
+    .theme-1 .id-header-bar { height: 11%; background: linear-gradient(90deg, var(--neon-red), var(--neon-gold)); border-bottom: 1px solid #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 3%; z-index: 3; }
+    .theme-1 .id-card-body { display: grid; grid-template-columns: 1fr 27%; gap: 2%; padding: 4px 8px; flex: 1; align-items: center; height: 89%; z-index: 2; background-color: #0a0b0e; }
     .theme-1 .id-atlas-emblem-box { display: none; }
 
-    .id-card-display.theme-2 { background: #0d0e12; border: 2px solid #ff004c; box-shadow: var(--glow-red); }
-    .theme-2 .id-header-bar { height: 11%; background: #2b000b; border-bottom: 2px solid var(--neon-red); display: flex; align-items: center; justify-content: space-between; padding: 0 3%; z-index: 3; position: relative; }
-    .theme-2 .id-card-body { display: grid; grid-template-columns: 14% 1fr 28%; gap: 2%; padding: 1% 3%; flex: 1; align-items: center; height: 89%; position: relative; z-index: 2; }
+    /* THEME 2 - PREMIUM INVERTIDO */
+    .id-card-display.theme-2 {
+      background-color: #161004;
+      border: 2px solid var(--neon-red);
+      box-shadow: 0 0 25px rgba(255, 170, 0, 0.4), inset 0 0 12px rgba(255, 170, 0, 0.2);
+    }
+    .theme-2 .id-header-bar {
+      height: 11%; background: linear-gradient(90deg, #591b00 0%, var(--neon-gold) 50%, #402600 100%);
+      border-bottom: 2px solid var(--neon-red); display: flex; align-items: center; justify-content: space-between; padding: 0 3%; z-index: 3;
+    }
+    .theme-2 .id-header-title { color: #1a0500 !important; font-weight: 900; text-shadow: none; }
+    .theme-2 .id-header-glyphs { color: #301000 !important; font-weight: bold; }
+    .theme-2 .id-card-body {
+      display: grid; grid-template-columns: 24% 1fr 27%; gap: 1.5%; padding: 4px 8px; flex: 1; align-items: center; height: 89%; z-index: 2; background-color: #161004;
+    }
+    .theme-2 .citizen-corner-badge { background: #ffaa00; color: #000; border: 1px solid var(--neon-red); }
+    .theme-2 .citizen-corner-badge span { color: #ff004c; text-shadow: none; font-weight: bold; }
+    .theme-2 .id-field-block {
+      background: rgba(0, 0, 0, 0.85); border: 1px solid rgba(255, 170, 0, 0.4);
+      border-left: 2px solid var(--neon-red);
+    }
+    .theme-2 .id-field-label { color: #ffcc66; }
+    .theme-2 .id-field-value { color: #ffffff; }
+    .theme-2 .atlas-symbol-original { border: 1.5px solid var(--neon-gold); box-shadow: var(--glow-gold); background: rgba(255, 170, 0, 0.2); }
+    .theme-2 .atlas-symbol-original::after { border: 1px solid var(--neon-red); background: rgba(255, 0, 76, 0.3); }
+    .theme-2 .atlas-symbol-original::before { background: var(--neon-gold); box-shadow: 0 0 6px var(--neon-gold); }
+    .theme-2 .card-shield-emblem { border: 1px solid var(--neon-red); box-shadow: 0 0 8px rgba(255, 0, 76, 0.5); }
+    .theme-2 .card-badges-slot { border: 1px dashed var(--neon-red); background: rgba(0,0,0,0.9); }
+    .theme-2 .id-photo-container { border: 1.5px solid var(--neon-gold); box-shadow: var(--glow-gold); }
+    .theme-2 .id-photo-placeholder { color: rgba(255, 170, 0, 0.9); text-shadow: 0 0 5px var(--neon-gold); }
+    .theme-2 .hud-corner { border: 2px solid var(--neon-red); }
 
-    .id-card-display.theme-3 { background: repeating-linear-gradient(45deg, #0f0505, #0f0505 10px, #200a0a 10px, #200a0a 20px); border: 2px solid var(--neon-green); box-shadow: var(--glow-green); }
-    .theme-3 .id-header-bar { height: 11%; background: rgba(0, 255, 102, 0.15); border-bottom: 1px solid var(--neon-green); display: flex; align-items: center; justify-content: space-between; padding: 0 3%; z-index: 3; position: relative; }
-    .theme-3 .id-card-body { display: grid; grid-template-columns: 1fr 28%; gap: 3%; padding: 1% 3%; flex: 1; align-items: center; height: 89%; position: relative; z-index: 2; }
+    /* THEME 3 */
+    .id-card-display.theme-3 { background-color: #0f0505; border: 2px solid var(--neon-green); box-shadow: var(--glow-green); }
+    .theme-3 .id-header-bar { height: 11%; background: rgba(0, 255, 102, 0.15); border-bottom: 1px solid var(--neon-green); display: flex; align-items: center; justify-content: space-between; padding: 0 3%; z-index: 3; }
+    .theme-3 .id-card-body { display: grid; grid-template-columns: 1fr 27%; gap: 2%; padding: 4px 8px; flex: 1; align-items: center; height: 89%; z-index: 2; background-color: #0f0505; }
     .theme-3 .id-atlas-emblem-box { display: none; }
 
-    .id-header-title { font-family: 'Orbitron', sans-serif; font-weight: 900; color: #ffffff; font-size: clamp(0.48rem, 1.3vw, 0.68rem); letter-spacing: 1px; }
-    .id-header-glyphs { font-family: 'Share Tech Mono', monospace; color: rgba(255, 255, 255, 0.7); font-size: clamp(0.38rem, 0.95vw, 0.58rem); letter-spacing: 1px; }
+    .id-header-title { font-family: 'Orbitron', sans-serif; font-weight: 900; color: #ffffff; font-size: clamp(0.45rem, 1.1vw, 0.65rem); letter-spacing: 1px; }
+    .id-header-glyphs { font-family: 'Share Tech Mono', monospace; color: rgba(255, 255, 255, 0.7); font-size: clamp(0.35rem, 0.9vw, 0.55rem); letter-spacing: 1px; }
 
+    /* COLUMNA IZQUIERDA */
     .id-atlas-emblem-box { 
       display: flex; flex-direction: column; align-items: center; justify-content: center; 
-      gap: 4px;
-      border-right: 1px dashed rgba(255, 170, 0, 0.3); padding-right: 4px; height: 100%; z-index: 2; 
+      gap: 6px; border-right: 1px dashed rgba(255, 170, 0, 0.3); padding-right: 4px; height: 100%; z-index: 2; 
     }
 
     .atlas-symbol-original {
-      width: 100%; max-width: 20px; aspect-ratio: 1 / 1; border: 1.5px solid var(--neon-red); box-shadow: var(--glow-red);
+      width: 22px; height: 22px; border: 1.5px solid var(--neon-red); box-shadow: var(--glow-red);
       background: rgba(255, 0, 76, 0.15); display: flex; justify-content: center; align-items: center; position: relative;
     }
     .atlas-symbol-original::after { content: ''; width: 45%; height: 45%; border: 1px solid var(--neon-gold); background: rgba(255, 170, 0, 0.3); transform: rotate(45deg); position: absolute; }
-    .atlas-symbol-original::before { content: ''; width: 4px; height: 4px; background: var(--neon-red); border-radius: 50%; box-shadow: 0 0 6px var(--neon-red); z-index: 2; position: absolute; }
+    .atlas-symbol-original::before { content: ''; width: 4px; height: 4px; background: var(--neon-red); border-radius: 50%; box-shadow: 0 0 4px var(--neon-red); z-index: 2; position: absolute; }
 
     .card-shield-emblem {
-      width: 100%; max-width: 22px; aspect-ratio: 1 / 1;
-      border: 1px solid var(--neon-gold);
-      border-radius: 50%;
-      object-fit: cover;
-      box-shadow: 0 0 8px rgba(255, 170, 0, 0.5);
-      background: #000;
+      width: 22px; height: 22px; border: 1px solid var(--neon-gold);
+      border-radius: 50%; object-fit: cover; box-shadow: 0 0 5px rgba(255, 170, 0, 0.5); background: #000;
     }
+
+    .card-extra-slots { display: flex; flex-direction: column; align-items: center; width: 100%; }
+
+    .card-badges-slot {
+      width: 26px; height: 26px; border: 1px dashed var(--neon-gold); border-radius: 3px;
+      background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; overflow: hidden;
+    }
+    .card-badges-slot img { width: 100%; height: 100%; object-fit: contain; display: none; }
 
     .citizen-corner-badge {
-      position: absolute; bottom: 2px; right: 4px; font-family: 'Orbitron', sans-serif; font-size: 0.38rem;
-      letter-spacing: 0.5px; color: var(--neon-gold); background: rgba(4, 7, 13, 0.85); border: 1px solid rgba(255, 170, 0, 0.4); padding: 1px 3px; border-radius: 2px; z-index: 4;
+      position: absolute; bottom: 3px; right: 6px; font-family: 'Orbitron', sans-serif; font-size: 0.38rem;
+      letter-spacing: 0.5px; color: var(--neon-gold); background: rgba(4, 7, 13, 0.95); border: 1px solid rgba(255, 170, 0, 0.4); padding: 1px 3px; border-radius: 2px; z-index: 4;
     }
-    .citizen-corner-badge span { color: var(--neon-red); font-family: 'Share Tech Mono', monospace; margin-left: 2px; text-shadow: 0 0 5px var(--neon-red); }
+    .citizen-corner-badge span { color: var(--neon-red); font-family: 'Share Tech Mono', monospace; margin-left: 2px; text-shadow: 0 0 4px var(--neon-red); }
 
-    .id-info-grid { display: flex; flex-direction: column; gap: 1px; justify-content: space-between; height: 100%; z-index: 2; }
-    .id-field-block { 
-      background: rgba(255, 170, 0, 0.02); 
-      border: 1px solid rgba(255, 170, 0, 0.12); 
-      border-left: 1.5px solid var(--neon-gold); 
-      padding: 1px 3px; 
-      border-radius: 1px; 
-      line-height: 0.95; 
-      max-width: 155px; 
+    /* GRILLA CENTRAL */
+    .id-info-grid { 
+      display: flex; flex-direction: column; justify-content: space-between; 
+      height: 100%; width: 100%; z-index: 2; gap: 0.5px; 
     }
-    .id-field-label { font-family: 'Orbitron', sans-serif; font-size: clamp(0.2rem, 0.44vw, 0.26rem); color: var(--neon-gold); letter-spacing: 0.2px; text-transform: uppercase; display: block; }
-    .id-field-value { font-size: clamp(0.32rem, 0.68vw, 0.43rem); color: #ffffff; font-weight: 700; letter-spacing: 0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .id-field-block { 
+      background: rgba(4, 7, 13, 0.9); border: 1px solid rgba(255, 170, 0, 0.2); 
+      border-left: 2px solid var(--neon-gold); padding: 0.5px 3px; border-radius: 1px; width: 100%; 
+    }
+    .id-field-label { 
+      font-family: 'Orbitron', sans-serif; font-size: 0.23rem; color: var(--neon-gold); 
+      letter-spacing: 0.1px; text-transform: uppercase; display: block; line-height: 1; 
+    }
+    .id-field-value { 
+      font-size: 0.32rem; color: #ffffff; font-weight: 700; letter-spacing: 0.1px; 
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; line-height: 1.05; 
+    }
+
+    /* CONTENEDOR FOTO ID */
+    .id-photo-wrapper-box {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
 
     .id-photo-container {
-      width: 100%; max-height: 130px; aspect-ratio: 3 / 4; border: 1.5px solid var(--neon-red); box-shadow: var(--glow-red);
-      background: #000; position: relative; overflow: hidden; border-radius: 3px; display: flex; justify-content: center; align-items: center; margin: auto 0; z-index: 2;
+      width: 100%; 
+      height: 100%;
+      max-height: 110px;
+      aspect-ratio: 3 / 4; 
+      border: 1.5px solid var(--neon-red); 
+      box-shadow: var(--glow-red);
+      background: #000; 
+      position: relative; 
+      overflow: hidden; 
+      border-radius: 3px; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      z-index: 2;
     }
     .id-photo-container img { width: 100%; height: 100%; object-fit: cover; display: none; }
-    .id-photo-placeholder { font-family: monospace; font-size: clamp(0.32rem, 0.7vw, 0.42rem); color: rgba(255, 0, 76, 0.8); text-align: center; padding: 2px; text-shadow: 0 0 5px var(--neon-red); }
+    .id-photo-placeholder { font-family: monospace; font-size: clamp(0.26rem, 0.55vw, 0.35rem); color: rgba(255, 0, 76, 0.8); text-align: center; padding: 2px; text-shadow: 0 0 4px var(--neon-red); }
 
     .btn-download-card {
       background: linear-gradient(135deg, var(--neon-gold), #b37700); color: #000; border: none;
       font-family: 'Orbitron', sans-serif; font-weight: 700; padding: 10px 20px; font-size: 0.75rem;
       cursor: pointer; border-radius: 4px; letter-spacing: 1px; text-transform: uppercase;
-      box-shadow: 0 0 12px rgba(255, 170, 0, 0.4); width: 100%; max-width: 380px;
-      transition: filter 0.2s;
+      box-shadow: 0 0 12px rgba(255, 170, 0, 0.4); width: 100%; max-width: 440px; transition: filter 0.2s;
     }
     .btn-download-card:hover { filter: brightness(1.15); }
 
-    /* ESQUINAS INTERIORES EN L (HUD) */
     .hud-corner { position: absolute; width: 8px; height: 8px; border: 2px solid var(--neon-gold); pointer-events: none; z-index: 12; background: transparent; }
     .c1 { top: -2px; left: -2px; border-right: none; border-bottom: none; }
     .c2 { top: -2px; right: -2px; border-left: none; border-bottom: none; }
@@ -346,30 +315,15 @@
     .c4 { bottom: -2px; right: -2px; border-left: none; border-top: none; }
 
     .faction-shield-corner {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      z-index: 1000;
-      width: 55px;
-      height: 55px;
-      background: #090d16;
-      border: 2px solid var(--neon-gold);
-      border-radius: 50%;
-      padding: 2px;
-      box-shadow: 0 0 12px rgba(255, 170, 0, 0.4);
+      position: fixed; bottom: 25px; right: 25px; z-index: 1000;
+      width: 55px; height: 55px; background: #090d16; border: 2px solid var(--neon-gold);
+      border-radius: 50%; padding: 2px; box-shadow: 0 0 12px rgba(255, 170, 0, 0.4);
     }
-    .faction-shield-corner img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      display: block;
-    }
+    .faction-shield-corner img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
   </style>
 </head>
 <body>
 
-  <!-- MARCO EXTERIOR CON ESQUINAS EN L -->
   <div class="screen-frame">
     <div class="screen-corner sc-tl"></div>
     <div class="screen-corner sc-tr"></div>
@@ -377,29 +331,16 @@
     <div class="screen-corner sc-br"></div>
   </div>
 
-  <!-- PARTÍCULAS DINÁMICAS -->
-  <script>
-    for (let i = 0; i < 30; i++) {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      p.style.left = Math.random() * 100 + 'vw';
-      p.style.top = Math.random() * 100 + 'vh';
-      const size = Math.random() * 3 + 1;
-      p.style.width = size + 'px';
-      p.style.height = size + 'px';
-      p.style.animationDuration = (Math.random() * 10 + 5) + 's';
-      p.style.animationDelay = (Math.random() * 5) + 's';
-      document.body.appendChild(p);
-    }
-  </script>
-
   <div class="faction-shield-corner" title="Templarios del Atlas">
     <img src="escudo.png" alt="Escudo">
   </div>
 
   <nav>
     <div class="runic-text" style="font-size: 1rem; font-weight: 900;">Templarios del Atlas</div>
-    <a href="index.html" class="btn-nav">⬅ Holo-Mapa</a>
+    <div class="nav-links">
+      <a href="generador de titulo y rango.html" class="btn-nav">⚙️ Rango y Medallas</a>
+      <a href="index.html" class="btn-nav">⬅ Holo-Mapa</a>
+    </div>
   </nav>
 
   <div class="id-section">
@@ -414,29 +355,37 @@
           <label>Subir Foto de Perfil</label>
           <div class="file-input-wrapper">
             <span class="id-file-btn">Seleccionar Imagen</span>
-            <input type="file" id="idFileInput" accept="image/*">
+            <input type="file" id="idFileInput" class="file-input-real" accept="image/*">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Subir Imagen de Medallas (Miniatura)</label>
+          <div class="file-input-wrapper">
+            <span class="id-file-btn">Seleccionar Medallas</span>
+            <input type="file" id="badgesFileInput" class="file-input-real" accept="image/*">
           </div>
         </div>
 
         <div class="form-group">
           <label>Nombre del Ciudadano</label>
-          <input type="text" id="nameInput" class="id-input" placeholder="Ej: EXPLORADOR-77" value="EXPLORADOR-77" maxlength="22">
+          <input type="text" id="nameInput" class="id-input" placeholder="Ej: NECO" value="NECO" maxlength="22">
         </div>
 
         <div class="form-group">
           <label>Plataforma</label>
           <select id="platformInput" class="id-select">
+            <option value="SWITCH" selected>Switch</option>
             <option value="PC">PC</option>
             <option value="PLAYSTATION">PlayStation</option>
             <option value="XBOX">Xbox</option>
-            <option value="SWITCH">Switch</option>
           </select>
         </div>
 
         <div class="form-group">
           <label>Profesión</label>
           <select id="professionInput" class="id-select">
-            <option value="TEMPLARIO">Templario</option>
+            <option value="TEMPLARIO" selected>Templario</option>
             <option value="ARQUITECTO">Arquitecto</option>
             <option value="EXPLORADOR">Explorador</option>
             <option value="GUARDIÁN">Guardián</option>
@@ -452,8 +401,8 @@
         </div>
 
         <div class="form-group">
-          <label>Rango o Rol</label>
-          <input type="text" id="roleInput" class="id-input" placeholder="Ej: VIAJERO" value="VIAJERO GALÁCTICO" maxlength="25">
+          <label>Rango o Rol (Sincronizado Automáticamente)</label>
+          <input type="text" id="roleInput" class="id-input" value="CIVIL" readonly style="opacity: 0.8; cursor: not-allowed;">
         </div>
 
         <div class="form-group">
@@ -469,13 +418,13 @@
 
       <div class="id-preview-wrapper">
         <div class="style-selector">
-          <button class="style-btn active" onclick="setTheme(0)">0</button>
+          <button class="style-btn" onclick="setTheme(0)">0</button>
           <button class="style-btn" onclick="setTheme(1)">1</button>
-          <button class="style-btn" onclick="setTheme(2)">2</button>
+          <button class="style-btn active" onclick="setTheme(2)">2</button>
           <button class="style-btn" onclick="setTheme(3)">3</button>
         </div>
 
-        <div class="id-card-display theme-0" id="idCardDesign">
+        <div class="id-card-display theme-2" id="idCardDesign">
           <div class="hud-corner c1"></div><div class="hud-corner c2"></div>
           <div class="hud-corner c3"></div><div class="hud-corner c4"></div>
 
@@ -490,48 +439,56 @@
             <div class="id-atlas-emblem-box">
               <div class="atlas-symbol-original"></div>
               <img src="escudo.png" alt="Escudo Faction" class="card-shield-emblem">
+              
+              <div class="card-extra-slots">
+                <div class="card-badges-slot" title="Medallas">
+                  <img id="cardBadgesPreview" src="" alt="Medallas">
+                </div>
+              </div>
             </div>
 
             <div class="id-info-grid">
               <div class="id-field-block">
-                <span class="id-field-label">NAME / NOMBRE</span>
-                <span class="id-field-value runic-text" id="idCardName">EXPLORADOR-77</span>
+                <span class="id-field-label">NOMBRE</span>
+                <span class="id-field-value runic-text" id="idCardName">NECO</span>
               </div>
 
               <div class="id-field-block">
-                <span class="id-field-label">PLATFORM / PLATAFORMA</span>
-                <span class="id-field-value" id="idCardPlatform" style="color: var(--neon-gold);">PC</span>
+                <span class="id-field-label">PLATAFORMA</span>
+                <span class="id-field-value" id="idCardPlatform" style="color: var(--neon-gold);">SWITCH</span>
               </div>
 
               <div class="id-field-block">
-                <span class="id-field-label">PROFESSION / PROFESIÓN</span>
+                <span class="id-field-label">PROFESIÓN</span>
                 <span class="id-field-value runic-text" id="idCardProfession" style="color: var(--neon-green);">TEMPLARIO</span>
               </div>
 
               <div class="id-field-block">
-                <span class="id-field-label">RACE / RAZA</span>
-                <span class="id-field-value runic-text" id="idCardRace" style="color: var(--neon-red); text-shadow: 0 0 6px var(--neon-red);">ANOMALY</span>
+                <span class="id-field-label">RAZA</span>
+                <span class="id-field-value runic-text" id="idCardRace" style="color: var(--neon-red); text-shadow: none;">ANOMALY</span>
               </div>
 
               <div class="id-field-block">
-                <span class="id-field-label">RANK / RANGO</span>
-                <span class="id-field-value" id="idCardRole">VIAJERO GALÁCTICO</span>
+                <span class="id-field-label">RANGO</span>
+                <span class="id-field-value" id="idCardRole">CIVIL</span>
               </div>
 
               <div class="id-field-block">
-                <span class="id-field-label">AFFILIATION / AFILIACIÓN</span>
+                <span class="id-field-label">AFILIACIÓN</span>
                 <span class="id-field-value" style="color: var(--neon-gold);" id="idCardGroup">NEXUS PACIFICATOR</span>
               </div>
 
               <div class="id-field-block">
-                <span class="id-field-label">CODE / CÓDIGO</span>
+                <span class="id-field-label">CÓDIGO</span>
                 <span class="id-field-value" style="font-family: monospace;" id="idCardCode">NMS-4096-7782-X</span>
               </div>
             </div>
 
-            <div class="id-photo-container">
-              <span class="id-photo-placeholder" id="photoPlaceholder">FOTO ID</span>
-              <img src="" alt="ID Photo" id="idPhotoPreview">
+            <div class="id-photo-wrapper-box">
+              <div class="id-photo-container">
+                <span class="id-photo-placeholder" id="photoPlaceholder">FOTO ID</span>
+                <img src="" alt="ID Photo" id="idPhotoPreview">
+              </div>
             </div>
           </div>
         </div>
@@ -542,12 +499,45 @@
   </div>
 
   <script>
+    const rangosEstructura = [
+      { min: 0, nombre: "civil" },
+      { min: 5, nombre: "soldado de cobre" },
+      { min: 15, nombre: "soldado de plata" },
+      { min: 30, nombre: "soldado de oro" },
+      { min: 50, nombre: "templario templado" },
+      { min: 75, nombre: "templario honorario" },
+      { min: 105, nombre: "templario ejecutor" },
+      { min: 140, nombre: "santo" },
+      { min: 180, nombre: "líder de templo" }
+    ];
+
+    function sincronizarRangoAutomatico() {
+      const misionesGuardadas = localStorage.getItem('templarios_misiones_totales');
+      const misionesTotales = misionesGuardadas !== null ? parseInt(misionesGuardadas, 10) || 0 : 0;
+      const esLiderSupremo = localStorage.getItem('templarios_lider_supremo') === 'true';
+
+      let rangoActual = rangosEstructura[0].nombre;
+
+      if (esLiderSupremo) {
+        rangoActual = "líder de templo";
+      } else {
+        for (let i = 0; i < rangosEstructura.length; i++) {
+          if (misionesTotales >= rangosEstructura[i].min) {
+            rangoActual = rangosEstructura[i].nombre;
+          }
+        }
+      }
+
+      const rangoMayus = rangoActual.toUpperCase();
+      document.getElementById('idCardRole').innerText = rangoMayus;
+      document.getElementById('roleInput').value = rangoMayus;
+    }
+
     const inputsMap = [
       { input: 'nameInput', target: 'idCardName' },
       { input: 'platformInput', target: 'idCardPlatform' },
       { input: 'professionInput', target: 'idCardProfession' },
       { input: 'raceInput', target: 'idCardRace' },
-      { input: 'roleInput', target: 'idCardRole' },
       { input: 'groupInput', target: 'idCardGroup' },
       { input: 'codeInput', target: 'idCardCode' }
     ];
@@ -572,6 +562,19 @@
       }
     });
 
+    document.getElementById('badgesFileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const img = document.getElementById('cardBadgesPreview');
+          img.src = evt.target.result;
+          img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
     function setTheme(themeIndex) {
       const card = document.getElementById('idCardDesign');
       card.className = `id-card-display theme-${themeIndex}`;
@@ -584,10 +587,14 @@
       const card = document.getElementById('idCardDesign');
       html2canvas(card, { backgroundColor: null, scale: 2 }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `ID_ATLAS_${document.getElementById('nameInput').value}.png`;
+        link.download = `ID_ATLAS_${document.getElementById('nameInput').value || 'TEMPLARIO'}.png`;
         link.href = canvas.toDataURL();
         link.click();
       });
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      sincronizarRangoAutomatico();
     });
   </script>
 </body>

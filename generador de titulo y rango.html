@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>generador de rango y medallas - templarios del atlas</title>
+    <!-- librería html2canvas para la generación de imágenes de descarga -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #020204;
+            --panel-bg: rgba(8, 8, 12, 0.95);
+            --border-color: #f59e0b;
+            --accent-gold: #ffb703;
+            --accent-red: #ff1f3d;
+            --terminal-green: #00ff66;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* capa de líneas crt / skin por encima de todo */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 999;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--panel-bg);
+            border: 2px solid var(--accent-gold);
+            border-radius: 4px;
+            padding: 25px;
+            box-shadow: 0 0 30px rgba(255, 183, 3, 0.3), inset 0 0 20px rgba(255, 31, 61, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent-gold);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            text-transform: lowercase;
+            letter-spacing: 2px;
+            border-bottom: 1px dashed var(--accent-red);
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 183, 3, 0.6);
+        }
+
+        .section {
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid var(--accent-red);
+            box-shadow: 0 0 10px rgba(255, 31, 61, 0.2);
+        }
+
+        .section h2 {
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-transform: lowercase;
+            letter-spacing: 1px;
+        }
+
+        .info-box {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: lowercase;
+        }
+
+        .info-value {
+            color: var(--terminal-green);
+            font-weight: bold;
+            text-shadow: 0 0 6px rgba(0, 255, 102, 0.4);
+            text-transform: lowercase;
+        }
+
+        /* medallas - grilla limpia para tarjeta de exportación */
+        .badges-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+            background: rgba(2, 2, 4, 0.95);
+            border: 1px dashed var(--accent-gold);
+            border-radius: 4px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .badge-card {
+            background: rgba(255, 183, 3, 0.05);
+            border: 1px solid var(--accent-gold);
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge-card.locked {
+            opacity: 0.4;
+            border-color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .badge-card img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 8px rgba(255, 183, 3, 0.6));
+        }
+
+        .badge-card.locked img {
+            filter: grayscale(100%) brightness(40%);
+        }
+
+        /* resultados */
+        .export-card {
+            background: rgba(2, 2, 4, 0.95);
+            border: 1px dashed var(--accent-gold);
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .export-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: lowercase;
+            margin-bottom: 5px;
+        }
+
+        .export-display {
+            font-size: 1.1rem;
+            color: var(--accent-gold);
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 183, 3, 0.7);
+            text-transform: lowercase;
+        }
+
+        button, .back-button {
+            width: 100%;
+            background: linear-gradient(135deg, #ffb703, #d97706);
+            color: #020204;
+            border: 1px solid var(--accent-gold);
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: lowercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            font-family: 'Courier New', Courier, monospace;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            box-sizing: border-box;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        button:hover, .back-button:hover {
+            background: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(255, 183, 3, 0.8);
+        }
+
+        .back-button {
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--accent-gold);
+            border: 1px dashed var(--accent-gold);
+        }
+
+        /* panel creador */
+        .admin-trigger {
+            margin-top: 15px;
+            font-size: 0.75rem;
+            text-align: center;
+            color: var(--accent-red);
+            cursor: pointer;
+            text-decoration: underline;
+            text-shadow: 0 0 6px rgba(255, 31, 61, 0.5);
+            text-transform: lowercase;
+        }
+
+        .admin-panel {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 31, 61, 0.08);
+            border: 1px dashed var(--accent-red);
+            border-radius: 4px;
+        }
+
+        .admin-panel input {
+            width: 100%;
+            padding: 6px;
+            margin-bottom: 8px;
+            background: #000;
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.75rem;
+            box-sizing: border-box;
+            outline: none;
+            box-shadow: inset 0 0 5px rgba(255, 31, 61, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>templarios del atlas</h1>
+
+    <div class="section">
+        <h2>estado del registrador</h2>
+        <div class="info-box">misiones totales (local storage): <span id="txtMisiones" class="info-value">0</span></div>
+        <div class="info-box">autoridad de sistema: <span id="txtEstadoAuth" class="info-value">estándar</span></div>
+    </div>
+
+    <div class="section">
+        <h2>rango oficial asignado</h2>
+        <div class="export-card" id="tarjetaRangoExportar">
+            <div class="export-title">rango actual en sistema</div>
+            <div class="export-display" id="rangoAsignado">civil</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>medallas desbloqueadas</h2>
+        <!-- Contenedor exclusivo que incluye puramente las imágenes de las medallas -->
+        <div class="badges-container" id="tarjetaMedallasExportar"></div>
+        <div style="margin-top: 15px;">
+            <button id="btnDescargarMedallas">descargar medallas (imagen)</button>
+        </div>
+        
+        <div class="admin-trigger" id="toggleAdmin">protocolo de creador (líder de templo)</div>
+        <div class="admin-panel" id="adminPanel">
+            <input type="text" id="inputPass1" placeholder="clave: código">
+            <input type="text" id="inputPass2" placeholder="frase compacta: delcodigovinimos...">
+            <button id="btnVerificarCreador" style="background:var(--accent-red); color:#fff; border-color:var(--accent-red); text-shadow: 0 0 5px #000;">autenticar líder</button>
+        </div>
+    </div>
+
+    <!-- Botón para regresar al archivo tarjeta.html -->
+    <a href="tarjeta.html" class="back-button">← volver</a>
+</div>
+
+<script>
+    const rangosEstructura = [
+        { min: 0, nombre: "civil" },
+        { min: 5, nombre: "soldado de cobre" },
+        { min: 15, nombre: "soldado de plata" },
+        { min: 30, nombre: "soldado de oro" },
+        { min: 50, nombre: "templario templado" },
+        { min: 75, nombre: "templario honorario" },
+        { min: 105, nombre: "templario ejecutor" },
+        { min: 140, nombre: "santo" },
+        { min: 180, nombre: "líder de templo" }
+    ];
+
+    const medallasConfig = [
+        { id: 4, req: 10, img: "medallas/4.png" },
+        { id: 3, req: 25, img: "medallas/3.png" },
+        { id: 2, req: 50, img: "medallas/2.png" },
+        { id: 1, req: 100, img: "medallas/1.png" }
+    ];
+
+    function calcularSistema() {
+        const misionesGuardadas = localStorage.getItem('templarios_misiones_totales');
+        const misionesTotales = misionesGuardadas !== null ? parseInt(misionesGuardadas, 10) || 0 : 0;
+        
+        document.getElementById('txtMisiones').innerText = misionesTotales;
+
+        const esLiderSupremo = localStorage.getItem('templarios_lider_supremo') === 'true';
+
+        let rangoActual = rangosEstructura[0].nombre;
+        let misionesParaEvaluar = misionesTotales;
+
+        if (esLiderSupremo) {
+            rangoActual = "líder de templo";
+            misionesParaEvaluar = 999;
+            const elAuth = document.getElementById('txtEstadoAuth');
+            elAuth.innerText = "líder de templo (autenticado)";
+            elAuth.style.color = "var(--accent-gold)";
+            elAuth.style.textShadow = "0 0 8px rgba(255, 183, 3, 0.7)";
+        } else {
+            for (let i = 0; i < rangosEstructura.length; i++) {
+                if (misionesTotales >= rangosEstructura[i].min) {
+                    rangoActual = rangosEstructura[i].nombre;
+                }
+            }
+        }
+
+        document.getElementById('rangoAsignado').innerText = rangoActual;
+
+        const contenedorMedallas = document.getElementById('tarjetaMedallasExportar');
+        contenedorMedallas.innerHTML = '';
+
+        medallasConfig.forEach(m => {
+            const desbloqueada = misionesParaEvaluar >= m.req;
+            const card = document.createElement('div');
+            card.className = `badge-card ${desbloqueada ? '' : 'locked'}`;
+            card.innerHTML = `
+                <img src="${m.img}" alt="medalla ${m.id}" onerror="this.style.display='none'">
+            `;
+            contenedorMedallas.appendChild(card);
+        });
+    }
+
+    document.getElementById('toggleAdmin').addEventListener('click', () => {
+        const panel = document.getElementById('adminPanel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.getElementById('btnVerificarCreador').addEventListener('click', () => {
+        const p1 = document.getElementById('inputPass1').value.toLowerCase().replace(/\s+/g, '');
+        const p2 = document.getElementById('inputPass2').value.toLowerCase().replace(/[\s\.]+/g, '');
+
+        const claveCorrecta1 = "delcodigoalser";
+        const claveCorrecta2 = "delcodigovinimosyalcodigovolvimoselatlasnoolvida"; 
+
+        if (p1 === claveCorrecta1 && p2 === claveCorrecta2) {
+            localStorage.setItem('templarios_lider_supremo', 'true');
+            alert("acceso concedido. rango máximo de líder de templo sincronizado con éxito.");
+            calcularSistema();
+            document.getElementById('adminPanel').style.display = 'none';
+        } else {
+            alert("acceso denegado. las credenciales del gran rollo no coinciden.");
+        }
+    });
+
+    function exportarSeccionComoImagen(elementId, nombreArchivo) {
+        const elemento = document.getElementById(elementId);
+        html2canvas(elemento, {
+            backgroundColor: '#08080c',
+            scale: 2,
+            useCORS: true
+        }).then(canvas => {
+            const enlace = document.createElement('a');
+            enlace.download = `${nombreArchivo}.png`;
+            enlace.href = canvas.toDataURL('image/png');
+            enlace.click();
+        }).catch(err => {
+            alert("error al generar la imagen de exportación.");
+            console.error(err);
+        });
+    }
+
+    document.getElementById('btnDescargarMedallas').addEventListener('click', () => {
+        exportarSeccionComoImagen('tarjetaMedallasExportar', 'medallas_templarios');
+    });
+
+    window.addEventListener('DOMContentLoaded', calcularSistema);
+</script>
+
+</body>
+</html>

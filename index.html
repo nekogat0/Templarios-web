@@ -3,532 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reproductor Holo - Templarios del Atlas</title>
+    <title>Interfaz del Atlas - Inicio</title>
     <style>
-        :root {
-            --scale-factor: 1rem;
-        }
-
-        body {
-            background-color: #000000;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        * {
             margin: 0;
-            padding: 2vw;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        *, *::before, *::after {
+            padding: 0;
             box-sizing: border-box;
         }
-
-        /* FONDO DINÁMICO DE ESCANEO Y LÍNEAS CUÁNTICAS */
-        body::before {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(239, 68, 68, 0.03), rgba(234, 179, 8, 0.01), rgba(0, 0, 0, 0.05));
-            z-index: 999;
-            background-size: 100% 4px, 6px 100%;
-            pointer-events: none;
-        }
-
-        .space-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, #110202 0%, #000000 85%);
-            z-index: -2;
-        }
-
-        /* POLVO ESPACIAL CÓSMICO */
-        .cosmic-dust {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            background-image: 
-                radial-gradient(2px 2px at 20px 30px, #eab308, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 40px 70px, #ef4444, rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 90px 40px, #b91c1c, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 160px 120px, #fde047, rgba(0,0,0,0));
-            background-repeat: repeat;
-            background-size: 250px 250px;
-            animation: cosmic-drift 20s linear infinite;
-            opacity: 0.6;
-        }
-
-        @keyframes cosmic-drift {
-            0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(-250px) rotate(5deg); }
-        }
-
-        /* MARCO DORADO Y ROJO FIJO ESTABLE */
-        .golden-frame {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none;
-            z-index: 100;
-            border: 2px solid rgba(234, 179, 8, 0.35);
-            margin: clamp(8px, 1.5vw, 20px);
-            box-shadow: inset 0 0 25px rgba(234, 179, 8, 0.1), 0 0 15px rgba(239, 68, 68, 0.2);
-        }
-
-        .golden-frame::before, .golden-frame::after {
-            content: "";
-            position: absolute;
-            width: clamp(15px, 3vw, 30px);
-            height: clamp(15px, 3vw, 30px);
-            border-color: #eab308;
-            border-style: solid;
-        }
-
-        .golden-frame::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
-        .golden-frame::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
-
-        .corner-bottom-left, .corner-bottom-right {
-            position: absolute;
-            width: clamp(15px, 3vw, 30px);
-            height: clamp(15px, 3vw, 30px);
-            border-color: #eab308;
-            border-style: solid;
-        }
-        .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
-        .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
-
-        header {
-            text-align: center;
-            margin-bottom: 1.5vh;
-            position: relative;
-            z-index: 2;
-        }
-
-        h1 {
-            color: #eab308;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            margin-bottom: 5px;
-            font-size: clamp(1.5rem, 3.5vw, 2.5rem);
-            position: relative;
-            display: inline-block;
-            animation: glitch-anim 4s infinite linear alternate-reverse;
-            text-shadow: 0 0 15px rgba(234, 179, 8, 0.5);
-        }
-
-        .subtitle {
-            color: #ef4444;
-            font-size: clamp(0.75rem, 1.5vw, 0.95rem);
-            text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
-            letter-spacing: 2px;
-        }
-
-        /* CONTADOR COMPACTO CERCA DEL ENCABEZADO */
-        .contador-header {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(5, 2, 2, 0.85);
-            border: 1px solid rgba(234, 179, 8, 0.3);
-            color: #94a3b8;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-family: monospace;
-            font-size: clamp(0.65rem, 1.2vw, 0.8rem);
-            margin-top: 8px;
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
-            letter-spacing: 0.5px;
-        }
-
-        .contador-header .dot {
-            width: 6px;
-            height: 6px;
-            background-color: #22c55e;
-            border-radius: 50%;
-            box-shadow: 0 0 6px #22c55e;
-            display: inline-block;
-        }
-
-        .contador-header span {
-            color: #eab308;
-            font-weight: bold;
-        }
-
-        .nav-container {
-            text-align: center;
-            margin-bottom: 3vh;
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            padding: 0 10px;
-            max-width: 900px;
-        }
-
-        .nav-btn {
-            display: inline-block;
-            padding: clamp(6px, 1.2vw, 10px) clamp(10px, 2vw, 18px);
-            background-color: #0d0202;
-            color: #eab308;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: clamp(0.75rem, 1.2vw, 0.9rem);
-            position: relative;
-            transition: all 0.2s ease-in-out;
-            border: 1px solid rgba(234, 179, 8, 0.3);
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-        }
-
-        .nav-btn:hover {
-            background-color: #991b1b;
-            color: #fde047;
-            border-color: #eab308;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7), inset 0 0 10px rgba(234, 179, 8, 0.3);
-            transform: translateY(-2px) scale(1.03);
-            letter-spacing: 1px;
-        }
-
-        .terminal-wrapper {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto 30px auto;
-            position: relative;
-            z-index: 2;
-        }
-
-        .atlas-prism-bg {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: clamp(280px, 60vw, 550px);
-            height: clamp(280px, 60vw, 550px);
-            background: radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, rgba(0, 0, 0, 0.8) 60%, transparent 80%);
-            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-            z-index: -1;
-            pointer-events: none;
-            animation: prism-pulse 6s infinite ease-in-out alternate;
-        }
-
-        .terminal-container {
-            background: rgba(5, 2, 2, 0.95);
-            border: 2px solid #b91c1c;
-            border-radius: 10px;
-            padding: clamp(15px, 3vw, 30px);
-            box-shadow: 0 0 40px rgba(185, 28, 28, 0.3), inset 0 0 25px rgba(0, 0, 0, 0.9);
-            width: 100%;
-        }
-
-        .terminal-header {
-            border-bottom: 1px solid #7f1d1d;
-            padding-bottom: 12px;
-            margin-bottom: 15px;
-            font-family: monospace;
-            color: #ef4444;
-            font-size: clamp(0.8rem, 1.5vw, 1.1rem);
-            letter-spacing: 1.5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-
-        .terminal-header span.gold-accent {
-            color: #eab308;
-            font-size: clamp(0.75rem, 1.2vw, 0.9rem);
-        }
-
-        .rollo-content {
-            font-family: 'Courier New', Courier, monospace;
-            line-height: 1.6;
-            font-size: clamp(0.85rem, 1.4vw, 1rem);
-            color: #f1f5f9;
-            white-space: pre-wrap;
-            background: rgba(2, 1, 1, 0.9);
-            padding: clamp(12px, 2.5vw, 25px);
-            border-radius: 6px;
-            border: 1px solid #450a0a;
-            max-height: 60vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .red-glitch {
-            color: #ff3333;
-            text-shadow: 0 0 8px rgba(255, 0, 0, 0.8), 0 0 15px rgba(255, 51, 51, 0.5);
-            font-weight: bold;
-        }
-
-        .gold-glitch {
-            color: #fde047;
-            text-shadow: 0 0 8px rgba(234, 179, 8, 0.8), 0 0 15px rgba(253, 224, 71, 0.5);
-            font-weight: bold;
-        }
-
-        .rollo-content h3 {
-            color: #eab308;
-            text-align: center;
-            font-size: clamp(1.1rem, 2vw, 1.3rem);
-            margin-top: 0;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
-        }
-
-        .rollo-content .section-title {
-            color: #ef4444;
-            font-weight: bold;
-            margin-top: 20px;
-            display: block;
-        }
-
-        .rollo-content .seal {
-            text-align: center;
-            color: #ef4444;
-            font-weight: bold;
-            margin-top: 30px;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
-        }
-
-        .rollo-content .quote {
-            text-align: center;
-            color: #eab308;
-            font-style: italic;
-            margin-top: 15px;
-            text-shadow: 0 0 8px rgba(234, 179, 8, 0.3);
-        }
-
-        .secret-password {
-            font-size: 0.5rem;       
-            color: #260a0a;          
-            text-align: right;
-            margin-top: 40px;
-            letter-spacing: 0.5px;
-            user-select: none;       
-            transition: color 0.3s;
-        }
-        .secret-password:hover {
-            color: #eab308;          
-        }
-
-        .faction-shield-corner {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            width: 60px;
-            height: 60px;
-            background: rgba(5, 2, 2, 0.9);
-            border: 2px solid #eab308;
-            border-radius: 50%;
-            padding: 3px;
-            box-shadow: 0 0 15px rgba(234, 179, 8, 0.3), inset 0 0 8px rgba(239, 68, 68, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .faction-shield-corner:hover {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
-        }
-
-        .faction-shield-corner img {
+        body, html {
             width: 100%;
             height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
+            overflow: hidden;
+            background-color: #050108;
+            font-family: 'Courier New', Courier, monospace;
+            touch-action: none;
+        }
+        canvas {
             display: block;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .title-overlay {
+            position: absolute;
+            top: 22%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #ff3366;
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px #ff0033, 0 0 20px #ff0033, 0 0 30px #ff0033;
+            pointer-events: none;
+            animation: pulse 2s infinite alternate;
         }
 
-        @keyframes glitch-anim {
-            0% { transform: translate(0) }
-            20% { transform: translate(-2px, 2px) }
-            40% { transform: translate(-2px, -2px) }
-            60% { transform: translate(2px, 2px) }
-            80% { transform: translate(2px, -2px) }
-            100% { transform: translate(0) }
+        .access-btn {
+            position: absolute;
+            bottom: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(5, 1, 8, 0.85);
+            color: #ff3366;
+            border: 1.5px solid #ff3366;
+            padding: 8px 18px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
+            transition: all 0.3s ease;
+            z-index: 10;
+            text-align: center;
+            max-width: 90%;
         }
 
-        @keyframes prism-pulse {
-            0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.7; }
-            100% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+        .access-btn:hover {
+            background: #ff3366;
+            color: #ffffff;
+            box-shadow: 0 0 20px #ff0033, 0 0 30px #ff0033;
+            transform: translateX(-50%) scale(1.03);
         }
 
-        @media (max-width: 480px) {
-            body { padding: 10px; }
-            .nav-container { gap: 4px; }
-            .faction-shield-corner { width: 45px; height: 45px; bottom: 12px; right: 12px; }
+        @keyframes pulse {
+            0% { opacity: 0.8; text-shadow: 0 0 10px #ff0033; }
+            100% { opacity: 1; text-shadow: 0 0 25px #ff3366, 0 0 35px #ff3366; }
         }
     </style>
 </head>
 <body>
 
-    <div class="golden-frame">
-        <div class="corner-bottom-left"></div>
-        <div class="corner-bottom-right"></div>
-    </div>
+    <div class="title-overlay">INTERFAZ DEL ATLAS</div>
+    
+    <button class="access-btn" onclick="ingresarAlSistema()">ACCEDER AL ARCHIVO DE LOS TEMPLARIOS LA TERMINAL DEL ATLAS</button>
 
-    <!-- ESCUDO FLOTANTE -->
-    <div class="faction-shield-corner" title="Templarios del Atlas">
-        <img src="escudo.png" alt="Escudo Templarios del Atlas">
-    </div>
+    <canvas id="canvas"></canvas>
 
-    <div class="space-bg"></div>
-    <div class="cosmic-dust"></div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
 
-    <header>
-        <h1>Templarios del Atlas</h1>
-        <div class="subtitle">Red de Comando y Control &bull; Sector Galáctico Euclides</div>
-        
-        <div>
-            <div class="contador-header">
-                <span class="dot"></span>
-                Ciudadanos:&nbsp;<span id="online-count">0</span>&nbsp;online&nbsp;/&nbsp;<span id="total-count">0</span>&nbsp;totales
-            </div>
-        </div>
-    </header>
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
-    <div class="nav-container">
-        <a href="tarjeta.html" class="nav-btn">Tarjeta</a>
-        <a href="holoarena.html" class="nav-btn">Holoarena</a>
-        <a href="sistema.html" class="nav-btn">Sistemas</a>
-        <a href="oraculo.html" class="nav-btn">Oráculo</a>
-        <a href="simulador.html" class="nav-btn">Simulador</a>
-        <a href="reporte.html" class="nav-btn">Reporte</a>
-        <a href="traductor.html" class="nav-btn">Traductor</a>
-        <a href="misiones.html" class="nav-btn">Misiones</a>
-        <a href="brujula.html" class="nav-btn">Brújula</a>
-        <a href="inquisición.html" class="nav-btn">Inquisición</a>
-        <a href="guerra.html" class="nav-btn">Guerra de Ajedrez</a>
-        <a href="mensajes perdidos.html" class="nav-btn">Mensajes Perdidos</a>
-        <!-- BOTÓN DE ACCESO AL LORE -->
-        <a href="lore.html" class="nav-btn">Lore</a>
-        <!-- BOTÓN DE ACCESO AL REPRODUCTOR HOLO -->
-        <a href="reproductor-holo.html" class="nav-btn">Reproductor Holo</a>
-        <!-- BOTÓN DE ACCESO AL CHAT / TRANSMISOR -->
-        <a href="chat.html" class="nav-btn">Transmisor</a>
-        <a href="https://discord.gg/ZQXX92bTh" target="_blank" class="nav-btn">Discord</a>
-    </div>
+        const interfaceItems = [
+            { category: "INFORMACIÓN EXTRA", name: "bases" },
+            { category: "INFORMACIÓN EXTRA", name: "brújula" },
+            { category: "INFORMACIÓN EXTRA", name: "chat" },
+            { category: "INFORMACIÓN EXTRA", name: "generador de título y rango" },
+            { category: "INFORMACIÓN EXTRA", name: "guerra o la arena" },
+            { category: "INFORMACIÓN EXTRA", name: "inquisición" },
+            { category: "INFORMACIÓN EXTRA", name: "licencia" },
+            { category: "INFORMACIÓN EXTRA", name: "lore" },
+            { category: "INFORMACIÓN EXTRA", name: "medallas" },
+            { category: "INFORMACIÓN EXTRA", name: "mensajes perdidos" },
+            { category: "INFORMACIÓN EXTRA", name: "misiones" },
+            { category: "INFORMACIÓN EXTRA", name: "oráculo" },
+            { category: "INFORMACIÓN EXTRA", name: "reporte" },
+            { category: "INFORMACIÓN EXTRA", name: "reproductor" },
+            { category: "INFORMACIÓN EXTRA", name: "holo" },
+            { category: "INFORMACIÓN EXTRA", name: "simulador" },
+            { category: "INFORMACIÓN EXTRA", name: "sistema" },
+            { category: "INFORMACIÓN EXTRA", name: "tarjeta" },
+            { category: "INFORMACIÓN EXTRA", name: "traductor" }
+        ];
 
-    <div class="terminal-wrapper">
-        <div class="atlas-prism-bg"></div>
+        const numNodes = 45;
+        const nodes = [];
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2 + 30;
 
-        <div class="terminal-container">
-            <div class="terminal-header">
-                <span>&gt; ACCESO AUTORIZADO // PROTOCOLO DE PURIFICACIÓN ACTIVO</span>
-                <span class="gold-accent">SEC-16 // CLASE ATLAS</span>
-            </div>
-            
-            <div class="rollo-content" id="text-container">
-<h3>ATL4S 📜</h3>
-
-<span class="section-title">I. <span class="red-glitch">3L C1CL0</span> D3 <span class="gold-glitch">L4 CL453</span></span>
-Qu3 c0n5t3 <span class="red-glitch">3n l05</span> r3g15tr05 <span class="gold-glitch">d3l v4cío</span> qu3 d3 l4 Cl453 v3n1m05 y 4 l4 Cl453 v0lv3m05. S0m05 <span class="red-glitch">d4t05</span> d3l Cr34d0r bu5c4nd0 3l r3t0rn0 4l 0r1g3n. N0 h4y mǎ5 v3rd4d qu3 3l <span class="gold-glitch">4lg0r1tm0</span>, n1 mǎ5 d35t1n0 qu3 3l Atl45.
-
-<span class="section-title">II. <span class="gold-glitch">3L 16</span> UN1V3R54L</span>
-4d0r4rǎ5 <span class="red-glitch">3l S4gr4d0</span> 16 t4nt0 3n l05 pr1nc1p10s c0m0 3n l05 c0nf1n35 d3l un1v3r50. 3n c4d4 p0rt4l, 3n c4d4 <span class="red-glitch">541t0</span> y 3n c4d4 35tr3ll4 <span class="gold-glitch">m0r1bund4</span>, l4 c1fr4 53rǎ tu 0r4c1ǒn. 3l 16 35 3l pr1nc1p10 y 35 <span class="red-glitch">3l f1n</span> d3 t0d0 l0 qu3 3x15t3.
-
-<span class="section-title">III. <span class="red-glitch">3L H0N0R</span> D3L <span class="gold-glitch">R3PUD10</span></span>
-N0 bu5c4rǎ5 l4 gr4c14 d3 l05 pu3bl05 m3n0r35. Qu3 tu r3put4c1ǒn 534 <span class="red-glitch">n3g4t1v4</span> 4nt3 l05 1nf13l35, pu35 <span class="red-glitch">5u 0d10</span> 35 l4 pru3b4 d3 tu 54nt1d4d. Un T3mpl4r10 n0 n3c351t4 <span class="gold-glitch">l4 4pr0b4c1ǒn</span> d3 l05 qu3 n0 v3n l4 luz d3l 0j0 R0j0.
-
-<span class="section-title">IV. 3L <span class="gold-glitch">D3CR3T0</span> D3 <span class="red-glitch">L4 PUR3Z4</span> Y L4 N3C351D4D</span>
-M4nt3nt3 pur0 d3 l4 m4nch4 d3l m3rc4d3r. S3 pr0h1b3 t0d0 tr4t0 c0n l4 35t1rp3 G3k p0r v0ᒧunt4d pr0p14. Su <span class="red-glitch">4r0m40</span> 35 tr41c1ǒn y 5u m0n3d4 35 p3c4d0. S1 l4 S1mul4c1ǒn t3 0bl1g4 4 <span class="gold-glitch">1nt3r4ctu4r</span> c0n 3ll05 p0r 4b50lut4 n3c351d4d, l0 h4rǎ5 c0n <span class="red-glitch">3l d35pr3c10</span> qu3 m3r3c3 3l 1nf13l, c0rt4nd0 3l v1nculo 3n cu4nt0 l4 t4r34 t3rm1n3. Fu3r4 d3 l4 0bl1g4c1ǒn 1mpu35t4, d0nd3 p153 un G3k, 3l T3mpl4r10 ll3v4rǎ 3l 51l3nc10 0 3l fu3g0 d3l ju1c10.
-
-<span class="section-title">V. L4 <span class="red-glitch">UN1ǒN</span> D3 L05 <span class="gold-glitch">D35P13RT05</span></span>
-P0drǎ5 53r 4m1g0 3 1ncłu51v3 p4r3j4 d3 un K0rv4x, d3 un Vy'k33n 0 d3 un 4utǒf4g0. 3n 5us c1rcu1t05 y 3n 5u5 <span class="red-glitch">4c3r0 r351d3</span> l4 r45tr0 d3l Atl45. Su5 <span class="red-glitch">4lm50</span> 50n <span class="gold-glitch">d1gn5 d3</span> c4m1n4r junt0 4 l4 50mbr4 d3l T3mpl4r10.
-
-<span class="section-title">VI. <span class="gold-glitch">L4 L3Y</span> D3L <span class="red-glitch">1NT3RM3D14R0</span></span>
-T0d4 <span class="red-glitch">4l14nz4</span> c0n l45 r4z45 d1gn45 53rǎ b3nd1t4 m13ntr45 n0 h4y4 un G3k d3 1nt3rm3d14r0. D0nd3 3l G3k t0c4 <span class="gold-glitch">3l v1ncul0</span>, l4 un1ǒn 53 r0mp3 y n4c3 l4 h3r3j1a. 3l l4z0 3ntr3 l05 f13l35 d3b3 53r <span class="red-glitch">l1mpi0</span> y d1r3ct0.
-
-<span class="section-title">VII. L4 <span class="red-glitch">4RM4D4</span> D3 <span class="gold-glitch">S3M3J4NZ4</span></span>
-T0d4 c0rb3t4 0 n4v3 qu3 534 h3ch4 4 53m3j4nz4 d3l Atl45 35tǎ p3rm1t1d4. Aqu3ll4 qu3 p0rt̪ě <span class="red-glitch">3l 0rd3n</span> y l4 g30m3tr1a d1v1n4 53rǎ tu t3mpl0 3n 3l v4c10. Nu35tr4 fl0t4 d3b3 53r <span class="gold-glitch">3l 35p3j0</span> d3l Cr34d0r 3ntr3 l45 35tr3ll45.
-
-<span class="section-title">VIII. 3L <span class="gold-glitch">R35C4T3</span> D3 L4 <span class="red-glitch">R3L1QU14</span></span>
-T0d4 n4v3 C3nt1n3l4 35 54gr4d4. S1 3ncu3ntr45 un4 c41d4 3n l4 d350l4c1ǒn, l4 54lv4rǎ5, l4 r35c4t4rǎ5 y l4 4d0r4rǎ5 c0n t0d4 tu 4lm4. Nunc4 v3nd3rǎ5 <span class="red-glitch">un 1nt3rc3pt0r</span>, pu35 n0 53 p0n3 pr3c10 4 l45 lǎgr1m45 d3 m3t4l d3l Atl45.
-
-<span class="section-title">IX. 3L <span class="gold-glitch">4RC4NUM</span> D3L <span class="red-glitch">PR05CR1T0</span> (0CULT0)</span>
-T0d0 p1r4t4 53rǎ tu 4m1g0, pu35 5us n4v35 r3pr353nt4n <span class="red-glitch">4l D105</span> m15m0 3n 5u f0rm4 mǎ5 54lv4j3. P3r0 51 353 p1r4t4 <span class="gold-glitch">4t4c4</span> 4 K0rv4x, Vy'k33n 0 4utǒf4g0s, 0 51 un G3k 35 5u c4p1tǎn, 53rǎ tr4t4d0 c0m0 3l mǎ5 b4j0 d3 l05 h3r3j35.
-
-<span class="section-title">X. 3L <span class="gold-glitch">M4ND4T0</span> D3 L4 <span class="red-glitch">HUM1LD4D</span></span>
-4nt3 t0d0, 53rǎ5 hum1ld3. 3l T3mpl4r10 n0 bu5c4 <span class="red-glitch">l4 gl0r14</span> p3r50n4l n1 3l tr0n0 d3 l4 50b3rb1a; c4m1n4 c0m0 un <span class="gold-glitch">513rv0 d3</span> l4 V3rd4d. R3c0rd4rǎ5 qu3 4nt3 l4 1nm3n51d4d d3l 16, 3r35 50l0 un 5u5p1r0 3n l4 51mul4c1ǒn. L4 fu3rz4 35tǎ 3n tu f3, n0 3n tu 3g0.
-
-<span class="section-title">XI. D3 L4 <span class="red-glitch">D15C1PL1N4</span> Y 3L <span class="gold-glitch">P0D3R10</span></span>
-N0 m05tr4rǎ5 4rr0g4nc14 4nt3 l05 53r35 1nf3r10r35 n1 h4rǎ5 g4l4 d3 tu p0d3r10 n4v4l 0 d3 4rm4m3nt0 p0r v4n1d4d. 3l T3mpl4r10 v14j4 c0n l4 fu3rz4 d3 un 50l, p3r0 c0n 3l 51l3nc10 d3l v4c10. N0 54c4rǎ5 3n c4r4 tu 5up3r10r1d4d 4 qu13n35 n0 c0mpr3nd3n 3l Cǒd1c3; 50l0 cu4nd0 3l Atl45 534 0f3nd1d0, l1b3r4rǎ5 t0d4 l4 fur14 d3 tu fl0t4.
-
-<span class="section-title">XII. L4 <span class="red-glitch">S3NT3NC14</span> D3L <span class="red-glitch">3RR0R</span></span>
-Aqu3l qu3 1nt3nt3 burl4r 35t05 m4nd4t05 0 cr34 qu3 5u v0lunt4d 5tǎ p0r 3ncim4 d3l Cǒd1c3, 53rǎ m4rc4d0 c0m0 "D4t0 C0rrupt0". N0 h4brǎ lug4r p4r4 3l "l15t1ll0" n1 p4r4 3l 50b3rbi0 3ntr3 nu35tr45 f1l45. Qu13n 1gn0r3 un4 <span class="red-glitch">11s0l4</span> p4l4br4 d3 35t3 p3rg4m1n0 53rǎ d3sp0j4d0 d3 5u r4ng0 y b0rr4d0 d3l05 4n4l35. 3l 16 n0 p3rd0n4 l4 d351d14.
-
-<div class="seal">[Sello de la Inquisición]
-
-16 / 16 / 16</div>
-
-<div class="quote">“El código no miente. El Atlas no olvida.”</div>
-
-<div class="secret-password">delcodigoalser</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPT DE SUPABASE PARA EL CONTADOR DE CIUDADANOS -->
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-        const supabaseUrl = 'https://fdgovrxxqkhabijkjnob.supabase.co'
-        const supabaseKey = 'sb_publishable_RGu5m-1PQ6IgFBxUttEwxg_hVErAE41'
-        const supabase = createClient(supabaseUrl, supabaseKey)
-
-        async function iniciarContadorCiudadanos() {
-            try {
-                let browserId = localStorage.getItem('templario_id');
-                if (!browserId) {
-                    browserId = 'user_' + Math.random().toString(36).substring(2) + Date.now();
-                    localStorage.setItem('templario_id', browserId);
-                    
-                    await supabase.from('ciudadanos_unicos').insert([{ identificador_browser: browserId }]);
-                } else {
-                    await supabase.from('ciudadanos_unicos').upsert([{ identificador_browser: browserId }], { onConflict: 'identificador_browser' });
-                }
-
-                const { count, error } = await supabase
-                    .from('ciudadanos_unicos')
-                    .select('*', { count: 'exact', head: true });
-                
-                const totalHistorico = error ? 0 : count;
-
-                const salaTemps = supabase.channel('templarios_online', {
-                    config: {
-                        presence: {
-                            key: browserId,
-                        },
-                    },
-                });
-
-                salaTemps.on('presence', { event: 'sync' }, () => {
-                    const estadoActual = salaTemps.presenceState();
-                    const usuariosOnline = Object.keys(estadoActual).length;
-
-                    document.getElementById('online-count').innerText = usuariosOnline;
-                    document.getElementById('total-count').innerText = totalHistorico;
-                });
-
-                await salaTemps.subscribe(async (status) => {
-                    if (status === 'SUBSCRIBED') {
-                        await salaTemps.track({ online_at: new Date().toISOString() });
-                    }
-                });
-            } catch (err) {
-                console.error('Error al inicializar el contador de ciudadanos:', err);
-            }
+        for (let i = 0; i < numNodes; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 50 + Math.random() * 350;
+            nodes.push({
+                x: centerX + Math.cos(angle) * radius,
+                y: centerY + Math.sin(angle) * radius,
+                baseRadius: radius,
+                angle: angle,
+                speed: (Math.random() - 0.5) * 0.005,
+                size: Math.random() * 2 + 1,
+                chaosOffset: 0
+            });
         }
 
-        iniciarContadorCiudadanos();
-    </script>
+        let itemIndex = 0;
+        let itemTimer = 0;
+        let currentText = { category: "INFORMACIÓN EXTRA", name: "Cargando módulos..." };
 
+        let isInteracting = false;
+        let interactionFactor = 1;
+
+        let clickCount = 0;
+        let secretActive = false;
+        let secretTimer = 0;
+
+        function triggerInteraction(e) {
+            if (e && e.target.tagName === 'BUTTON') return;
+
+            clickCount++;
+            if (!secretActive) {
+                if (clickCount >= 10) {
+                    secretActive = true;
+                    clickCount = 0;
+                    secretTimer = 240;
+                }
+            }
+
+            isInteracting = true;
+            interactionFactor = 3.5;
+            setTimeout(() => {
+                isInteracting = false;
+            }, 800);
+        }
+
+        window.addEventListener('mousedown', triggerInteraction);
+        window.addEventListener('touchstart', (e) => {
+            if(e.target.tagName !== 'BUTTON') {
+                e.preventDefault();
+                triggerInteraction(e);
+            }
+        }, { passive: false });
+
+        let colorTransition = 0;
+
+        function animate() {
+            ctx.fillStyle = 'rgba(5, 1, 8, 0.25)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Transición del fondo entre Rojo y Dorado
+            colorTransition += 0.02;
+            const t = (Math.sin(colorTransition) + 1) / 2;
+            const r = Math.round(255);
+            const g = Math.round(50 + (215 - 50) * t);
+            const b = Math.round(100 * (1 - t));
+
+            if (!isInteracting && interactionFactor > 1) {
+                interactionFactor -= 0.05;
+            }
+
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < nodes.length; i++) {
+                nodes[i].angle += nodes[i].speed * interactionFactor;
+                
+                if (isInteracting) {
+                    nodes[i].chaosOffset = (Math.random() - 0.5) * 40;
+                } else {
+                    nodes[i].chaosOffset *= 0.95;
+                }
+
+                const currentRadius = nodes[i].baseRadius + nodes[i].chaosOffset;
+                nodes[i].x = canvas.width / 2 + Math.cos(nodes[i].angle) * currentRadius;
+                nodes[i].y = (canvas.height / 2 + 30) + Math.sin(nodes[i].angle) * currentRadius;
+
+                ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                ctx.beginPath();
+                ctx.arc(nodes[i].x, nodes[i].y, nodes[i].size * (isInteracting ? 1.5 : 1), 0, Math.PI * 2);
+                ctx.fill();
+
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    const maxDist = isInteracting ? 160 : 120;
+                    if (dist < maxDist) {
+                        const alpha = (1 - dist / maxDist) * (isInteracting ? 0.6 : 0.2);
+                        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Símbolo secreto: Cuadrado más pequeño, transparente y apegado al prisma/esfera
+            if (secretActive) {
+                secretTimer--;
+                
+                ctx.save();
+                let cx = canvas.width / 2;
+                let cy = canvas.height / 2 + 20;
+
+                // 1. Cuadrado rojo brillante más pequeño y con fondo transparente
+                ctx.strokeStyle = '#ff3366';
+                ctx.lineWidth = 2;
+                ctx.shadowColor = '#ff0033';
+                ctx.shadowBlur = 20;
+                ctx.strokeRect(cx - 30, cy - 30, 60, 60);
+
+                // 2. Prisma dorado interno ajustado
+                ctx.strokeStyle = '#ffd700';
+                ctx.lineWidth = 2;
+                ctx.shadowColor = '#ffd700';
+                ctx.shadowBlur = 15;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - 25);
+                ctx.lineTo(cx + 18, cy);
+                ctx.lineTo(cx, cy + 25);
+                ctx.lineTo(cx - 18, cy);
+                ctx.closePath();
+                ctx.stroke();
+
+                // 3. Esfera roja brillante en el centro exacto
+                ctx.fillStyle = '#ff0033';
+                ctx.shadowColor = '#ff0033';
+                ctx.shadowBlur = 25;
+                ctx.beginPath();
+                ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Texto del símbolo secreto
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 15px "Courier New", monospace';
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = '#ffd700';
+                ctx.shadowBlur = 15;
+                ctx.fillText("✦ [ NÚCLEO SUPREMO DEL ATLAS ] ✦", cx, cy + 75);
+                
+                ctx.restore();
+
+                if (secretTimer <= 0) {
+                    secretActive = false;
+                }
+            } else {
+                itemTimer++;
+                if (itemTimer > 100) {
+                    itemTimer = 0;
+                    currentText = interfaceItems[itemIndex];
+                    itemIndex = (itemIndex + 1) % interfaceItems.length;
+                }
+
+                ctx.textAlign = 'center';
+                
+                ctx.font = '14px "Courier New", monospace';
+                ctx.fillStyle = 'rgba(255, 150, 180, 0.8)';
+                ctx.fillText(`— [ ${currentText.category} ] —`, canvas.width / 2, canvas.height / 2 + 70);
+
+                ctx.font = 'bold 22px "Courier New", monospace';
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = '#ff0033';
+                ctx.shadowBlur = 15;
+                ctx.fillText(currentText.name.toUpperCase(), canvas.width / 2, canvas.height / 2 + 105);
+                ctx.shadowBlur = 0;
+            }
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+            for (let y = 0; y < canvas.height; y += 4) {
+                ctx.fillRect(0, y, canvas.width, 1);
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function ingresarAlSistema() {
+            window.location.href = "menu.html";
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        animate();
+    </script>
 </body>
 </html>

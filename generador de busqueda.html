@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Pósters - Orden Templaria</title>
+  <style>
+    /* --- RESET Y ESTILOS BASE (FONDO NEGRO Y RESPONSIVO) --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #000000;
+      color: #ffdd77;
+      font-family: 'Eurostile', 'Arial Black', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+
+    /* --- CONTENEDOR CRT Y EFECTO HOLOGRAMA / LÍNEAS RETRO --- */
+    .crt-wrapper {
+      position: relative;
+      background-color: #000000;
+      padding: 20px;
+      width: 100%;
+      max-width: 1200px;
+      overflow: hidden;
+    }
+
+    /* Filtro de líneas de escaneo (CRT / Retro TV / Holograma) */
+    .crt-wrapper::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), 
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      z-index: 10;
+      background-size: 100% 3px, 3px 100%;
+      pointer-events: none;
+    }
+
+    /* --- ESTILOS DE LA PÁGINA: ROJO Y DORADO NEÓN --- */
+    .wanted-generator-container {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      background: #050202;
+      border: 2px solid #ff0033;
+      padding: 25px;
+      box-shadow: 0 0 20px rgba(255, 0, 51, 0.4);
+      width: 100%;
+      border-radius: 4px;
+    }
+
+    .controls-panel, .preview-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .controls-panel h3 {
+      color: #ffd700;
+      border-bottom: 2px solid #ffd700;
+      padding-bottom: 5px;
+      text-transform: uppercase;
+      margin-top: 0;
+      text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+    }
+
+    .controls-panel label {
+      color: #ffd700;
+      font-size: 0.9em;
+    }
+
+    .controls-panel input[type="text"], 
+    .controls-panel select {
+      background: #150505;
+      border: 1px solid #ff0033;
+      color: #ffd700;
+      padding: 10px;
+      font-family: inherit;
+      border-radius: 2px;
+      width: 100%;
+    }
+
+    .controls-panel input[type="text"]:focus,
+    .controls-panel select:focus {
+      outline: none;
+      border-color: #ffd700;
+      box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    }
+
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 5px;
+      color: #ffdd77;
+      font-size: 0.9em;
+    }
+
+    .controls-panel input[type="file"] {
+      background: transparent;
+      border: none;
+      padding: 0;
+      color: #ffd700;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .button-group button, .menu-button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    #downloadBtn {
+      background: #ffd700;
+      color: #080808;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+    }
+
+    #downloadBtn:hover {
+      background: #fffbea;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.9);
+    }
+
+    #resetBtn {
+      background: #150505;
+      color: #ff0033;
+      border: 1px solid #ff0033;
+      box-shadow: 0 0 5px rgba(255, 0, 51, 0.5);
+    }
+
+    #resetBtn:hover {
+      background: #30010a;
+      color: #ff335c;
+      border-color: #ff335c;
+    }
+
+    .menu-button {
+      background: #150505;
+      color: #ffd700;
+      border: 1px solid #ffd700;
+      box-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
+      margin-top: 10px;
+    }
+
+    .menu-button:hover {
+      background: #2a0a0a;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+    }
+
+    #posterCanvas {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      border: 4px solid #1a0f09; 
+      align-self: center;
+      background: #d4c39f; 
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+      cursor: crosshair;
+    }
+
+    /* Adaptabilidad total para móviles y escritorios */
+    @media (max-width: 768px) {
+      .crt-wrapper {
+        padding: 5px;
+      }
+      .wanted-generator-container {
+        padding: 15px;
+        gap: 15px;
+      }
+      .button-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="crt-wrapper">
+    <div class="wanted-generator-container">
+      
+      <div class="controls-panel">
+        <h3>CONFIGURATOR WNT-01</h3>
+        
+        <label for="targetName">NOMBRE DEL OBJETIVO</label>
+        <input type="text" id="targetName" value="GHEK PIRATE X-12">
+
+        <label for="crimeType">DELITO</label>
+        <select id="crimeType">
+          <option value="PIRATERÍA COMERCIAL">PIRATERÍA COMERCIAL</option>
+          <option value="OPRESIÓN CIVIL">OPRESIÓN CIVIL</option>
+          <option value="TRAICIÓN">TRAICIÓN</option>
+          <option value="ENEMIGO TEMPLARIO">ENEMIGO TEMPLARIO</option>
+        </select>
+
+        <label for="targetDesc">DESCRIPCIÓN DEL FORAJIDO</label>
+        <input type="text" id="targetDesc" value="ALTURA 2.10M - ARMADO Y PELIGROSO">
+
+        <label for="bountyAmount">RECOMPENSA</label>
+        <input type="text" id="bountyAmount" value="950,000,000 Units">
+
+        <label>ESTADO</label>
+        <div class="radio-group">
+          <label><input type="radio" name="status" value="VIVO" checked> VIVO</label>
+          <label><input type="radio" name="status" value="MUERTO"> MUERTO</label>
+          <label><input type="radio" name="status" value="VIVO O MUERTO"> VIVO O MUERTO</label>
+        </div>
+
+        <label for="imageLoader">SUBIR IMAGEN DE CAPTURA</label>
+        <input type="file" id="imageLoader" accept="image/*">
+
+        <a href="menu.html" class="menu-button">VOLVER AL MENU</a>
+      </div>
+
+      <div class="preview-panel">
+        <canvas id="posterCanvas" width="800" height="1100"></canvas>
+        <div class="button-group">
+          <button id="downloadBtn">DESCARGAR PÓSTER (PNG)</button>
+          <button id="resetBtn">REINICIAR</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /* --- LÓGICA JAVASCRIPT DEL PÓSTER (ESTILO VIEJO OESTE) --- */
+    const canvas = document.getElementById('posterCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let targetImg = new Image();
+    targetImg.crossOrigin = "anonymous";
+    targetImg.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='350' height='350'><rect width='100%' height='100%' fill='%232a1a0f'/><text x='50%' y='50%' fill='%23c59b27' font-size='20' font-family='monospace' text-anchor='middle' dominant-baseline='middle'>SIN IMAGEN</text></svg>";
+
+    function drawPoster() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // 1. Fondo base: Tono pergamino envejecido
+      ctx.fillStyle = '#d9ccb0'; 
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Textura de fibras y suciedad sutil
+      ctx.save();
+      ctx.fillStyle = 'rgba(90, 60, 30, 0.12)';
+      for(let i = 0; i < 1200; i++) {
+        let px = (i * 73) % canvas.width;
+        let py = (i * 149) % canvas.height;
+        ctx.fillRect(px, py, 2, 2);
+      }
+
+      // Viñeta profunda de bordes quemados/oscuros
+      let gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 250, canvas.width/2, canvas.height/2, 650);
+      gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      gradient.addColorStop(0.65, 'rgba(70, 40, 15, 0.25)');
+      gradient.addColorStop(0.9, 'rgba(50, 25, 8, 0.65)');
+      gradient.addColorStop(1, 'rgba(25, 12, 3, 0.95)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Manchas de humedad y óxido
+      ctx.fillStyle = 'rgba(60, 30, 10, 0.2)';
+      ctx.beginPath(); ctx.arc(120, 150, 90, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(700, 950, 120, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(650, 200, 80, 0, Math.PI * 2); ctx.fill();
+
+      // Líneas de dobleces y arrugas del papel
+      ctx.strokeStyle = 'rgba(40, 20, 5, 0.25)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, 320); ctx.lineTo(canvas.width, 300);
+      ctx.moveTo(0, 780); ctx.lineTo(canvas.width, 810);
+      ctx.moveTo(220, 0); ctx.lineTo(190, canvas.height);
+      ctx.stroke();
+
+      // Bordes rasgados orgánicos
+      ctx.clearRect(0, 0, 25, 15);
+      ctx.clearRect(canvas.width - 25, 0, 25, 20);
+      ctx.clearRect(0, canvas.height - 20, 30, 20);
+      ctx.clearRect(canvas.width - 30, canvas.height - 25, 30, 25);
+      
+      ctx.restore();
+
+      // 2. Título "SE BUSCA"
+      ctx.fillStyle = '#1c0d06';
+      ctx.font = 'bold 115px "Impact", "Arial Black", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(90, 50, 20, 0.4)';
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 3;
+      ctx.fillText('SE BUSCA', canvas.width / 2, 175);
+      ctx.shadowColor = 'transparent';
+
+      // 3. Imagen del Objetivo
+      ctx.save();
+      ctx.filter = 'grayscale(100%) contrast(150%) brightness(85%)';
+      if (targetImg.complete && targetImg.naturalWidth !== 0) {
+        ctx.drawImage(targetImg, 225, 235, 350, 330);
+      }
+      ctx.restore();
+
+      // Marco de la foto
+      ctx.strokeStyle = '#3d1c0b';
+      ctx.lineWidth = 7;
+      ctx.strokeRect(225, 235, 350, 330);
+
+      // 4. Textos dinámicos en español
+      const nameVal = document.getElementById('targetName').value;
+      const crimeVal = document.getElementById('crimeType').value;
+      const descVal = document.getElementById('targetDesc').value;
+      const bountyVal = document.getElementById('bountyAmount').value;
+      const statusVal = document.querySelector('input[name="status"]:checked').value;
+
+      ctx.fillStyle = '#1c0d06';
+      ctx.font = 'bold 32px "Courier New", monospace';
+      ctx.fillText(nameVal.toUpperCase(), canvas.width / 2, 630);
+
+      ctx.font = 'bold 22px "Courier New", monospace';
+      ctx.fillStyle = '#7a2810';
+      ctx.fillText(crimeVal.toUpperCase(), canvas.width / 2, 675);
+
+      // Descripción leve del forajido
+      ctx.fillStyle = '#3a2212';
+      ctx.font = '16px "Courier New", monospace';
+      ctx.fillText(descVal.toUpperCase(), canvas.width / 2, 715);
+
+      // Estado del objetivo (Soporta Vivo, Muerto o Vivo o Muerto)
+      ctx.fillStyle = '#1c0d06';
+      ctx.font = 'bold 20px "Courier New", monospace';
+      ctx.fillText(`ESTADO: ${statusVal}`, canvas.width / 2, 760);
+
+      // Recompensa destacada
+      ctx.font = 'bold 45px "Courier New", monospace';
+      ctx.fillStyle = '#9c731e'; 
+      ctx.strokeStyle = '#1c0d06';
+      ctx.lineWidth = 1.5;
+      ctx.fillText(bountyVal, canvas.width / 2, 850);
+      ctx.strokeText(bountyVal, canvas.width / 2, 850);
+
+      // 5. Sello oficial adaptado al español
+      ctx.save();
+      ctx.translate(655, 925);
+      ctx.rotate(0.18);
+
+      ctx.strokeStyle = '#7a2810';
+      ctx.lineWidth = 4.5;
+      ctx.beginPath();
+      ctx.arc(0, 0, 85, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#7a2810';
+      ctx.font = 'bold 18px "Times New Roman", serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('ORDEN', 0, -28);
+      ctx.fillText('TEMPLARIA', 0, -5);
+      ctx.fillText('STELLARIS', 0, 18);
+
+      ctx.fillRect(-9, -12, 18, 34);
+      ctx.fillRect(-20, -4, 40, 16);
+
+      ctx.restore();
+    }
+
+    // Event Listeners de inputs
+    document.querySelectorAll('.controls-panel input[type="text"], .controls-panel select, .controls-panel input[name="status"]').forEach(element => {
+      element.addEventListener('input', drawPoster);
+      element.addEventListener('change', drawPoster);
+    });
+
+    // Manejo de carga de imagen local
+    document.getElementById('imageLoader').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          targetImg = new Image();
+          targetImg.onload = function() {
+            drawPoster();
+          };
+          targetImg.src = event.target.result;
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Botón de Reiniciar
+    document.getElementById('resetBtn').addEventListener('click', function() {
+      document.getElementById('targetName').value = "GHEK PIRATE X-12";
+      document.getElementById('crimeType').selectedIndex = 0;
+      document.getElementById('targetDesc').value = "ALTURA 2.10M - ARMADO Y PELIGROSO";
+      document.getElementById('bountyAmount').value = "950,000,000 Units";
+      document.querySelector('input[name="status"][value="VIVO"]').checked = true;
+      document.getElementById('imageLoader').value = "";
+      targetImg.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='350' height='350'><rect width='100%' height='100%' fill='%232a1a0f'/><text x='50%' y='50%' fill='%23c59b27' font-size='20' font-family='monospace' text-anchor='middle' dominant-baseline='middle'>SIN IMAGEN</text></svg>";
+      targetImg.onload = drawPoster;
+      drawPoster();
+    });
+
+    // Botón de Descarga
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+      const link = document.createElement('a');
+      link.download = 'poster-se-busca.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    // Render inicial
+    targetImg.onload = drawPoster;
+    if(targetImg.complete) {
+      drawPoster();
+    }
+  </script>
+</body>
+</html>

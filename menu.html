@@ -20,13 +20,14 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
         }
 
         *, *::before, *::after {
             box-sizing: border-box;
         }
 
-        /* FONDO DINÁMICO DE ESCANEO Y LÍNEAS CUÁNTICAS */
         body::before {
             content: " ";
             display: block;
@@ -40,15 +41,14 @@
 
         .space-bg {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             background: radial-gradient(circle at 50% 50%, #110202 0%, #000000 85%);
             z-index: -2;
         }
 
-        /* POLVO ESPACIAL CÓSMICO */
         .cosmic-dust {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none;
             z-index: -1;
             background-image: 
@@ -67,7 +67,6 @@
             100% { transform: translateY(-250px) rotate(5deg); }
         }
 
-        /* MARCO DORADO Y ROJO FIJO ESTABLE */
         .golden-frame {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -100,11 +99,25 @@
         .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
         .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
 
+        .secret-trigger-btn {
+            position: fixed;
+            bottom: 12px;
+            left: 12px;
+            width: 35px;
+            height: 35px;
+            background: transparent;
+            border: none;
+            opacity: 0;
+            z-index: 10005;
+            cursor: pointer;
+        }
+
         header {
             text-align: center;
             margin-bottom: 1.5vh;
             position: relative;
             z-index: 2;
+            width: 100%;
         }
 
         h1 {
@@ -126,7 +139,6 @@
             letter-spacing: 2px;
         }
 
-        /* CONTADOR COMPACTO CERCA DEL ENCABEZADO */
         .contador-header {
             display: inline-flex;
             align-items: center;
@@ -168,6 +180,7 @@
             gap: 8px;
             padding: 0 10px;
             max-width: 900px;
+            width: 100%;
         }
 
         .nav-btn {
@@ -346,6 +359,77 @@
             display: block;
         }
 
+        .hacker-popup {
+            position: fixed;
+            background: rgba(10, 2, 2, 0.92);
+            border: 2px solid #eab308;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.7), inset 0 0 15px rgba(234, 179, 8, 0.4);
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            z-index: 10000;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-radius: 4px;
+            backdrop-filter: blur(2px);
+            box-sizing: border-box;
+            max-width: 90vw;
+        }
+
+        .hacker-popup.giant-gek-alert {
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%);
+            width: 85vw;
+            max-width: 700px;
+            padding: 30px;
+            background: rgba(20, 2, 2, 0.96);
+            border: 3px solid #eab308;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.9), inset 0 0 30px rgba(234, 179, 8, 0.6);
+            z-index: 15000;
+            box-sizing: border-box;
+        }
+
+        .hacker-popup.giant-gek-alert h2 {
+            color: #ef4444;
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            margin: 0 0 15px 0;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+            letter-spacing: 2px;
+        }
+
+        .hacker-popup.giant-gek-alert p {
+            color: #fde047;
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            line-height: 1.5;
+            margin: 0;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(234, 179, 8, 0.6);
+        }
+
+        .countdown-timer {
+            font-family: monospace;
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            color: #ff3333;
+            margin-top: 15px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 12px rgba(255, 0, 0, 0.8);
+        }
+
+        @keyframes global-flash {
+            0% { filter: invert(0) hue-rotate(0deg); }
+            50% { filter: invert(0.15) hue-rotate(30deg) drop-shadow(0 0 10px red); }
+            100% { filter: invert(0) hue-rotate(0deg); }
+        }
+
+        .body-glitch-mode {
+            animation: global-flash 0.3s infinite alternate;
+        }
+
         @keyframes glitch-anim {
             0% { transform: translate(0) }
             20% { transform: translate(-2px, 2px) }
@@ -374,7 +458,16 @@
         <div class="corner-bottom-right"></div>
     </div>
 
-    <!-- ESCUDO FLOTANTE -->
+    <button class="secret-trigger-btn" id="secret-trigger" title="Acceso Oculto"></button>
+
+    <audio id="audio-alarma" preload="auto" loop>
+        <source src="musica/alarma.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="audio-alarma2" preload="auto" loop>
+        <source src="musica/alarma2.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="faction-shield-corner" title="Templarios del Atlas">
         <img src="escudo.png" alt="Escudo Templarios del Atlas">
     </div>
@@ -383,8 +476,8 @@
     <div class="cosmic-dust"></div>
 
     <header>
-        <h1>Templarios del Atlas</h1>
-        <div class="subtitle">Red de Comando y Control &bull; Sector Galáctico Euclides</div>
+        <h1 id="main-title">Templarios del Atlas</h1>
+        <div class="subtitle" id="main-subtitle">Red de Comando y Control &bull; Sector Galáctico Euclides</div>
         
         <div>
             <div class="contador-header">
@@ -394,26 +487,24 @@
         </div>
     </header>
 
-    <div class="nav-container">
-        <a href="tarjeta.html" class="nav-btn">Tarjeta</a>
-        <a href="holoarena.html" class="nav-btn">Holoarena</a>
-        <a href="sistema.html" class="nav-btn">Sistemas</a>
-        <a href="oraculo.html" class="nav-btn">Oráculo</a>
-        <a href="simulador.html" class="nav-btn">Simulador</a>
-        <a href="reporte.html" class="nav-btn">Reporte</a>
-        <a href="traductor.html" class="nav-btn">Traductor</a>
-        <a href="misiones.html" class="nav-btn">Misiones</a>
-        <a href="brujula.html" class="nav-btn">Brújula</a>
-        <a href="inquisición.html" class="nav-btn">Inquisición</a>
-        <a href="guerra.html" class="nav-btn">Guerra de Ajedrez</a>
-        <a href="mensajes perdidos.html" class="nav-btn">Mensajes Perdidos</a>
-        <!-- BOTÓN DE ACCESO AL LORE -->
-        <a href="lore.html" class="nav-btn">Lore</a>
-        <!-- BOTÓN DE ACCESO AL REPRODUCTOR HOLO -->
-        <a href="reproductor-holo.html" class="nav-btn">Reproductor Holo</a>
-        <!-- BOTÓN DE ACCESO AL CHAT / TRANSMISOR -->
-        <a href="chat.html" class="nav-btn">Transmisor</a>
-        <a href="https://discord.gg/ZQXX92bTh" target="_blank" class="nav-btn">Discord</a>
+    <div class="nav-container" id="nav-menu">
+        <a href="tarjeta.html" class="nav-btn" data-original="Tarjeta">Tarjeta</a>
+        <a href="holoarena.html" class="nav-btn" data-original="Holoarena">Holoarena</a>
+        <a href="sistema.html" class="nav-btn" data-original="Sistemas">Sistemas</a>
+        <a href="oraculo.html" class="nav-btn" data-original="Oráculo">Oráculo</a>
+        <a href="simulador.html" class="nav-btn" data-original="Simulador">Simulador</a>
+        <a href="reporte.html" class="nav-btn" data-original="Reporte">Reporte</a>
+        <a href="traductor.html" class="nav-btn" data-original="Traductor">Traductor</a>
+        <a href="misiones.html" class="nav-btn" data-original="Misiones">Misiones</a>
+        <a href="brujula.html" class="nav-btn" data-original="Brújula">Brújula</a>
+        <a href="inquisición.html" class="nav-btn" data-original="Inquisición">Inquisición</a>
+        <a href="guerra.html" class="nav-btn" data-original="Guerra de Ajedrez">Guerra de Ajedrez</a>
+        <a href="mensajes perdidos.html" class="nav-btn" data-original="Mensajes Perdidos">Mensajes Perdidos</a>
+        <a href="lore.html" class="nav-btn" data-original="Lore">Lore</a>
+        <a href="reproductor-holo.html" class="nav-btn" data-original="Reproductor Holo">Reproductor Holo</a>
+        <a href="chat.html" class="nav-btn" data-original="Transmisor">Transmisor</a>
+        <a href="generador de busqueda.html" class="nav-btn" data-original="generador de busqueda">generador de busqueda</a>
+        <a href="https://discord.gg/ZQXX92bTh" target="_blank" class="nav-btn" data-original="Discord">Discord</a>
     </div>
 
     <div class="terminal-wrapper">
@@ -437,19 +528,19 @@ Qu3 c0n5t3 <span class="red-glitch">3n l05</span> r3g15tr05 <span class="gold-gl
 <span class="section-title">III. <span class="red-glitch">3L H0N0R</span> D3L <span class="gold-glitch">R3PUD10</span></span>
 N0 bu5c4rǎ5 l4 gr4c14 d3 l05 pu3bl05 m3n0r35. Qu3 tu r3put4c1ǒn 534 <span class="red-glitch">n3g4t1v4</span> 4nt3 l05 1nf13l35, pu35 <span class="red-glitch">5u 0d10</span> 35 l4 pru3b4 d3 tu 54nt1d4d. Un T3mpl4r10 n0 n3c351t4 <span class="gold-glitch">l4 4pr0b4c1ǒn</span> d3 l05 qu3 n0 v3n l4 luz d3l 0j0 R0j0.
 
-<span class="section-title">IV. 3L <span class="gold-glitch">D3CR3T0</span> D3 <span class="red-glitch">L4 PUR3Z4</span> Y L4 N3C351D4D</span>
-M4nt3nt3 pur0 d3 l4 m4nch4 d3l m3rc4d3r. S3 pr0h1b3 t0d0 tr4t0 c0n l4 35t1rp3 G3k p0r v0ᒧunt4d pr0p14. Su <span class="red-glitch">4r0m40</span> 35 tr41c1ǒn y 5u m0n3d4 35 p3c4d0. S1 l4 S1mul4c1ǒn t3 0bl1g4 4 <span class="gold-glitch">1nt3r4ctu4r</span> c0n 3ll05 p0r 4b50lut4 n3c351d4d, l0 h4rǎ5 c0n <span class="red-glitch">3l d35pr3c10</span> qu3 m3r3c3 3l 1nf13l, c0rt4nd0 3l v1nculo 3n cu4nt0 l4 t4r34 t3rm1n3. Fu3r4 d3 l4 0bl1g4c1ǒn 1mpu35t4, d0nd3 p153 un G3k, 3l T3mpl4r10 ll3v4rǎ 3l 51l3nc10 0 3l fu3g0 d3l ju1c10.
+<span class="section-title">IV. IV. 3L <span class="gold-glitch">D3CR3T0</span> D3 <span class="red-glitch">L4 PUR3Z4</span> Y L4 N3C351D4D</span>
+M4nt3nt3 pur0 d3 l4 m4nch4 d3l m3rc4d3r. S3 pr0h1b3 t0d0 tr4t0 c0n l4 35t1rp3 G3k p0r v0ᒧunt4d pr0p14. Su <span class="red-glitch">4r0m40</span> 35 tr41c1ǒn y 5u m0n3d4 35 p3c4d0. S1 l4 S1mul4c1ǒn t3 0bl1g4 4 <span class="gold-glitch">1nt3r4ctu4r</span> c0n 3ll05 p0r 4b50lut4 n3c351d4d, l0 h4rǎ5 c0n <span class="red-glitch">3l d35pr3c10</span> qu3 m3r3c3 3l 1nf13l, c0rt4nd0 3l v1nculo 3n cu4nt0 l4 t4r34 t3rm1n3. Fu3r4 d3 l4 0bl1g4c1ǒn 1mpu35t4, d0nd3 p153 un G3k, 3l T3mpl4r10 ll3v4rǎ 3l 51l3nc10 0 l4 f3rg0 d3l ju1c10.
 
 <span class="section-title">V. L4 <span class="red-glitch">UN1ǒN</span> D3 L05 <span class="gold-glitch">D35P13RT05</span></span>
-P0drǎ5 53r 4m1g0 3 1ncłu51v3 p4r3j4 d3 un K0rv4x, d3 un Vy'k33n 0 d3 un 4utǒf4g0. 3n 5us c1rcu1t05 y 3n 5u5 <span class="red-glitch">4c3r0 r351d3</span> l4 r45tr0 d3l Atl45. Su5 <span class="red-glitch">4lm50</span> 50n <span class="gold-glitch">d1gn5 d3</span> c4m1n4r junt0 4 l4 50mbr4 d3l T3mpl4r10.
+P0drǎ5 53r 4m1g0 3 1ncłu51v3 p4r3j4 d3 un K0rv4x, d3 un Vy'k33n 0 d3 un 4utǒf4g0. 3n 5us c1rcu1t0s y 3n 5u5 <span class="red-glitch">4c3r0 r351d3</span> l4 r45tr0 d3l Atl45. Su5 <span class="red-glitch">4lm50</span> 50n <span class="gold-glitch">d1gn5 d3</span> c4m1n4r junt0 4 l4 50mbr4 d3l T3mpl4r10.
 
 <span class="section-title">VI. <span class="gold-glitch">L4 L3Y</span> D3L <span class="red-glitch">1NT3RM3D14R0</span></span>
 T0d4 <span class="red-glitch">4l14nz4</span> c0n l45 r4z45 d1gn45 53rǎ b3nd1t4 m13ntr45 n0 h4y4 un G3k d3 1nt3rm3d14r0. D0nd3 3l G3k t0c4 <span class="gold-glitch">3l v1ncul0</span>, l4 un1ǒn 53 r0mp3 y n4c3 l4 h3r3j1a. 3l l4z0 3ntr3 l05 f13l35 d3b3 53r <span class="red-glitch">l1mpi0</span> y d1r3ct0.
 
 <span class="section-title">VII. L4 <span class="red-glitch">4RM4D4</span> D3 <span class="gold-glitch">S3M3J4NZ4</span></span>
-T0d4 c0rb3t4 0 n4v3 qu3 534 h3ch4 4 53m3j4nz4 d3l Atl45 35tǎ p3rm1t1d4. Aqu3ll4 qu3 p0rt̪ě <span class="red-glitch">3l 0rd3n</span> y l4 g30m3tr1a d1v1n4 53rǎ tu t3mpl0 3n 3l v4c10. Nu35tr4 fl0t4 d3b3 53r <span class="gold-glitch">3l 35p3j0</span> d3l Cr34d0r 3ntr3 l45 35tr3ll45.
+T0d4 c0rb3t4 0 n4v3 qu3 534 h3ch4 4 53m3j4nz4 d3l Atl45 35tǎ p3rm1t1d4. Aqu3ll4 qu3 p0rt̪ě <span class="red-glitch">3l 0rd3n</span> y l4 g30m3tr1a d1v1n4 53rǎ tu t3mpl0 3n 3l v4c10. Nu35tr4 fl0t4 d3b3 53r <span class="gold-glitch">l4 35p3j0</span> d3l Cr34d0r 3ntr3 l45 35tr3ll45.
 
-<span class="section-title">VIII. 3L <span class="gold-glitch">R35C4T3</span> D3 L4 <span class="red-glitch">R3L1QU14</span></span>
+<span class="section-title">VIII. 3L <span class="gold-glitch">R35C4T3</span> D3 L4 <span class="red-glitch">R3LIQU14</span></span>
 T0d4 n4v3 C3nt1n3l4 35 54gr4d4. S1 3ncu3ntr45 un4 c41d4 3n l4 d350l4c1ǒn, l4 54lv4rǎ5, l4 r35c4t4rǎ5 y l4 4d0r4rǎ5 c0n t0d4 tu 4lm4. Nunc4 v3nd3rǎ5 <span class="red-glitch">un 1nt3rc3pt0r</span>, pu35 n0 53 p0n3 pr3c10 4 l45 lǎgr1m45 d3 m3t4l d3l Atl45.
 
 <span class="section-title">IX. 3L <span class="gold-glitch">4RC4NUM</span> D3L <span class="red-glitch">PR05CR1T0</span> (0CULT0)</span>
@@ -459,7 +550,7 @@ T0d0 p1r4t4 53rǎ tu 4m1g0, pu35 5us n4v35 r3pr353nt4n <span class="red-glitch">
 4nt3 t0d0, 53rǎ5 hum1ld3. 3l T3mpl4r10 n0 bu5c4 <span class="red-glitch">l4 gl0r14</span> p3r50n4l n1 3l tr0n0 d3 l4 50b3rb1a; c4m1n4 c0m0 un <span class="gold-glitch">513rv0 d3</span> l4 V3rd4d. R3c0rd4rǎ5 qu3 4nt3 l4 1nm3n51d4d d3l 16, 3r35 50l0 un 5u5p1r0 3n l4 51mul4c1ǒn. L4 fu3rz4 35tǎ 3n tu f3, n0 3n tu 3g0.
 
 <span class="section-title">XI. D3 L4 <span class="red-glitch">D15C1PL1N4</span> Y 3L <span class="gold-glitch">P0D3R10</span></span>
-N0 m05tr4rǎ5 4rr0g4nc14 4nt3 l05 53r35 1nf3r10r35 n1 h4rǎ5 g4l4 d3 tu p0d3r10 n4v4l 0 d3 4rm4m3nt0 p0r v4n1d4d. 3l T3mpl4r10 v14j4 c0n l4 fu3rz4 d3 un 50l, p3r0 c0n 3l 51l3nc10 d3l v4c10. N0 54c4rǎ5 3n c4r4 tu 5up3r10r1d4d 4 qu13n35 n0 c0mpr3nd3n 3l Cǒd1c3; 50l0 cu4nd0 3l Atl45 534 0f3nd1d0, l1b3r4rǎ5 t0d4 l4 fur14 d3 tu fl0t4.
+N0 m05tr4rǎ5 4rr0g4nc14 4nt3 l05 53r35 1nf3r10r35 n1 h4rǎ5 g4l4 d3 tu p0d3r10 n4v4l 0 d3 4rm4m3nt0 p0r v4n1d4d. 3l T3mpl4r10 v14j4 c0n l4 fu3rz4 d3 un 50l, p3r0 c0n 3l 51l3nc10 d3l v4c10. N0 54c4rǎ5 3n c4r4 tu 5up3r10rid4d 4 qu13n35 n0 c0mpr3nd3n 3l Cǒd1c3; 50l0 cu4nd0 3l Atl45 534 0f3nd1d0, l1b3r4rǎ5 t0d4 l4 fur14 d3 tu fl0t4.
 
 <span class="section-title">XII. L4 <span class="red-glitch">S3NT3NC14</span> D3L <span class="red-glitch">3RR0R</span></span>
 Aqu3l qu3 1nt3nt3 burl4r 35t05 m4nd4t05 0 cr34 qu3 5u v0lunt4d 5tǎ p0r 3ncim4 d3l Cǒd1c3, 53rǎ m4rc4d0 c0m0 "D4t0 C0rrupt0". N0 h4brǎ lug4r p4r4 3l "l15t1ll0" n1 p4r4 3l 50b3rbi0 3ntr3 nu35tr45 f1l45. Qu13n 1gn0r3 un4 <span class="red-glitch">11s0l4</span> p4l4br4 d3 35t3 p3rg4m1n0 53rǎ d3sp0j4d0 d3 5u r4ng0 y b0rr4d0 d3l05 4n4l35. 3l 16 n0 p3rd0n4 l4 d351d14.
@@ -475,13 +566,244 @@ Aqu3l qu3 1nt3nt3 burl4r 35t05 m4nd4t05 0 cr34 qu3 5u v0lunt4d 5tǎ p0r 3ncim4 d
         </div>
     </div>
 
-    <!-- SCRIPT DE SUPABASE PARA EL CONTADOR DE CIUDADANOS -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
         const supabaseUrl = 'https://fdgovrxxqkhabijkjnob.supabase.co'
         const supabaseKey = 'sb_publishable_RGu5m-1PQ6IgFBxUttEwxg_hVErAE41'
         const supabase = createClient(supabaseUrl, supabaseKey)
+
+        const errorMessages = [
+            "CRITICAL_ERROR: 0x8007000E - Memoria del Núcleo desbordada",
+            "SECURITY_BREACH: Acceso no autorizado detectado en el Sector 16",
+            "WARNING: El Núcleo de la Simulación está colapsando",
+            "DATA_CORRUPTION: Pérdida masiva de paquetes en el Anillo Atlas",
+            "FATAL EXCEPTION: El Sistema Gek ha interceptado las credenciales",
+            "ALERTA: Anomalía cuántica detectada en el terminal",
+            "ERROR 16: Desincronización total del Enlace Neuronal",
+            "SYSTEM FAILURE: Violación del protocolo de purificación"
+        ];
+
+        const glitchedNavTexts = [
+            "ERR_404", "VOID_ERR", "CORRUPT", "0x16_FAIL", "BAD_DAT", 
+            "NULL_REF", "SYS_DOWN", "FATAL_X", "ANOMALY", "LOST_SEG",
+            "BROKEN", "NO_LINK", "UNSAFE", "PARSER_E", "GLITCH", "BLOCKED"
+        ];
+
+        let eventActive = false;
+        let popupInterval = null;
+        let countdownInterval = null;
+        let staticPopupsRef = [];
+        let activePopupsRef = [];
+
+        function corromperNavegacion(activar) {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const mainTitle = document.getElementById('main-title');
+            const mainSubtitle = document.getElementById('main-subtitle');
+
+            if (activar) {
+                if (mainTitle) mainTitle.innerText = "3RR0R_G3K_SYS";
+                if (mainSubtitle) mainSubtitle.innerText = "F4LL0 T0T4L D3 R3D // 16:16:16";
+
+                navButtons.forEach(btn => {
+                    const randomWord = glitchedNavTexts[Math.floor(Math.random() * glitchedNavTexts.length)];
+                    btn.innerText = randomWord + "_" + Math.floor(Math.random() * 999);
+                });
+            } else {
+                if (mainTitle) mainTitle.innerText = "Templarios del Atlas";
+                if (mainSubtitle) mainSubtitle.innerText = "Red de Comando y Control • Sector Galáctico Euclides";
+
+                navButtons.forEach(btn => {
+                    const originalText = btn.getAttribute('data-original');
+                    if (originalText) btn.innerText = originalText;
+                });
+            }
+        }
+
+        function dispararEventoCorrupcion() {
+            if (eventActive) return;
+            eventActive = true;
+
+            const audioAlarma = document.getElementById('audio-alarma');
+            const audioAlarma2 = document.getElementById('audio-alarma2');
+            
+            if (audioAlarma) {
+                audioAlarma.currentTime = 0;
+                audioAlarma.play().catch(e => console.log("Audio alarma bloqueado:", e));
+            }
+            if (audioAlarma2) {
+                audioAlarma2.currentTime = 0;
+                audioAlarma2.play().catch(e => console.log("Audio alarma2 bloqueado:", e));
+            }
+
+            document.body.classList.add('body-glitch-mode');
+            corromperNavegacion(true);
+
+            const textContainer = document.getElementById('text-container');
+            const contenidoOriginalRollo = textContainer ? textContainer.innerHTML : "";
+
+            if (textContainer) {
+                textContainer.innerHTML = `
+<h3>⚠️ ALERTA DE INTRUSIÓN // PROTOCOLO DE DEFENSA ⚠️</h3>
+<span class="red-glitch">0X16000FF // ACCESO NO AUTORIZADO DETECTADO</span><br><br>
+El sistema ha detectado rastros de la Cofradía Gek intentando vulnerar el cortafuegos del sector.<br>
+<span class="gold-glitch">¡Templarios del Atlas, mantengan la posición y refuercen los nodos! ¡Civiles, escóndanse en zonas seguras!</span><br><br>
+16 / 16 / 16 / 16 / 16 / 16 / 16 / 16
+                `;
+            }
+
+            const giantAlert = document.createElement('div');
+            giantAlert.className = 'hacker-popup giant-gek-alert';
+            giantAlert.id = 'giant-alert-box';
+            giantAlert.innerHTML = `
+                <h2>🚨 ALERTA: INMINENTE INGRESO GEK 🚨</h2>
+                <p>Civiles, escóndanse. Templarios del Atlas, preparados. El cortafuegos está resistiendo el ataque.</p>
+                <div class="countdown-timer" id="countdown-display">02:00:00</div>
+            `;
+            document.body.appendChild(giantAlert);
+
+            let tiempoRestanteMs = 120000;
+            const tiempoInicio = Date.now();
+
+            countdownInterval = setInterval(() => {
+                const transcurrido = Date.now() - tiempoInicio;
+                let actualMs = Math.max(0, tiempoRestanteMs - transcurrido);
+
+                const minutos = Math.floor(actualMs / 60000).toString().padStart(2, '0');
+                const segundos = Math.floor((actualMs % 60000) / 1000).toString().padStart(2, '0');
+                const milisegundos = Math.floor((actualMs % 1000) / 10).toString().padStart(2, '0');
+
+                const timerEl = document.getElementById('countdown-display');
+                if (timerEl) {
+                    timerEl.innerText = `${minutos}:${segundos}:${milisegundos}`;
+                }
+
+                if (actualMs <= 0) {
+                    clearInterval(countdownInterval);
+                }
+            }, 50);
+
+            staticPopupsRef = [];
+            const coords = [
+                { top: '15vh', left: '5vw' },
+                { top: '70vh', left: '3vw' },
+                { top: '20vh', left: '75vw' }
+            ];
+
+            coords.forEach((pos, idx) => {
+                const sp = document.createElement('div');
+                sp.className = 'hacker-popup';
+                sp.style.top = pos.top;
+                sp.style.left = pos.left;
+                sp.style.width = '200px';
+                sp.style.fontSize = '0.7rem';
+                sp.style.borderColor = '#ef4444';
+                sp.innerText = `⚠️ ERROR_ESTÁTICO_0${idx+1}: INTRUSIÓN EN CURSO`;
+                document.body.appendChild(sp);
+                staticPopupsRef.push(sp);
+            });
+
+            activePopupsRef = [];
+            const numPopups = 4;
+
+            for (let i = 0; i < numPopups; i++) {
+                const p = document.createElement('div');
+                p.className = 'hacker-popup';
+                p.innerText = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+                
+                p.style.top = Math.random() * 80 + 10 + '%';
+                p.style.left = Math.random() * 80 + 10 + '%';
+                p.style.width = '220px';
+                p.style.fontSize = '0.75rem';
+                
+                document.body.appendChild(p);
+                activePopupsRef.push(p);
+            }
+
+            popupInterval = setInterval(() => {
+                activePopupsRef.forEach(p => {
+                    p.innerText = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+                    p.style.top = Math.random() * 80 + 10 + '%';
+                    p.style.left = Math.random() * 80 + 10 + '%';
+                });
+            }, 800);
+
+            setTimeout(() => {
+                clearInterval(popupInterval);
+                clearInterval(countdownInterval);
+                document.body.classList.remove('body-glitch-mode');
+                
+                if (audioAlarma) {
+                    audioAlarma.pause();
+                    audioAlarma.currentTime = 0;
+                }
+                if (audioAlarma2) {
+                    audioAlarma2.pause();
+                    audioAlarma2.currentTime = 0;
+                }
+
+                activePopupsRef.forEach(p => p.remove());
+                staticPopupsRef.forEach(sp => sp.remove());
+                activePopupsRef = [];
+                staticPopupsRef = [];
+                corromperNavegacion(false);
+
+                if (giantAlert) {
+                    giantAlert.className = 'hacker-popup giant-gek-alert';
+                    giantAlert.style.borderColor = '#22c55e';
+                    giantAlert.style.boxShadow = '0 0 50px rgba(34, 197, 94, 0.9), inset 0 0 30px rgba(34, 197, 94, 0.4)';
+                    giantAlert.innerHTML = `
+                        <h2 style="color: #22c55e; text-shadow: 0 0 10px rgba(34, 197, 94, 0.8);">🛡️ AMENAZA NEUTRALIZADA 🛡️</h2>
+                        <p style="color: #f1f5f9;">Todos calmados. Civiles, volver a hacer lo suyo con total normalidad. Templarios, estad atentos y vigilantes a cualquier otro rastro de amenaza en el sector.</p>
+                        <p style="color: #eab308; font-size: 0.8rem; margin-top: 15px;">[ El sistema se restablecerá por completo en unos segundos... ]</p>
+                    `;
+                }
+
+                if (textContainer) {
+                    textContainer.innerHTML = `
+<h3>✨ SISTEMA RESTAURADO // 16:16:16 ✨</h3>
+<span class="gold-glitch">ESTADO: SEGURO Y ESTABLE</span><br><br>
+La brecha ha sido sellada. Los registros del Atlas se han sincronizado correctamente.<br>
+La paz vuelve a reinar en el Sector Galáctico Euclides.
+                    `;
+                }
+
+                setTimeout(() => {
+                    if (giantAlert) {
+                        giantAlert.style.transition = 'opacity 1s ease';
+                        giantAlert.style.opacity = '0';
+                        setTimeout(() => {
+                            giantAlert.remove();
+                        }, 1000);
+                    }
+                    if (textContainer) {
+                        textContainer.innerHTML = contenidoOriginalRollo;
+                    }
+                    eventActive = false;
+                }, 8000);
+
+            }, 120000);
+        }
+
+        const secretBtn = document.getElementById('secret-trigger');
+        let clicksSecretos = 0;
+        let ultimoClickTiempo = 0;
+
+        if (secretBtn) {
+            secretBtn.addEventListener('click', () => {
+                const ahora = Date.now();
+                if (ahora - ultimoClickTiempo > 2000) {
+                    clicksSecretos = 0;
+                }
+                ultimoClickTiempo = ahora;
+                clicksSecretos++;
+
+                if (clicksSecretos >= 16) {
+                    clicksSecretos = 0;
+                    dispararEventoCorrupcion();
+                }
+            });
+        }
 
         async function iniciarContadorCiudadanos() {
             try {
@@ -522,6 +844,7 @@ Aqu3l qu3 1nt3nt3 burl4r 35t05 m4nd4t05 0 cr34 qu3 5u v0lunt4d 5tǎ p0r 3ncim4 d
                         await salaTemps.track({ online_at: new Date().toISOString() });
                     }
                 });
+
             } catch (err) {
                 console.error('Error al inicializar el contador de ciudadanos:', err);
             }

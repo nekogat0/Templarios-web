@@ -81,9 +81,32 @@
 
     <canvas id="canvas"></canvas>
 
+    <!-- Elemento de audio para la música de fondo -->
+    <audio id="bg-audio" loop>
+        <source src="musica/musica7.mp3" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
+        const bgAudio = document.getElementById('bg-audio');
+
+        // Activación de audio al cargar o primer contacto
+        window.addEventListener('DOMContentLoaded', () => {
+            bgAudio.play().catch(() => {
+                const activarAudioAlInteractuar = () => {
+                    bgAudio.play().then(() => {
+                        window.removeEventListener('mousemove', activarAudioAlInteractuar);
+                        window.removeEventListener('touchstart', activarAudioAlInteractuar);
+                        window.removeEventListener('click', activarAudioAlInteractuar);
+                    }).catch(() => {});
+                };
+                window.addEventListener('mousemove', activarAudioAlInteractuar, { once: true });
+                window.addEventListener('touchstart', activarAudioAlInteractuar, { once: true });
+                window.addEventListener('click', activarAudioAlInteractuar, { once: true });
+            });
+        });
 
         function resize() {
             canvas.width = window.innerWidth;
@@ -145,6 +168,7 @@
         let secretTimer = 0;
 
         function triggerInteraction(e) {
+            if (bgAudio.paused) bgAudio.play().catch(() => {});
             if (e && e.target.tagName === 'BUTTON') return;
 
             clickCount++;
@@ -168,6 +192,8 @@
             if(e.target.tagName !== 'BUTTON') {
                 e.preventDefault();
                 triggerInteraction(e);
+            } else {
+                if (bgAudio.paused) bgAudio.play().catch(() => {});
             }
         }, { passive: false });
 
@@ -190,6 +216,7 @@
 
             ctx.lineWidth = 1;
 
+            // Movimiento estilo red neuronal orgánica
             for (let i = 0; i < nodes.length; i++) {
                 nodes[i].angle += nodes[i].speed * interactionFactor;
                 
@@ -225,7 +252,7 @@
                 }
             }
 
-            // Símbolo secreto: Cuadrado más pequeño, transparente y apegado al prisma/esfera
+            // Símbolo secreto al hacer clics múltiples
             if (secretActive) {
                 secretTimer--;
                 
@@ -233,14 +260,12 @@
                 let cx = canvas.width / 2;
                 let cy = canvas.height / 2 + 20;
 
-                // 1. Cuadrado rojo brillante más pequeño y con fondo transparente
                 ctx.strokeStyle = '#ff3366';
                 ctx.lineWidth = 2;
                 ctx.shadowColor = '#ff0033';
                 ctx.shadowBlur = 20;
                 ctx.strokeRect(cx - 30, cy - 30, 60, 60);
 
-                // 2. Prisma dorado interno ajustado
                 ctx.strokeStyle = '#ffd700';
                 ctx.lineWidth = 2;
                 ctx.shadowColor = '#ffd700';
@@ -253,7 +278,6 @@
                 ctx.closePath();
                 ctx.stroke();
 
-                // 3. Esfera roja brillante en el centro exacto
                 ctx.fillStyle = '#ff0033';
                 ctx.shadowColor = '#ff0033';
                 ctx.shadowBlur = 25;
@@ -261,7 +285,6 @@
                 ctx.arc(cx, cy, 7, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Texto del símbolo secreto
                 ctx.textAlign = 'center';
                 ctx.font = 'bold 15px "Courier New", monospace';
                 ctx.fillStyle = '#ffffff';
@@ -305,6 +328,7 @@
         }
 
         function ingresarAlSistema() {
+            if (bgAudio.paused) bgAudio.play().catch(() => {});
             window.location.href = "menu.html";
         }
 

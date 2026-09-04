@@ -414,9 +414,12 @@
         <!-- CABECERA CON TÍTULO Y BOTÓN AL INDEX -->
         <div class="header-panel">
             <h2>Transmisor Cuántico</h2>
-            <a href="menu.html" class="index-btn">
-                <span>&lt;</span> Volver
-            </a>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <div id="aviso-actividad" style="font-family: monospace; font-size: 0.75rem; padding: 4px 8px; background: rgba(5, 2, 2, 0.9); border: 1px solid #3a0d14; border-radius: 4px; color: #94a3b8;">🛡️ Supabase Activo</div>
+                <a href="menu.html" class="index-btn">
+                    <span>&lt;</span> Volver
+                </a>
+            </div>
         </div>
 
         <!-- APARTADO DE CIUDADANOS CONECTADOS (SUPABASE 1) -->
@@ -475,6 +478,30 @@
         const supabaseChatUrl = 'https://vsepcshzueqrhlulkhdg.supabase.co';
         const supabaseChatKey = 'sb_publishable_pTJKdpHP5hp48EyfNxlUVg_J6qEoYb3';
         const dbChat = createClient(supabaseChatUrl, supabaseChatKey);
+
+        // ==========================================
+        // CONTROL ANTI-PAUSA DE SUPABASE
+        // ==========================================
+        function verificarActividadSupabase() {
+            const HOY = new Date().getTime();
+            const ULTIMO_ACCESO = localStorage.getItem('templarios_ultima_chat_activa');
+            
+            localStorage.setItem('templarios_ultima_chat_activa', HOY);
+
+            const aviso = document.getElementById('aviso-actividad');
+            if (ULTIMO_ACCESO && aviso) {
+                const diasInactivo = Math.floor((HOY - parseInt(ULTIMO_ACCESO)) / (1000 * 60 * 60 * 24));
+                
+                if (diasInactivo >= 5) {
+                    aviso.style.borderColor = '#ff1e38';
+                    aviso.style.color = '#ffb700';
+                    aviso.innerHTML = `⚠️ ¡Atención! ${diasInactivo} días sin entrar.`;
+                } else {
+                    aviso.innerHTML = `🛡️ Supabase Activo`;
+                }
+            }
+        }
+        verificarActividadSupabase();
 
         const glyphsData = [
             {"id": 0, "name": "Sunset", "url": "glifos/PORTALSYMBOLALT.0.webp"},

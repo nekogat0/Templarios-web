@@ -56,6 +56,8 @@
         .nav-links-group {
             display: flex;
             gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
         }
         .nav-btn {
             background-color: #090d16;
@@ -393,6 +395,7 @@
         <div class="nav-links-group">
             <a href="menu.html" class="nav-btn">← Volver al Inicio</a>
             <a href="medallas.html" class="nav-btn">🏅 Ver Medallas</a>
+            <div id="aviso-actividad" style="font-family: monospace; font-size: 0.75rem; padding: 5px 10px; background: rgba(5, 2, 2, 0.9); border: 1px solid #3a0d14; border-radius: 4px; color: #94a3b8;">🛡️ Supabase Activo</div>
         </div>
         <div class="points-box">
             Puntos: <span id="points-display">0</span>
@@ -441,6 +444,30 @@
     <div id="notification-toast">
         <span id="toast-message">¡Acción realizada con éxito!</span>
     </div>
+
+    <!-- SCRIPT DE CONTROL ANTI-PAUSA DE SUPABASE -->
+    <script>
+        function verificarActividadSupabase() {
+            const HOY = new Date().getTime();
+            const ULTIMO_ACCESO = localStorage.getItem('templarios_ultima_misiones_activa');
+            
+            localStorage.setItem('templarios_ultima_misiones_activa', HOY);
+
+            const aviso = document.getElementById('aviso-actividad');
+            if (ULTIMO_ACCESO && aviso) {
+                const diasInactivo = Math.floor((HOY - parseInt(ULTIMO_ACCESO)) / (1000 * 60 * 60 * 24));
+                
+                if (diasInactivo >= 5) {
+                    aviso.style.borderColor = '#ff1e38';
+                    aviso.style.color = '#ffb700';
+                    aviso.innerHTML = `⚠️ ¡Atención! ${diasInactivo} días sin entrar.`;
+                } else {
+                    aviso.innerHTML = `🛡️ Supabase Activo`;
+                }
+            }
+        }
+        verificarActividadSupabase();
+    </script>
 
     <script>
         const allMissions = [

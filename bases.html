@@ -111,7 +111,7 @@
         }
 
         /* Botón de Navegación */
-        .nav-header { margin-bottom: 20px; width: 100%; max-width: 900px; z-index: 2; }
+        .nav-header { margin-bottom: 20px; width: 100%; max-width: 900px; z-index: 2; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .btn-regresar {
             display: inline-block;
             padding: clamp(6px, 1.2vw, 10px) clamp(10px, 2vw, 18px);
@@ -251,9 +251,10 @@
     <div class="space-bg"></div>
     <div class="cosmic-dust"></div>
 
-    <!-- BOTÓN DE RETORNO RÁPIDO -->
+    <!-- BOTÓN DE RETORNO RÁPIDO Y AVISO ANTI-PAUSA -->
     <div class="nav-header">
         <a href="sistema.html" class="btn-regresar">⬅ Volver a sistema</a>
+        <div id="aviso-actividad" style="font-family: monospace; font-size: 0.8rem; padding: 6px 10px; background: rgba(5, 2, 2, 0.9); border: 1px solid #450a0a; border-radius: 6px; color: #94a3b8;">🛡️ Verificando estado...</div>
     </div>
 
     <div class="main-container">
@@ -316,6 +317,33 @@
 
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ==========================================
+        // CONTROL ANTI-PAUSA DE SUPABASE
+        // ==========================================
+        function verificarActividadSupabase() {
+            const HOY = new Date().getTime();
+            const ULTIMO_ACCESO = localStorage.getItem('templarios_ultima_base_activa');
+            
+            // Registramos la actividad actual en el navegador
+            localStorage.setItem('templarios_ultima_base_activa', HOY);
+
+            const aviso = document.getElementById('aviso-actividad');
+            if (ULTIMO_ACCESO && aviso) {
+                const diasInactivo = Math.floor((HOY - parseInt(ULTIMO_ACCESO)) / (1000 * 60 * 60 * 24));
+                
+                if (diasInactivo >= 5) {
+                    aviso.style.borderColor = '#b91c1c';
+                    aviso.style.color = '#fde047';
+                    aviso.innerHTML = `⚠️ ¡Atención! ${diasInactivo} días sin entrar. Supabase podría pausarse pronto.`;
+                } else {
+                    aviso.innerHTML = `🛡️ Supabase Activo (Última visita: hoy)`;
+                }
+            } else if (aviso) {
+                aviso.innerHTML = `🛡️ Supabase Activo (Primer acceso registrado)`;
+            }
+        }
+        verificarActividadSupabase();
 
         // ==========================================
         // 2. DATOS ESTÁTICOS (Actualizados con los 157 sistemas de Euclid del Excel)

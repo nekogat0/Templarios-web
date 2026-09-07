@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistema Eahams-Ayg - Mesa Táctica Naval</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #050402;
+            font-family: sans-serif;
+            color: #ffd700;
+            touch-action: none;
+        }
+
+        /* FILTRO DE TV / HOLOGRAMA SUTIL Y TRANSPARENTE */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 14, 6, 0) 50%, rgba(0, 0, 0, 0.12) 50%);
+            z-index: 999;
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #hud-header {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: #000000;
+            border-left: 3px solid #ff0000;
+            border-top: 1px solid rgba(255, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 0, 0, 0.3);
+            padding: 8px 12px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: #ffd700;
+            z-index: 10;
+            pointer-events: none;
+            box-shadow: 0 0 6px rgba(255, 0, 0, 0.15);
+        }
+
+        #btn-back {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: #000000;
+            border: 1px solid #ff0000;
+            color: #ffd700;
+            padding: 8px 14px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            z-index: 20;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: 0 0 6px rgba(255, 0, 0, 0.15);
+        }
+
+        #btn-back:hover {
+            background: #ff0000;
+            color: #000000;
+        }
+
+        #hud-hint {
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000000;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 10px;
+            color: #ffd700;
+            z-index: 10;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 0 6px rgba(255, 0, 0, 0.15);
+        }
+
+        #modal-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            max-height: 55vh;
+            background: #000000;
+            border-top: 2px solid #ff0000;
+            border-left: 1px solid #ff0000;
+            border-right: 1px solid #ff0000;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-in-out;
+            overflow-y: auto;
+            pointer-events: auto;
+            box-shadow: 0 -5px 20px rgba(255, 0, 0, 0.2);
+        }
+
+        #modal-panel.active {
+            transform: translateY(0);
+        }
+
+        #modal-panel h2 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #ffd700;
+            border-bottom: 1px solid rgba(255, 0, 0, 0.3);
+            padding-bottom: 8px;
+            padding-right: 30px;
+        }
+
+        #modal-panel p {
+            font-size: 12px;
+            color: #ddd;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+            color: #ff0000;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .data-section { margin-top: 10px; margin-bottom: 10px; }
+        .data-title { font-weight: bold; color: #ffd700; }
+        .data-item { margin-left: 10px; font-size: 11px; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+    <div id="hud-header">sistema: eahams-ayg<br><span style="font-size:9px; color:#ffd700;">mesa tactica naval</span></div>
+    <a id="btn-back" href="sistema.html">VOLVER A SISTEMA</a>
+    <div id="hud-hint">arrastra para moverte • usa zoom para acercar • toca un objetivo</div>
+    
+    <div id="canvas-container"></div>
+
+    <div id="modal-panel">
+        <span class="modal-close" onclick="closeModal()">✕</span>
+        <h2 id="modal-title">título</h2>
+        <p id="modal-desc">descripción...</p>
+    </div>
+
+    <script>
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const textureLoader = new THREE.TextureLoader();
+
+        const folderPath = 'Sistema eahams-ayg/';
+        scene.background = new THREE.Color(0x050402);
+        textureLoader.load(folderPath + 'fondo.jpg', (tex) => {
+            scene.background = tex;
+        });
+
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.set(0, 180, 150);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.PointLight(0xffaa00, 2.0, 800);
+        scene.add(sunLight);
+
+        const sunGeo = new THREE.SphereGeometry(12, 32, 32);
+        const sunMat = new THREE.MeshBasicMaterial({ color: 0xff6600 });
+        textureLoader.load(folderPath + 'sol.png', (tex) => {
+            sunMat.map = tex;
+            sunMat.needsUpdate = true;
+        });
+        const sun = new THREE.Mesh(sunGeo, sunMat);
+        scene.add(sun);
+
+        const interactiveObjects = [];
+        const rotatingPlanets = [];
+        const rotatingClouds = [];
+        const moonOrbits = [];
+        const asteroidBelts = [];
+        const movingNebulae = [];
+
+        function createOuterNebula(angle, distance, count = 400) {
+            const nebulaGroup = new THREE.Group();
+            const dustGeo = new THREE.BufferGeometry();
+            const dustPos = new Float32Array(count * 3);
+            for (let i = 0; i < count * 3; i += 3) {
+                dustPos[i] = (Math.random() - 0.5) * 50;
+                dustPos[i + 1] = (Math.random() - 0.5) * 15;
+                dustPos[i + 2] = (Math.random() - 0.5) * 50;
+            }
+            dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+            const dustMat = new THREE.PointsMaterial({ color: 0x33ff77, size: 1.3, transparent: true, opacity: 0.4 });
+            const cloud = new THREE.Points(dustGeo, dustMat);
+            nebulaGroup.add(cloud);
+
+            nebulaGroup.position.set(
+                Math.cos(angle) * distance,
+                (Math.random() - 0.5) * 10,
+                Math.sin(angle) * distance
+            );
+            scene.add(nebulaGroup);
+
+            movingNebulae.push({
+                group: nebulaGroup,
+                angle: angle,
+                distance: distance,
+                speed: 0.00012 + Math.random() * 0.00008
+            });
+        }
+
+        createOuterNebula(0.0, 190);
+        createOuterNebula(2.1, 210);
+        createOuterNebula(4.2, 200);
+
+        const shipGeo = new THREE.ConeGeometry(0.5, 1.4, 4);
+        shipGeo.rotateX(Math.PI / 2);
+        const shipMat = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.9, roughness: 0.2 });
+
+        function createFleetCluster(centerX, centerZ) {
+            const clusterGroup = new THREE.Group();
+            const count = 4 + Math.floor(Math.random() * 2); 
+            for (let i = 0; i < count; i++) {
+                const mesh = new THREE.Mesh(shipGeo, shipMat);
+                mesh.position.set(
+                    (Math.random() - 0.5) * 4,
+                    (Math.random() - 0.5) * 1.5,
+                    (Math.random() - 0.5) * 4
+                );
+                const scale = 0.6 + Math.random() * 1.2;
+                mesh.scale.set(scale, scale, scale);
+                mesh.rotation.set(Math.random() * 0.3, Math.random() * Math.PI * 2, Math.random() * 0.3);
+                clusterGroup.add(mesh);
+            }
+            clusterGroup.position.set(centerX, 2, centerZ);
+            scene.add(clusterGroup);
+        }
+
+        const fleetLocations = [
+            { x: 40, z: -60 },
+            { x: -65, z: -20 },
+            { x: 55, z: 50 }
+        ];
+        fleetLocations.forEach(loc => createFleetCluster(loc.x, loc.z));
+
+        const stationGroup = new THREE.Group();
+        const coreGeo = new THREE.IcosahedronGeometry(2.2, 0);
+        const stationMat = new THREE.MeshStandardMaterial({ color: 0x9999aa, metalness: 0.8, roughness: 0.2, flatShading: true });
+        const stationCore = new THREE.Mesh(coreGeo, stationMat);
+
+        stationCore.userData = { 
+            name: "Estación Espacial (Sector Eahams-Ayg)", 
+            desc: `
+                <div class='data-section'><span class='data-title'>Información General:</span>
+                <div class='data-item'>Raza Predominante: Gek</div>
+                <div class='data-item'>Economía: Minera Equilibrada</div>
+                <div class='data-item'>Nivel de Conflicto: Medio</div>
+                <div class='data-item'>Mercado Galáctico (Venta): +61.8%</div>
+                <div class='data-item'>Mercado Galáctico (Compra): -35.7%</div></div>
+                <div class='data-section'><span class='data-title'>Comercio (Compra en Estación):</span>
+                <div class='data-item'>Grasa de Pirita sin Refinar: 3,983</div>
+                <div class='data-item'>Sal de Brumoru: 12,611</div>
+                <div class='data-item'>Sociedad: 769</div>
+                <div class='data-item'>Plasma Inestable: 6,538</div>
+                <div class='data-item'>Polvo de Ferrita: 15</div>
+                <div class='data-item'>Cobalto: 82</div>
+                <div class='data-item'>Cableado Hidráulico: 5,634</div>
+                <div class='data-item'>Panel Cableado: 39,341</div>
+                <div class='data-item'>Placa de Metal: 835</div>
+                <div class='data-item'>Microprocesador: 10,500</div>
+                <div class='data-item'>Oro: 404</div>
+                <div class='data-item'>Parafino: 70</div>
+                <div class='data-item'>Ferrita Pura: 33</div></div>
+            ` 
+        };
+        
+        stationGroup.add(stationCore);
+        stationGroup.position.set(50, 4, 30);
+        scene.add(stationGroup);
+        interactiveObjects.push(stationCore);
+
+        const rocksGroup = new THREE.Group();
+        const rockGeometries = [
+            new THREE.DodecahedronGeometry(1, 0),
+            new THREE.IcosahedronGeometry(0.8, 0),
+            new THREE.BoxGeometry(1.2, 0.9, 1.1)
+        ];
+        const rockMaterial = new THREE.MeshStandardMaterial({ color: 0x4a453f, roughness: 0.9 });
+
+        for (let i = 0; i < 35; i++) {
+            const geo = rockGeometries[Math.floor(Math.random() * rockGeometries.length)];
+            const rockMesh = new THREE.Mesh(geo, rockMaterial);
+            
+            const distance = 30 + Math.random() * 130;
+            const angle = Math.random() * Math.PI * 2;
+            rockMesh.position.set(
+                Math.cos(angle) * distance,
+                (Math.random() - 0.5) * 8,
+                Math.sin(angle) * distance
+            );
+            
+            const scale = 0.7 + Math.random() * 2.5;
+            rockMesh.scale.set(scale, scale * (0.8 + Math.random() * 0.4), scale);
+            rockMesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+            
+            rocksGroup.add(rockMesh);
+        }
+        scene.add(rocksGroup);
+
+        const celestialData = [
+            {
+                type: 'planet',
+                name: "Geyrosan Mamot (Base Templaria)",
+                textureUrl: folderPath + 'basetemplaria.png',
+                size: 5,
+                distance: 35,
+                angle: 0,
+                desc: `
+                    <div class='data-section'><span class='data-title'>Condiciones Ambientales:</span>
+                    <div class='data-item'>Clima: Brisas refrescantes</div>
+                    <div class='data-item'>Centinelas: Patrullas irregulares</div>
+                    <div class='data-item'>Recursos: Huesos antiguos, Bulbo estelar, Plata, Parafino, Cobre</div></div>
+                    <div class='data-section'><span class='data-title'>Flora Rebosante (12 descubiertas):</span>
+                    <div class='data-item'>Netnomea: Planta que parece un puercoespín.</div>
+                    <div class='data-item'>Rotuatum: Flor terrestre.</div>
+                    <div class='data-item'>Horsecut: Planta acuática tipo puercoespín de mar.</div>
+                    <div class='data-item'>Claucoium: Alga marina.</div>
+                    <div class='data-item'>Portipilaguera: Alga marina.</div>
+                    <div class='data-item'>Driyukus: Flora flotante, flor que vuela.</div>
+                    <div class='data-item'>Trayetrima: Árboles característicos.</div></div>
+                    <div class='data-section'><span class='data-title'>Fauna Rico (13 de 13 descubiertas):</span>
+                    <div class='data-item'>Escroftis Seclera: Pez abisal muy feo, sin ojos, se guía por sonido con un grito escalofriante.</div>
+                    <div class='data-item'>Bibobit Felum: Krill gigante acuático.</div>
+                    <div class='data-item'>Obinefotoe: Pez abisal.</div>
+                    <div class='data-item'>Daisalty: Cangrejo con silla incrustada en la cabeza, pinzas y patas como tentáculos, cara de bicho.</div>
+                    <div class='data-item'>Hopkinupum: Cangrejo ermitaño atípico.</div>
+                    <div class='data-item'>Poliblanca: Pájaro nocturno con aspecto de polilla blanca.</div>
+                    <div class='data-item'>Leo-deogeum: Criatura con patas de xenomorfo, espinas en la espalda y gran boca sonriente (no carnívoro ni hostil, le encantan las cosas húmedas).</div></div>
+                    <div class='data-section'><span class='data-title'>Minerales (5):</span>
+                    <div class='data-item'>Cloisita: Con forma de piedra tradicional.</div>
+                    <div class='data-item'>Sushimaita: Con forma de cuernos.</div>
+                    <div class='data-item'>Suselita: Rocas acumuladas.</div>
+                    <div class='data-item'>Kevancita: Con forma de coral.</div>
+                    <div class='data-item'>Joesmaita: Montón de piedras.</div></div>
+                    <div class='data-section'><span class='data-title'>Red de Bases Internas:</span>
+                    <div class='data-item'>Ciudad / Pueblo: Parte principal de operaciones</div>
+                    <div class='data-item'>Base City</div>
+                    <div class='data-item'>Base Bajo</div>
+                    <div class='data-item'>Estación Templaria: Ubicada en el aire (órbita baja)</div></div>
+                `
+            },
+            {
+                type: 'moon',
+                name: "Risda VI (Luna)",
+                parentName: "Geyrosan Mamot",
+                textureUrl: folderPath + 'basetemplaria.png',
+                size: 2.2,
+                distance: 11,
+                desc: `
+                    <div class='data-section'><span class='data-title'>Datos de la Luna:</span>
+                    <div class='data-item'>Clima: Bajo corrosivo</div>
+                    <div class='data-item'>Centinelas: Limitados</div>
+                    <div class='data-item'>Flora: Copioso (0 descubiertas)</div>
+                    <div class='data-item'>Fauna: Poco frecuente (0 de 3 descubiertas)</div>
+                    <div class='data-item'>Recursos: Moho fúngico, Cobalto, Amonio, Cobre</div></div>
+                `
+            },
+            {
+                type: 'planet',
+                name: "Pusconta Modat",
+                textureUrl: folderPath + 'modat.png',
+                size: 4.8,
+                distance: 65,
+                angle: 1.0,
+                hasRing: false,
+                desc: `
+                    <div class='data-section'><span class='data-title'>Datos del Planeta:</span>
+                    <div class='data-item'>Clima: Ventiscas poco frecuentes</div>
+                    <div class='data-item'>Centinelas: Requieren ortodoxia</div>
+                    <div class='data-item'>Flora: Medio (0 descubiertas)</div>
+                    <div class='data-item'>Fauna: Rebosante (0 de 17 descubiertas)</div>
+                    <div class='data-item'>Recursos: Cristal de escarcha, Cobalto, Dioxita, Cobre</div></div>
+                `
+            },
+            {
+                type: 'planet',
+                name: "Gujyotanhol Otsur",
+                textureUrl: folderPath + 'otsur.png',
+                size: 5.2,
+                distance: 92,
+                angle: 2.2,
+                hasRing: false,
+                desc: `
+                    <div class='data-section'><span class='data-title'>Datos del Planeta:</span>
+                    <div class='data-item'>Clima: Gélido</div>
+                    <div class='data-item'>Centinelas: Poco frecuentes</div>
+                    <div class='data-item'>Flora: Rebosante</div>
+                    <div class='data-item'>Fauna: Lleno (3 descubiertas)</div>
+                    <div class='data-item'>Recursos: Cristal de escarcha, Ferrita imantada, Dioxita, Cobre</div></div>
+                `
+            },
+            {
+                type: 'planet',
+                name: "Etheri Omega",
+                textureUrl: folderPath + 'omega.png',
+                size: 5.6,
+                distance: 120,
+                angle: 3.6,
+                desc: `
+                    <div class='data-section'><span class='data-title'>Datos del Planeta:</span>
+                    <div class='data-item'>Clima: Tormenta de polvo de rad</div>
+                    <div class='data-item'>Centinelas: Patrullas irregulares</div>
+                    <div class='data-item'>Flora: Viral (2 descubiertas)</div>
+                    <div class='data-item'>Fauna: Abundante (7 descubiertas)</div>
+                    <div class='data-item'>Recursos: Rais gama, Plata, Uranio, Cobre</div></div>
+                `
+            },
+            {
+                type: 'planet',
+                name: "Laika",
+                textureUrl: folderPath + 'laika.png',
+                size: 5.0,
+                distance: 148,
+                angle: 4.9,
+                hasRing: false,
+                isLaika: true,
+                desc: `
+                    <div class='data-section'><span class='data-title'>Datos del Planeta:</span>
+                    <div class='data-item'>Clima: Bajo tóxico</div>
+                    <div class='data-item'>Centinelas: Requieren ortodoxia</div>
+                    <div class='data-item'>Flora: Rico (0 descubiertas)</div>
+                    <div class='data-item'>Fauna: Numeroso (0 de 7 descubiertas)</div>
+                    <div class='data-item'>Recursos: Moho fúngico, Cobalto, Amonio, Cobre</div></div>
+                `
+            }
+        ];
+
+        let basePlanetGroup = null;
+        let basePlanetMesh = null;
+
+        celestialData.forEach((data) => {
+            if (data.type === 'planet') {
+                const orbitGeo = new THREE.RingGeometry(data.distance - 0.3, data.distance + 0.3, 64);
+                const orbitMat = new THREE.MeshBasicMaterial({ color: 0xffcc00, side: THREE.DoubleSide, transparent: true, opacity: 0.15 });
+                const orbitMesh = new THREE.Mesh(orbitGeo, orbitMat);
+                orbitMesh.rotation.x = Math.PI / 2;
+                scene.add(orbitMesh);
+
+                const pGroup = new THREE.Group();
+                const pGeo = new THREE.SphereGeometry(data.size, 32, 32);
+                
+                let pMat = new THREE.MeshStandardMaterial({ roughness: 0.7 });
+                textureLoader.load(data.textureUrl, (tex) => {
+                    pMat.map = tex;
+                    pMat.needsUpdate = true;
+                }, undefined, () => {
+                    pMat.color.setHex(data.name.includes("Base") ? 0x2266aa : 0x555555);
+                });
+
+                const pMesh = new THREE.Mesh(pGeo, pMat);
+                pMesh.userData = { name: data.name, desc: data.desc };
+                pGroup.add(pMesh);
+                interactiveObjects.push(pMesh);
+                rotatingPlanets.push({ mesh: pMesh, speed: 0.005 });
+
+                const cGeo = new THREE.SphereGeometry(data.size + 0.3, 32, 32);
+                const cMat = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 });
+                const cMesh = new THREE.Mesh(cGeo, cMat);
+                pGroup.add(cMesh);
+                rotatingClouds.push({ mesh: cMesh, speed: 0.0015 });
+
+                if (data.isLaika) {
+                    const particleCount = 500;
+                    const particleGeo = new THREE.BufferGeometry();
+                    const particlePos = new Float32Array(particleCount * 3);
+
+                    for (let i = 0; i < particleCount * 3; i += 3) {
+                        const radius = data.size + 1.5 + Math.random() * 2.5;
+                        const theta = Math.random() * Math.PI * 2;
+                        particlePos[i] = Math.cos(theta) * radius;
+                        particlePos[i + 1] = (Math.random() - 0.5) * 0.4;
+                        particlePos[i + 2] = Math.sin(theta) * radius;
+                    }
+
+                    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+                    const particleMat = new THREE.PointsMaterial({
+                        color: 0x1c1c1c,
+                        size: 0.35,
+                        transparent: true,
+                        opacity: 0.9
+                    });
+
+                    const asteroidSystem = new THREE.Points(particleGeo, particleMat);
+                    pGroup.add(asteroidSystem);
+                    asteroidBelts.push(asteroidSystem);
+                }
+
+                pGroup.position.x = Math.cos(data.angle) * data.distance;
+                pGroup.position.z = Math.sin(data.angle) * data.distance;
+                scene.add(pGroup);
+
+                if (data.name.includes("Geyrosan Mamot")) {
+                    basePlanetGroup = pGroup;
+                    basePlanetMesh = pMesh;
+                }
+            }
+        });
+
+        let moonMeshRef = null;
+        let moonPivotRef = null;
+        let shadowSpotRef = null;
+
+        if (basePlanetGroup && basePlanetMesh) {
+            const moonData = celestialData.find(d => d.type === 'moon');
+            moonPivotRef = new THREE.Group();
+            const moonGeo = new THREE.SphereGeometry(moonData.size, 32, 32);
+            
+            let moonMat = new THREE.MeshStandardMaterial({ roughness: 0.8 });
+            textureLoader.load(moonData.textureUrl, (tex) => {
+                moonMat.map = tex;
+                moonMat.needsUpdate = true;
+            }, undefined, () => {
+                moonMat.color.setHex(0x888888);
+            });
+
+            moonMeshRef = new THREE.Mesh(moonGeo, moonMat);
+            moonMeshRef.position.x = moonData.distance;
+            moonMeshRef.userData = { name: moonData.name, desc: moonData.desc };
+            
+            moonPivotRef.add(moonMeshRef);
+            basePlanetGroup.add(moonPivotRef);
+            
+            interactiveObjects.push(moonMeshRef);
+            moonOrbits.push(moonPivotRef);
+            rotatingPlanets.push({ mesh: moonMeshRef, speed: 0.003 });
+
+            const shadowGeo = new THREE.CircleGeometry(1.8, 32);
+            const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.0, side: THREE.DoubleSide, depthWrite: false });
+            shadowSpotRef = new THREE.Mesh(shadowGeo, shadowMat);
+            basePlanetMesh.add(shadowSpotRef);
+        }
+
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let targetCameraX = 0;
+        let targetCameraZ = 0;
+
+        window.addEventListener('pointerdown', (e) => {
+            if (e.target.closest('#modal-panel')) return;
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+            targetCameraX -= deltaX * 0.5;
+            targetCameraZ -= deltaY * 0.5;
+            targetCameraX = Math.max(-150, Math.min(150, targetCameraX));
+            targetCameraZ = Math.max(-150, Math.min(150, targetCameraZ));
+            camera.position.x = targetCameraX;
+            camera.position.z = targetCameraZ + 150;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('pointerup', () => { isDragging = false; });
+        window.addEventListener('wheel', (e) => {
+            camera.position.y = Math.max(70, Math.min(280, camera.position.y + e.deltaY * 0.2));
+        });
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        window.addEventListener('click', (e) => {
+            if (e.target.closest('#modal-panel')) return;
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(interactiveObjects);
+
+            if (intersects.length > 0) {
+                const data = intersects[0].object.userData;
+                openModal(data.name, data.desc);
+            }
+        });
+
+        function openModal(title, desc) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-desc').innerHTML = desc;
+            document.getElementById('modal-panel').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-panel').classList.remove('active');
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            rotatingPlanets.forEach((item) => {
+                item.mesh.rotation.y += item.speed;
+            });
+
+            rotatingClouds.forEach((item) => {
+                item.mesh.rotation.y += item.speed;
+            });
+
+            movingNebulae.forEach((neb) => {
+                neb.angle += neb.speed;
+                neb.group.position.x = Math.cos(neb.angle) * neb.distance;
+                neb.group.position.z = Math.sin(neb.angle) * neb.distance;
+                neb.group.rotation.y += 0.0005;
+            });
+
+            if (moonPivotRef && shadowSpotRef && basePlanetMesh) {
+                moonPivotRef.rotation.y += 0.0015;
+
+                const planetWorldPos = new THREE.Vector3();
+                basePlanetMesh.getWorldPosition(planetWorldPos);
+                
+                const moonWorldPos = new THREE.Vector3();
+                moonMeshRef.getWorldPosition(moonWorldPos);
+
+                const dirToSun = new THREE.Vector3(0,0,0).sub(planetWorldPos).normalize();
+                const dirToMoon = moonWorldPos.clone().sub(planetWorldPos).normalize();
+
+                const alignment = dirToSun.dot(dirToMoon);
+                
+                if (alignment > 0.4) {
+                    shadowSpotRef.material.opacity = Math.min(0.7, (alignment - 0.4) * 1.5);
+                    shadowSpotRef.position.copy(dirToMoon).multiplyScalar(5.0);
+                    shadowSpotRef.lookAt(planetWorldPos.clone().add(dirToMoon.multiplyScalar(10)));
+                } else {
+                    shadowSpotRef.material.opacity = 0;
+                }
+            }
+
+            asteroidBelts.forEach((belt) => {
+                belt.rotation.y -= 0.002;
+            });
+
+            sun.rotation.y += 0.003;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

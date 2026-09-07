@@ -51,6 +51,15 @@
             box-shadow: 0 0 6px rgba(255, 0, 0, 0.15);
         }
 
+        .hud-header-img {
+            display: block;
+            margin-top: 6px;
+            max-width: 90px;
+            height: auto;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 3px;
+        }
+
         #btn-back {
             position: fixed;
             top: 15px;
@@ -70,6 +79,29 @@
         }
 
         #btn-back:hover {
+            background: #ff0000;
+            color: #000000;
+        }
+
+        #btn-player {
+            position: fixed;
+            top: 65px;
+            right: 15px;
+            background: #000000;
+            border: 1px solid #ff0000;
+            color: #ffd700;
+            padding: 8px 14px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            z-index: 20;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: 0 0 6px rgba(255, 0, 0, 0.15);
+        }
+
+        #btn-player:hover {
             background: #ff0000;
             color: #000000;
         }
@@ -144,14 +176,16 @@
         
         .data-section { margin-top: 10px; margin-bottom: 10px; }
         .data-title { font-weight: bold; color: #ffd700; }
-        .data-item { margin-left: 10px; font-size: 11px; }
+        .data-item { margin-left: 10px; font-size: 11px; margin-bottom: 6px; }
+        .base-img { display: block; margin-top: 4px; max-width: 120px; height: auto; border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 3px; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-    <div id="hud-header">sistema: eahams-ayg<br><span style="font-size:9px; color:#ffd700;">mesa tactica naval</span></div>
+    <div id="hud-header">sistema: eahams-ayg<br><span style="font-size:9px; color:#ffd700;">mesa tactica naval</span><img src="Sistema eahams-ayg/coordenadas.jpg" class="hud-header-img" alt="Coordenadas"></div>
     <a id="btn-back" href="sistema.html">VOLVER A SISTEMA</a>
+    <button id="btn-player" onclick="openPlayerModal()">DESCUBRIDOR</button>
     <div id="hud-hint">arrastra para moverte • usa zoom para acercar • toca un objetivo</div>
     
     <div id="canvas-container"></div>
@@ -275,6 +309,12 @@
         stationCore.userData = { 
             name: "Estación Espacial (Sector Eahams-Ayg)", 
             desc: `
+                <div class='data-section'><span class='data-title'>Vista General de la Estación:</span>
+                <div class='data-item'>Exterior:<img src="Sistema eahams-ayg/estacion espacial.jpg" class="base-img" alt="Estación Espacial Exterior"></div>
+                <div class='data-item'>Interior:<img src="Sistema eahams-ayg/estacion espacial dentro.jpg" class="base-img" alt="Estación Espacial Interior"></div></div>
+                <div class='data-section'><span class='data-title'>Áreas Clave:</span>
+                <div class='data-item'>Zona de Aterrizaje<img src="Sistema eahams-ayg/zona de aterrizaje.jpg" class="base-img" alt="Zona de Aterrizaje"></div>
+                <div class='data-item'>Apartado de Venta<img src="Sistema eahams-ayg/venta.jpg" class="base-img" alt="Apartado de Venta"></div></div>
                 <div class='data-section'><span class='data-title'>Información General:</span>
                 <div class='data-item'>Raza Predominante: Gek</div>
                 <div class='data-item'>Economía: Minera Equilibrada</div>
@@ -367,10 +407,10 @@
                     <div class='data-item'>Kevancita: Con forma de coral.</div>
                     <div class='data-item'>Joesmaita: Montón de piedras.</div></div>
                     <div class='data-section'><span class='data-title'>Red de Bases Internas:</span>
-                    <div class='data-item'>Ciudad / Pueblo: Parte principal de operaciones</div>
-                    <div class='data-item'>Base City</div>
-                    <div class='data-item'>Base Bajo</div>
-                    <div class='data-item'>Estación Templaria: Ubicada en el aire (órbita baja)</div></div>
+                    <div class='data-item'>Ciudad / Pueblo: Parte principal de operaciones<img src="Sistema eahams-ayg/pueblo templario.jpg" class="base-img" alt="Pueblo Templario"></div>
+                    <div class='data-item'>Base City<img src="Sistema eahams-ayg/city.jpg" class="base-img" alt="City"></div>
+                    <div class='data-item'>Base Bajo<img src="Sistema eahams-ayg/bajo.jpg" class="base-img" alt="Base Bajo"></div>
+                    <div class='data-item'>Estación Templaria: Ubicada en el aire (órbita baja)<img src="Sistema eahams-ayg/estacion templaria.jpg" class="base-img" alt="Estacion Templaria"></div></div>
                 `
             },
             {
@@ -613,6 +653,24 @@
             document.getElementById('modal-title').textContent = title;
             document.getElementById('modal-desc').innerHTML = desc;
             document.getElementById('modal-panel').classList.add('active');
+        }
+
+        function openPlayerModal() {
+            const title = "jugador: neko";
+            const desc = `
+                <div class='data-section'><span class='data-title'>Identificación del Descubridor:</span>
+                <div class='data-item'>Jugador: Neko</div>
+                <div class='data-item'>Clase: Templario</div>
+                <div class='data-item'>Imagen de Perfil:<img src="Sistema eahams-ayg/jugador.png" class="base-img" alt="Jugador Neko"></div></div>
+                <div class='data-section'><span class='data-title'>Especificaciones de la Nave:</span>
+                <div class='data-item'>Nombre de la Nave: Redención CR3 de Uhasukuh</div>
+                <div class='data-item'>Daño Potencial: 160.1</div>
+                <div class='data-item'>Potencia del Escudo: 467.2</div>
+                <div class='data-item'>Rango del Hiperturbo: 1856.6</div>
+                <div class='data-item'>Maniobrabilidad: 1475.0</div>
+                <div class='data-item'>Infracuchillo: 83.148</div></div>
+            `;
+            openModal(title, desc);
         }
 
         function closeModal() {

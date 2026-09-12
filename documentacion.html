@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasaporte Galáctico y Aduanas - Atlas</title>
+    <!-- Librería html2canvas para la exportación a imagen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            background-color: #080808;
+            color: #d1d1d1;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Efecto de líneas de pantalla antigua (CRT Scanlines) */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 99999;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            border: 2px solid #ff1744; /* Rojo fosforescente más intenso */
+            background-color: #121212;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.4), inset 0 0 15px rgba(0, 0, 0, 0.8);
+        }
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed #ff1744;
+            padding-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #ffea00; /* Dorado fosforescente */
+            text-transform: uppercase;
+            font-size: 22px;
+            margin: 0;
+            border: none;
+            padding: 0;
+            text-shadow: 0 0 8px rgba(255, 234, 0, 0.6);
+        }
+        .btn-back {
+            background: #222;
+            color: #ffea00;
+            border: 1px solid #ffea00;
+            padding: 6px 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 0;
+            width: auto;
+        }
+        .btn-back:hover {
+            background: #333;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(255, 234, 0, 0.4);
+        }
+        .section-title {
+            color: #ff1744; /* Rojo fosforescente */
+            font-size: 16px;
+            margin-top: 25px;
+            text-transform: uppercase;
+            text-shadow: 0 0 6px rgba(255, 23, 68, 0.5);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .form-group {
+            background: #181818;
+            border: 1px solid #333;
+            padding: 12px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        }
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        label {
+            display: block;
+            color: #ffea00; /* Dorado fosforescente */
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        input[type="file"], input[type="text"], select, textarea {
+            background: #0b0b0b;
+            color: #00ffcc; /* Texto interno cian/verdoso clásico de terminal */
+            border: 1px solid #444;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+        }
+        input[type="text"]:focus, select:focus, textarea:focus {
+            border-color: #ffea00;
+            outline: none;
+            box-shadow: 0 0 5px rgba(255, 234, 0, 0.4);
+        }
+        textarea {
+            resize: vertical;
+            height: 70px;
+        }
+        button {
+            background: #ff1744; /* Rojo fosforescente */
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 14px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(255, 23, 68, 0.4);
+        }
+        button:hover {
+            background: #ff4081;
+            box-shadow: 0 0 15px rgba(255, 64, 129, 0.6);
+        }
+        .btn-download {
+            background: #00e676; /* Verde fosforescente para descarga */
+            color: #000;
+            margin-top: 15px;
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.4);
+        }
+        .btn-download:hover {
+            background: #69f0ae;
+            box-shadow: 0 0 15px rgba(105, 240, 174, 0.6);
+        }
+        /* Estilos para el expediente consolidado tipo credencial unificada */
+        #expedienteFinal {
+            margin-top: 30px;
+            border: 2px dashed #ffea00;
+            background: #0f0f0f;
+            padding: 20px;
+            display: none;
+            box-shadow: 0 0 15px rgba(255, 234, 0, 0.2);
+        }
+        .expediente-header {
+            text-align: center;
+            border-bottom: 1px solid #ff1744;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #ffea00;
+            font-weight: bold;
+            font-size: 15px;
+            text-shadow: 0 0 6px rgba(255, 234, 0, 0.5);
+        }
+        .expediente-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .img-preview-box {
+            text-align: center;
+            background: #151515;
+            border: 1px solid #333;
+            padding: 10px;
+        }
+        .img-preview-box img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ff1744;
+            max-height: 220px;
+            object-fit: contain;
+            box-shadow: 0 0 8px rgba(255, 23, 68, 0.3);
+        }
+        .data-list p {
+            margin: 6px 0;
+            font-size: 13px;
+        }
+        .data-list span {
+            color: #ffea00;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-nav">
+            <h1>Control de Aduanas y Pasaporte Galáctico</h1>
+            <a href="menu.html" class="btn-back">⬅ Volver al Menú</a>
+        </div>
+        
+        <!-- Sección 1: Documentación Visual -->
+        <div class="section-title">> 1. Documentación Oficial y de Nave</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Subir Tarjeta de Identidad</label>
+                <input type="file" id="fileIdentidad" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label>Subir Licencia de Conducir (Nave)</label>
+                <input type="file" id="fileLicencia" accept="image/*">
+            </div>
+        </div>
+
+        <!-- Sección 2: Manifiesto de Vuelo y Aduanas -->
+        <div class="section-title">> 2. Manifiesto de Aduanas (Control Migratorio)</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Propósito del Viaje / Trámite</label>
+                <select id="propositoViaje">
+                    <option value="Exploración de Sistemas">Exploración de Sistemas</option>
+                    <option value="Misión de la Orden / Templarios">Misión de la Orden / Templarios</option>
+                    <option value="Comercio Estelar">Comercio Estelar</option>
+                    <option value="Tránsito Civil / Diplomacia">Tránsito Civil / Diplomacia</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nombre / Modelo de la Nave</label>
+                <input type="text" id="nombreNave" value="Fiery Owl WK4 / Transporte Civil">
+            </div>
+            <div class="form-group">
+                <label>Sistema de Origen (Procedencia)</label>
+                <input type="text" id="sistemaOrigen" placeholder="Ej: Sistema Gek / Euclid">
+            </div>
+            <div class="form-group">
+                <label>Sistema de Destino (Llegada)</label>
+                <input type="text" id="sistemaDestino" placeholder="Ej: Sistema Norman Skype">
+            </div>
+            <div class="form-group">
+                <label>Declaración de Carga y Contrabando</label>
+                <input type="text" id="cargaContrabando" value="Limpio / Sin mercancía prohibida">
+            </div>
+            <div class="form-group">
+                <label>Tiempo estimado de estancia</label>
+                <input type="text" id="tiempoEstancia" value="72 Ciclos Estelares">
+            </div>
+            <div class="form-group full-width">
+                <label>Bitácora Escrita / Notas de Aduanas</label>
+                <textarea id="notasBitacora" placeholder="Describa brevemente la razón de su entrada..."></textarea>
+            </div>
+        </div>
+
+        <button onclick="generarExpediente()">Consolidar Expediente de Viaje</button>
+
+        <!-- Apartado Visual Consolidado (Listo para capturar en imagen) -->
+        <div id="expedienteFinal">
+            <div class="expediente-header">
+                === EXPEDIENTE OFICIAL DE ADUANAS UNIFICADO ===
+            </div>
+            <div class="expediente-grid">
+                <div class="img-preview-box">
+                    <label>Identidad Registrada</label>
+                    <img id="viewIdentidad" src="" alt="Sin tarjeta de identidad">
+                </div>
+                <div class="img-preview-box">
+                    <label>Licencia de Conducir Estelar</label>
+                    <img id="viewLicencia" src="" alt="Sin licencia de nave">
+                </div>
+            </div>
+            <div class="data-list" style="margin-top: 20px; background: #141414; padding: 15px; border: 1px solid #333;">
+                <p><strong>Propósito:</strong> <span id="resProposito">-</span></p>
+                <p><strong>Nave Autorizada:</strong> <span id="resNave">-</span></p>
+                <p><strong>Ruta:</strong> <span id="resRuta">-</span></p>
+                <p><strong>Inspección de Carga:</strong> <span id="resCarga">-</span></p>
+                <p><strong>Estancia Autorizada:</strong> <span id="resEstancia">-</span></p>
+                <p><strong>Bitácora / Notas:</strong> <span id="resNotas">-</span></p>
+            </div>
+            <button class="btn-download" onclick="descargarExpedienteImage()">📥 Descargar Expediente como Imagen (PNG)</button>
+        </div>
+    </div>
+
+    <script>
+        function leerImagen(inputElement, imgElementId) {
+            const file = inputElement.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(imgElementId).src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function generarExpediente() {
+            const inputIden = document.getElementById('fileIdentidad');
+            const inputLic = document.getElementById('fileLicencia');
+            
+            if(inputIden.files && inputIden.files[0]) {
+                leerImagen(inputIden, 'viewIdentidad');
+            }
+            if(inputLic.files && inputLic.files[0]) {
+                leerImagen(inputLic, 'viewLicencia');
+            }
+
+            document.getElementById('resProposito').innerText = document.getElementById('propositoViaje').value;
+            document.getElementById('resNave').innerText = document.getElementById('nombreNave').value;
+            document.getElementById('resRuta').innerText = (document.getElementById('sistemaOrigen').value || 'Desconocido') + ' ➔ ' + (document.getElementById('sistemaDestino').value || 'Desconocido');
+            document.getElementById('resCarga').innerText = document.getElementById('cargaContrabando').value;
+            document.getElementById('resEstancia').innerText = document.getElementById('tiempoEstancia').value;
+            document.getElementById('resNotas').innerText = document.getElementById('notasBitacora').value || 'Sin notas adicionales registradas.';
+
+            const contenedor = document.getElementById('expedienteFinal');
+            contenedor.style.display = 'block';
+            contenedor.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function descargarExpedienteImage() {
+            const elemento = document.getElementById('expedienteFinal');
+            
+            const botonDescarga = elemento.querySelector('.btn-download');
+            botonDescarga.style.display = 'none';
+
+            html2canvas(elemento, {
+                backgroundColor: '#0f0f0f',
+                scale: 2
+            }).then(canvas => {
+                botonDescarga.style.display = 'block';
+
+                const enlace = document.createElement('a');
+                enlace.download = 'Expediente_Aduanas_Atlas.png';
+                enlace.href = canvas.toDataURL('image/png');
+                enlace.click();
+            }).catch(err => {
+                console.error("Error al generar la imagen:", err);
+                botonDescarga.style.display = 'block';
+                alert("Hubo un error al exportar la imagen del expediente.");
+            });
+        }
+    </script>
+</body>
+</html>

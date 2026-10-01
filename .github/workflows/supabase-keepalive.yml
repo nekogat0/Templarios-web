@@ -1,0 +1,63 @@
+name: Supabase Multi-Project Keep-Alive
+
+on:
+  schedule:
+    # Se ejecuta cada 4 días automáticamente (puedes cambiarlo si prefieres)
+    - cron: '0 0 */4 * *'
+  workflow_dispatch: # Te permite darle a un botón para probarlo manualmente cuando quieras
+
+jobs:
+  ping-all-projects:
+    runs-on: ubuntu-latest
+    steps:
+      # --- PROYECTO 1 ---
+      - name: Ping Proyecto 1
+        env:
+          URL: ${{ https://akmcataerxvkdurrkzas.supabase.co }}
+          KEY: ${{ sb_publishable_-pd-n1Nd1ND9uKU-w3eY-A_LHKyw2MW }}
+        run: |
+          if [ -n "$URL" ] && [ -n "$KEY" ]; then
+            response=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" "$URL/rest/v1/")
+            echo "Proyecto 1 respondio con codigo: $response"
+          else
+            echo "Proyecto 1 omitido (faltan secretos)."
+          fi
+
+      # --- PROYECTO 2 ---
+      - name: Ping Proyecto 2
+        env:
+          URL: ${{ https://vsepcshzueqrhlulkhdg.supabase.co }}
+          KEY: ${{ sb_publishable_pTJKdpHP5hp48EyfNxlUVg_J6qEoYb3 }}
+        run: |
+          if [ -n "$URL" ] && [ -n "$KEY" ]; then
+            response=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" "$URL/rest/v1/")
+            echo "Proyecto 2 respondio con codigo: $response"
+          else
+            echo "Proyecto 2 omitido (faltan secretos)."
+          fi
+
+      # --- PROYECTO 3 ---
+      - name: Ping Proyecto 3
+        env:
+          URL: ${{ https://sndisappxeebfjlfcnwj.supabase.co }}
+          KEY: ${{ sb_publishable_5R5GmcZUunwh1RgJ3cZ0bg_XdSpQ4EL }}
+        run: |
+          if [ -n "$URL" ] && [ -n "$KEY" ]; then
+            response=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" "$URL/rest/v1/")
+            echo "Proyecto 3 respondio con codigo: $response"
+          else
+            echo "Proyecto 3 omitido (faltan secretos)."
+          fi
+
+      # --- PROYECTO 4 ---
+      - name: Ping Proyecto 4
+        env:
+          URL: ${{ https://fdgovrxxqkhabijkjnob.supabase.co }}
+          KEY: ${{ sb_publishable_RGu5m-1PQ6IgFBxUttEwxg_hVErAE41 }}
+        run: |
+          if [ -n "$URL" ] && [ -n "$KEY" ]; then
+            response=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" "$URL/rest/v1/")
+            echo "Proyecto 4 respondio con codigo: $response"
+          else
+            echo "Proyecto 4 omitido (faltan secretos)."
+          fi

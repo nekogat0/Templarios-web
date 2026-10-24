@@ -344,7 +344,7 @@
             padding: 3px;
             box-shadow: 0 0 15px rgba(234, 179, 8, 0.3), inset 0 0 8px rgba(239, 68, 68, 0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer; /* Añadido para indicar que es clickeable */
+            cursor: pointer;
         }
 
         .faction-shield-corner:hover {
@@ -511,6 +511,8 @@
         <a href="chat.html" class="nav-btn" data-original="chat en vivo">chat en vivo</a>
         <a href="generador de busqueda.html" class="nav-btn" data-original="generador de busqueda">generador de busqueda</a>
         <a href="documentacion.html" class="nav-btn" data-original="documentacion">documentacion</a>
+        <!-- BOTÓN ACTUALIZADO APLANOS DE NAVES -->
+        <a href="planos de naves.html" class="nav-btn" data-original="Planos de Naves">Planos de Naves</a>
         <a href="https://discord.gg/ZQXX92bTh" target="_blank" class="nav-btn" data-original="Discord">Discord</a>
     </div>
 
@@ -580,7 +582,6 @@ Aqu3l qu3 1nt3nt3 burl4r 35t05 m4nd4t05 0 cr34 qu3 5u v0lunt4d 5tǎ p0r 3ncim4 d
         const supabaseKey = 'sb_publishable_RGu5m-1PQ6IgFBxUttEwxg_hVErAE41'
         const supabase = createClient(supabaseUrl, supabaseKey)
 
-        // LÓGICA PARA REPRODUCIR "CENTINELAS DE PLATA" AL PRESIONAR EL ESCUDO
         const shieldMusicBtn = document.getElementById('shield-music-btn');
         const audioCentinelas = document.getElementById('audio-centinelas');
 

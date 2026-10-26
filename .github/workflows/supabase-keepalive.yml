@@ -2,7 +2,8 @@ name: Supabase Multi-Project Keep-Alive
 
 on:
   schedule:
-    - cron: '0 0 */4 * *'
+    # Se ejecuta todos los días a las 00:00 UTC para evitar el bloqueo de 7 días
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -17,7 +18,11 @@ jobs:
         run: |
           if [ -n "$URL" ] && [ -n "$KEY" ]; then
             response=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" "$URL/rest/v1/")
-            echo "Proyecto 1 respondio con codigo: $response"
+            echo "Proyecto 1 respondió con código: $response"
+            if [ "$response" -ge 400 ]; then
+              echo "::error::Proyecto 1 falló con código $response"
+              exit 1
+            fi
           else
             echo "Proyecto 1 omitido (faltan datos)."
           fi
@@ -30,7 +35,11 @@ jobs:
         run: |
           if [ -n "$URL" ] && [ -n "$KEY" ]; then
             response=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" "$URL/rest/v1/")
-            echo "Proyecto 2 respondio con codigo: $response"
+            echo "Proyecto 2 respondió con código: $response"
+            if [ "$response" -ge 400 ]; then
+              echo "::error::Proyecto 2 falló con código $response"
+              exit 1
+            fi
           else
             echo "Proyecto 2 omitido (faltan datos)."
           fi
@@ -43,7 +52,11 @@ jobs:
         run: |
           if [ -n "$URL" ] && [ -n "$KEY" ]; then
             response=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" "$URL/rest/v1/")
-            echo "Proyecto 3 respondio con codigo: $response"
+            echo "Proyecto 3 respondió con código: $response"
+            if [ "$response" -ge 400 ]; then
+              echo "::error::Proyecto 3 falló con código $response"
+              exit 1
+            fi
           else
             echo "Proyecto 3 omitido (faltan datos)."
           fi
@@ -56,7 +69,11 @@ jobs:
         run: |
           if [ -n "$URL" ] && [ -n "$KEY" ]; then
             response=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" "$URL/rest/v1/")
-            echo "Proyecto 4 respondio con codigo: $response"
+            echo "Proyecto 4 respondió con código: $response"
+            if [ "$response" -ge 400 ]; then
+              echo "::error::Proyecto 4 falló con código $response"
+              exit 1
+            fi
           else
             echo "Proyecto 4 omitido (faltan datos)."
           fi
